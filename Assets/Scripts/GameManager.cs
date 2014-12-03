@@ -21,12 +21,27 @@ public class GameManager : MonoBehaviour {
     // Gui text
     public Text txt_TimePlayed;
 
+    // Audio
+    public AudioSource GameStartMusic;
+
+    // Buttons
+    public GameObject startGameButton;
+    public Text startButtonText;
+
 	void Start ()
+    {
+        startButtonText.text = "START";
+	}
+
+    // This function is called from StartGameButton
+    public void StartGame()
     {
         SpawnPlayer();
         StartCoroutine(SpawnHealthPickup());
         StartCoroutine(SpawnHealthPickupP2());
-	}
+        GameStartMusic.Play();
+        startGameButton.SetActive(false);
+    }
 
     void Update()
     {
@@ -38,11 +53,6 @@ public class GameManager : MonoBehaviour {
         timePlayed += Time.deltaTime;
         txt_TimePlayed.text = ("Time Played " + timePlayed);
     }
-
-    //public void StopTimer()
-    //{
-    //    gameIsRunning = false;
-    //}
 
     void SpawnPlayer()
     {
@@ -77,5 +87,4 @@ public class GameManager : MonoBehaviour {
 
         }
     }
-    
 }

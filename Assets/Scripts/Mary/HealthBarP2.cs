@@ -37,6 +37,7 @@ public class HealthBarP2 : MonoBehaviour {
     {
         // Sends message to Player2Controller.cs
         gameObject.SendMessageUpwards("Player2Died");
+        txt_MaryLife.text = "MARY DEAD :(";
     }
 
     // Recieves message from HealthPickupP2.cs when health pickup is picked up

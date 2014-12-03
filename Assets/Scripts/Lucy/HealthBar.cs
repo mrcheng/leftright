@@ -37,6 +37,7 @@ public class HealthBar : MonoBehaviour {
     {
         // Sends message to PlayerController.cs
         gameObject.SendMessageUpwards("PlayerDied");
+        txt_LucyLife.text = "LUCY DEAD :(";
     }
 
     // Recieves message from HealthPickup.cs when health pickup is picked up
