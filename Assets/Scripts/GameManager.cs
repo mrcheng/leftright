@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour {
     // This function is called from StartGameButton
     public void StartGame()
     {
+        gameIsRunning = true;
         SpawnPlayer();
         StartCoroutine(SpawnHealthPickup());
         StartCoroutine(SpawnHealthPickupP2());
@@ -49,7 +50,6 @@ public class GameManager : MonoBehaviour {
         GameStartMusic.Play();
         startGameButton.SetActive(false);
         nazi.SendMessage("ActivateDirections"); // Sends message to DirectionController.cs to activate directions when game is starting
-        gameIsRunning = true;
     }
 
     void Update()
@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator SpawnHealthPickup()
     {
-        while (gameIsRunning)
+        while (gameIsRunning = true)
         {
             yield return new WaitForSeconds(Random.Range(5, 10));
             var numOfHealthPickups = Random.Range(0,2);
@@ -80,13 +80,12 @@ public class GameManager : MonoBehaviour {
             {
                 var clone = Instantiate(healthPickup, new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
             }
-
         }
     }
 
     IEnumerator SpawnHealthPickupP2()
     {
-        while (gameIsRunning)
+        while (gameIsRunning = true)
         {
             yield return new WaitForSeconds(Random.Range(5, 10));
             var numOfHealthPickups = Random.Range(0, 2);
@@ -94,7 +93,7 @@ public class GameManager : MonoBehaviour {
             {
                 var clone = Instantiate(healthPickupP2, new Vector3(Random.Range(-9, 9), 0.5f, 1.1f), Quaternion.identity);
             }
-
         }
     }
+
 }
