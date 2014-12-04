@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour {
     public GameObject healthPickup;
     public GameObject healthPickupP2;
 
-    public bool gameIsRunning = true;
+    public bool gameIsRunning = false;
 
     public float timePlayed;
 
@@ -23,14 +23,20 @@ public class GameManager : MonoBehaviour {
 
     // Audio
     public AudioSource GameStartMusic;
+    public AudioSource StartMenuMusic;
 
     // Buttons
     public GameObject startGameButton;
     public Text startButtonText;
 
+    // To be able to send start message to Directioncontroller.cs
+    public GameObject nazi;
+
 	void Start ()
     {
         startButtonText.text = "START";
+        StartMenuMusic.Play();
+        gameIsRunning = false;
 	}
 
     // This function is called from StartGameButton
@@ -39,13 +45,17 @@ public class GameManager : MonoBehaviour {
         SpawnPlayer();
         StartCoroutine(SpawnHealthPickup());
         StartCoroutine(SpawnHealthPickupP2());
+        StartMenuMusic.Stop();
         GameStartMusic.Play();
         startGameButton.SetActive(false);
+        nazi.SendMessage("ActivateDirections"); // Sends message to DirectionController.cs to activate directions when game is starting
+        gameIsRunning = true;
     }
 
     void Update()
     {
-        GameTimer();
+        if (gameIsRunning)
+            GameTimer();
     }
 
     public void GameTimer()

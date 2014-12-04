@@ -7,7 +7,7 @@ public class DirectionController : MonoBehaviour {
     Animator anim;
 
     public bool naziDirectionRight = true;
-    public bool gameIsRunning = true;
+    public bool gameIsRunning = false;
     public float minTimeTurn = .5f;
     public float maxTimeTurn = 5.0f;
 
@@ -20,12 +20,17 @@ public class DirectionController : MonoBehaviour {
     private float flipTimer = 0.0f; 
     private float timeRange;
 
+    // Audio
+    public AudioSource snd_links;
+    public AudioSource snd_rechts;
+
     void Start()
     {
         anim = GetComponent<Animator>();
         anim.Play(naziIdle);
         naziInfo.text = "CHOOSING DIRECTION";
         timeRange = Random.Range(minTimeTurn, maxTimeTurn);
+        gameIsRunning = false;
     }
 
     void Update()
@@ -42,17 +47,25 @@ public class DirectionController : MonoBehaviour {
         }
     }
 
+    // Recieves message from GameController when game starts
+    void ActivateDirections()
+    {
+        gameIsRunning = true;
+    }
+
     void Flip()
     {
         if (naziDirectionRight)
         {
             anim.Play(naziLeft);
+            snd_links.Play();
             naziInfo.text = "LEFT";
             naziDirectionRight = false;
         }
         else
         {
             anim.Play(naziRight);
+            snd_rechts.Play();
             naziInfo.text = "RIGHT";
             naziDirectionRight = true;
         }
