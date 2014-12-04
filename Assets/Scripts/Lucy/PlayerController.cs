@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour {
     private PlayerPhysics playerPhysics;
     private Animator animator;
     public GameObject Player1Lane; // to be able to send message to lane when player dies
+    public GameObject gameManager;
 
     //Reference to Nazi
     public DirectionController nazi;
@@ -128,6 +129,8 @@ public class PlayerController : MonoBehaviour {
     {
         // Sends message to LaneController.cs to remove lane on player death
         Player1Lane.SendMessage("RemoveLane");
+        // Sends message to GameManager.cs to remove lane on player death
+        gameManager.SendMessage("LucyDead");
     }
 
 }
