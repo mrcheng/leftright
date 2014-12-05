@@ -58,14 +58,14 @@ public class DirectionController : MonoBehaviour {
         if (naziDirectionRight)
         {
             anim.Play(naziLeft);
-            snd_links.Play();
+            //snd_links.Play();
             naziInfo.text = "LEFT";
             naziDirectionRight = false;
         }
         else
         {
             anim.Play(naziRight);
-            snd_rechts.Play();
+            //snd_rechts.Play();
             naziInfo.text = "RIGHT";
             naziDirectionRight = true;
         }

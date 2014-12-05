@@ -63,14 +63,14 @@ BlendTree:
     m_CycleOffset: 0
     m_IsAnim: 1
     m_Mirror: 0
-  - m_Motion: {fileID: 7400008, guid: f5c7aa86d6a6a4da5996470ef0266d43, type: 3}
+  - m_Motion: {fileID: 7400000, guid: 78eec1fc2d4f0064992447cec3456a2c, type: 2}
     m_Threshold: 2
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_IsAnim: 1
     m_Mirror: 0
-  - m_Motion: {fileID: 7400006, guid: f5c7aa86d6a6a4da5996470ef0266d43, type: 3}
+  - m_Motion: {fileID: 7400000, guid: 07eea890f115ffc468824eb40a218817, type: 2}
     m_Threshold: 6
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
@@ -171,14 +171,14 @@ BlendTree:
   m_PrefabInternal: {fileID: 0}
   m_Name: Blend Tree
   m_Childs:
-  - m_Motion: {fileID: 7400012, guid: f5c7aa86d6a6a4da5996470ef0266d43, type: 3}
+  - m_Motion: {fileID: 7400000, guid: ce1fa0f816c0e70448059575496fa495, type: 2}
     m_Threshold: 0
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_IsAnim: 1
     m_Mirror: 0
-  - m_Motion: {fileID: 7400016, guid: f5c7aa86d6a6a4da5996470ef0266d43, type: 3}
+  - m_Motion: {fileID: 7400000, guid: 34333201897e85346b6a7e140f8c6499, type: 2}
     m_Threshold: 6
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
@@ -444,14 +444,14 @@ StateMachine:
       - {fileID: 110100000}
       - {fileID: 110125626}
     data:
-      first: {fileID: 110245117}
-      second:
-      - {fileID: 110191940}
-    data:
       first: {fileID: 110212368}
       second:
       - {fileID: 110179064}
       - {fileID: 110136365}
+    data:
+      first: {fileID: 110245117}
+      second:
+      - {fileID: 110191940}
     data:
       first: {fileID: 110280526}
       second:

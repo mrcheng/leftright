@@ -141,13 +141,11 @@ public class GameManager : MonoBehaviour {
 
     void LucyDead()
     {
-        //print("Lucy is dead!");
         lucyDead = true;
     }
 
     void MaryDead() 
     {
-        //print("Mary is dead!");
         maryDead = true;
     }
 
