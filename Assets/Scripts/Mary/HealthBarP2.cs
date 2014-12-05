@@ -15,6 +15,9 @@ public class HealthBarP2 : MonoBehaviour {
     {
         if (GameObject.FindGameObjectWithTag("Player2").GetComponent<PlayerControllerP2>().isDamaged)
         {
+
+            gameObject.renderer.material.color = new Color(1f, 0.1f, 0.25f, 0.5f);
+
             if (healthBarP2Length <= 0.0f)
             {
                 Player2Dead();
@@ -23,6 +26,10 @@ public class HealthBarP2 : MonoBehaviour {
             {
                 InflictDamage();
             }
+        }
+        else
+        {
+            gameObject.renderer.material.color = new Color(0.25f, 1, 0.1f, 0.5f);
         }
     }
 

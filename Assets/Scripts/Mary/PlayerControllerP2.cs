@@ -132,4 +132,11 @@ public class PlayerControllerP2 : MonoBehaviour {
         // Sends message to GameManager.cs to remove lane on player death
         gameManager.SendMessage("MaryDead");
     }
+
+    // Recieves message from GameManager.cs (player1 casts freeze)
+    //public void FreezePickupPickedUpP1()
+    //{
+    //    print("det funkar");
+    //}
+
 }

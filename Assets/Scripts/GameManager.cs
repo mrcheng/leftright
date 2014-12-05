@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour {
     // Pickups
     public GameObject healthPickup;
     public GameObject healthPickupP2;
+    public GameObject freezePickup;
 
     // Obsticles
     public GameObject obsticleCube;
@@ -58,10 +59,12 @@ public class GameManager : MonoBehaviour {
         StartCoroutine(SpawnObsticleCube());
 
         StartCoroutine(SpawnHealthPickupP2());
-        StartCoroutine(SpawnObsticleCubeP2()); 
+        StartCoroutine(SpawnObsticleCubeP2());
+
+        StartCoroutine(SpawnFreezePickup());
 
         StartMenuMusic.Stop();
-        GameStartMusic.Play();
+        //GameStartMusic.Play();
         startGameButton.SetActive(false);
         nazi.SendMessage("ActivateDirections"); // Sends message to DirectionController.cs to activate directions when game is starting
     }
@@ -135,6 +138,18 @@ public class GameManager : MonoBehaviour {
             for (var i = 0; i < 1; i++)
             {
                 Instantiate(obsticleCubeP2, new Vector3(Random.Range(-9, 9), 0.6f, 1.1f), Quaternion.identity);
+            }
+        }
+    }
+
+    IEnumerator SpawnFreezePickup()
+    {
+        while (gameIsRunning)
+        {
+            yield return new WaitForSeconds(Random.Range(10, 20));
+            for (var i = 0; i < 1; i++)
+            {
+                Instantiate(freezePickup, new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
             }
         }
     }
