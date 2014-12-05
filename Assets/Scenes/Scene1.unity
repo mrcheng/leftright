@@ -2112,8 +2112,8 @@ AudioSource:
   serializedVersion: 3
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: .699999988
-  m_Pitch: 1.23000002
+  m_Volume: .300000012
+  m_Pitch: 2
   Loop: 0
   Mute: 0
   Priority: 128
@@ -3335,7 +3335,7 @@ AudioSource:
   serializedVersion: 3
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: .699999988
+  m_Volume: .300000012
   m_Pitch: 1
   Loop: 0
   Mute: 0

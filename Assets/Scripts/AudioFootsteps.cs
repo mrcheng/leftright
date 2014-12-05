@@ -24,6 +24,7 @@ public class AudioFootsteps : MonoBehaviour {
     void PlayRunFootsteps()
     {
         audio.clip = footsteps_run[Random.Range(0, footsteps_run.Length)];
+        audio.volume = 1.0f;
         audio.Play();
     }
 
