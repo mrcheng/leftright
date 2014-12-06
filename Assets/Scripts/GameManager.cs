@@ -88,8 +88,10 @@ public class GameManager : MonoBehaviour {
 
     void SpawnPlayer()
     {
-        Instantiate(lucy, lucySpawnCoordinates, Quaternion.identity);
-        Instantiate(mary, marySpawnCoordinates, Quaternion.identity);
+        var lucyInstance = (GameObject)Instantiate(lucy, lucySpawnCoordinates, Quaternion.identity);
+        var maryInstance = (GameObject)Instantiate(mary, marySpawnCoordinates, Quaternion.identity);
+        lucyInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(0);
+        maryInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(1);
     }
 
     IEnumerator SpawnHealthPickup()
