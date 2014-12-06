@@ -2,8 +2,8 @@
 using System.Collections;
 
 [RequireComponent(typeof(PlayerPhysics))]
-public class PlayerController : MonoBehaviour {
-
+public class PlayerController : MonoBehaviour
+{
     public Rewired.Player _player;
 
     // Player Handling
@@ -12,9 +12,6 @@ public class PlayerController : MonoBehaviour {
     public float runSpeed = 12;
     public float acceleration = 30;
     public float jumpHeight = 12;
-
-    // Health
-    public bool isDamaged = false;
 
     // System
     private float animationSpeed;
@@ -30,26 +27,22 @@ public class PlayerController : MonoBehaviour {
     // Components
     private PlayerPhysics playerPhysics;
     private Animator animator;
-    public GameObject PlayerLane; // to be able to send message to lane when player dies
-    public GameObject gameManager;
 
     //Reference to Nazi
     public DirectionController nazi;
 
-    public string PlayerName;
-
-	void Start() 
+    void Start()
     {
         playerPhysics = GetComponent<PlayerPhysics>();
         animator = GetComponent<Animator>();
-        
+
         animator.SetBool("Jumping", true);
         animator.SetLayerWeight(1, 1); // headband layer (both layer zero and layer headband has 100%)
         playerDirectionRight = false;
         playerStandingStill = true;
-	}
+    }
 
-	void Update() 
+    void Update()
     {
         // reset acceleration upon collision
         if (playerPhysics.movementStopped)
@@ -58,12 +51,9 @@ public class PlayerController : MonoBehaviour {
             currentSpeed = 0;
         }
 
-        // inflict damage if player facing wrong direction
-        isDamaged = playerDirectionRight != nazi.naziDirectionRight;
-
         // If player is touching ground
         if (playerPhysics.grounded)
-        {   
+        {
             amountToMove.y = 0; //reset gravity when grounded
             animator.SetBool("Jumping", false);
 
@@ -91,7 +81,7 @@ public class PlayerController : MonoBehaviour {
         float speed = (_player.GetButton("Run")) ? runSpeed : walkSpeed;
         targetSpeed = _player.GetAxisRaw("Horizontal") * speed;
         currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
-            
+
         // face direction
         float moveDir = _player.GetAxisRaw("Horizontal");
         if (moveDir != 0)
@@ -103,15 +93,14 @@ public class PlayerController : MonoBehaviour {
         else
         {
             playerStandingStill = true;
-            isDamaged = true; // inflict damage when standing still
         }
 
         // Set amount to move
         amountToMove.x = currentSpeed;
         amountToMove.y -= gravity * Time.deltaTime;
         playerPhysics.Move(amountToMove * Time.deltaTime);
- 
-	}
+
+    }
 
     // Increase n towards target by speed
     private float IncrementTowards(float n, float target, float a)
@@ -128,20 +117,10 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    // Recieves message from HealthBar.cs
-    void PlayerDied()
-    {
-        // Sends message to LaneController.cs to remove lane on player death
-        PlayerLane.SendMessage("RemoveLane");
-        // Sends message to GameManager.cs to remove lane on player death
-        gameManager.SendMessage(PlayerName + "Dead");
-    }
-
     // Recieves message from FreezePickup.cs (player1)
     //public void FreezePickupPickedUp()
     //{
     //    //Sends message to PlayerControllerP2.cs when freeze pickup is picked up from player1
     //    BroadcastMessage("FreezePickupPickedUpP1");
     //}
-
 }

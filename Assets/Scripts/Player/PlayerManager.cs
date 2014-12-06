@@ -1,26 +1,38 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
 {
     public DirectionController Nazi;
-
+    public LaneController Lane;
     // Master health bars
     public RectTransform HealthBar;
+    public Text LifeText;
+    public string PlayerName;
+
+    public float HealthInSeconds = 10f;
 
     PlayerController _playerController;
     HealthBar _healthBar;
+    float _health;
     bool _takingDamage;
+    bool _isDead;
 
     void Awake()
     {
         _playerController = GetComponentInChildren<PlayerController>();
         _healthBar = GetComponentInChildren<HealthBar>();
+        _health = 1f;
     }
 
     void Update()
     {
-        if (_playerController.playerDirectionRight != Nazi.naziDirectionRight)
+        if (_isDead)
+            return;
+
+        if (_playerController.playerDirectionRight != Nazi.naziDirectionRight ||
+            _playerController.playerStandingStill)
         {
             if (!_takingDamage)
             {
@@ -39,9 +51,22 @@ public class PlayerManager : MonoBehaviour
 
         if (_takingDamage)
         {
-            _healthBar.InflictDamage();
-            HealthBar.localScale = HealthBar.localScale - new Vector3(Time.deltaTime, 0, 0);
+            _health -= Time.deltaTime / HealthInSeconds;
+            if (_health < 0f)
+            {
+                _health = 0f;
+                Died();
+            }
+
+            UpdateHealth();
         }
+    }
+
+    void UpdateHealth()
+    {
+        LifeText.text = PlayerName + " time left: " + System.Math.Round(_health * HealthInSeconds, 2);
+        _healthBar.Health = _health;
+        HealthBar.localScale = new Vector3(_health, 1f, 1f);
     }
 
     void StartTakingDamage()
@@ -52,5 +77,19 @@ public class PlayerManager : MonoBehaviour
     void StopTakingDamage()
     {
         _healthBar.TakingDamage = false;
+    }
+
+    void Died()
+    {
+        _isDead = true;
+        Lane.RemoveLane();
+        LifeText.text = PlayerName.ToUpper() + " DEAD :(";
+        GameManager.Instance.SendMessage(PlayerName + "Dead");
+    }
+
+    // Recieves message from HealthPickup.cs when health pickup is picked up
+    public void HealthPickupPickedUp()
+    {
+        _health += 1f / HealthInSeconds;
     }
 }

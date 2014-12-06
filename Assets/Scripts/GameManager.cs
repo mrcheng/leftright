@@ -39,6 +39,17 @@ public class GameManager : MonoBehaviour {
     // To be able to send start message to Directioncontroller.cs
     public GameObject nazi;
 
+    static GameManager _instance;
+    public static GameManager Instance
+    {
+        get { return _instance; }
+    }
+
+    void Awake()
+    {
+        _instance = this;
+    }
+
 	void Start ()
     {
         lucyDead = false;

@@ -235,6 +235,8 @@ GameObject:
   - 33: {fileID: 18790150}
   - 65: {fileID: 18790149}
   - 23: {fileID: 18790148}
+  - 114: {fileID: 18790152}
+  - 54: {fileID: 18790151}
   m_Layer: 8
   m_Name: Lane3
   m_TagString: Untagged
@@ -293,6 +295,32 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 18790146}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &18790151
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 18790146}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: .0500000007
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &18790152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 18790146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd03800fbfe0dbb4da00e4a80a669e86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &18873503
 GameObject:
   m_ObjectHideFlags: 0
@@ -1834,9 +1862,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b73bc0e59a636f4dbad6801f8b6a032, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthBarLength: 10
-  txt_Life: {fileID: 576412863}
-  PlayerName: Mary
 --- !u!23 &388334834
 Renderer:
   m_ObjectHideFlags: 0
@@ -3477,9 +3502,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b73bc0e59a636f4dbad6801f8b6a032, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthBarLength: 10
-  txt_Life: {fileID: 1591620964}
-  PlayerName: Lucy
 --- !u!23 &878824908
 Renderer:
   m_ObjectHideFlags: 0
@@ -3650,13 +3672,9 @@ MonoBehaviour:
   runSpeed: 6
   acceleration: 15
   jumpHeight: 8
-  isDamaged: 0
   playerDirectionRight: 1
   playerStandingStill: 1
-  PlayerLane: {fileID: 1008213355}
-  gameManager: {fileID: 1594089847}
   nazi: {fileID: 1678774727}
-  PlayerName: Mary
 --- !u!114 &956776961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3806,7 +3824,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Nazi: {fileID: 1678774727}
+  Lane: {fileID: 1008213360}
   HealthBar: {fileID: 739237659}
+  LifeText: {fileID: 576412863}
+  PlayerName: Mary
+  HealthInSeconds: 10
 --- !u!1 &971432616
 GameObject:
   m_ObjectHideFlags: 0
@@ -5181,9 +5203,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b73bc0e59a636f4dbad6801f8b6a032, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthBarLength: 10
-  txt_Life: {fileID: 576412863}
-  PlayerName: Mary
 --- !u!23 &1450069184
 Renderer:
   m_ObjectHideFlags: 0
@@ -5773,13 +5792,9 @@ MonoBehaviour:
   runSpeed: 6
   acceleration: 15
   jumpHeight: 8
-  isDamaged: 0
   playerDirectionRight: 1
   playerStandingStill: 1
-  PlayerLane: {fileID: 1033554890}
-  gameManager: {fileID: 1594089847}
   nazi: {fileID: 1678774727}
-  PlayerName: Lucy
 --- !u!114 &1591160893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5930,7 +5945,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Nazi: {fileID: 1678774727}
+  Lane: {fileID: 1033554895}
   HealthBar: {fileID: 1381776402}
+  LifeText: {fileID: 1591620964}
+  PlayerName: Lucy
+  HealthInSeconds: 10
 --- !u!1 &1591620963
 GameObject:
   m_ObjectHideFlags: 0
@@ -7163,6 +7182,8 @@ GameObject:
   - 33: {fileID: 1800357100}
   - 65: {fileID: 1800357099}
   - 23: {fileID: 1800357098}
+  - 114: {fileID: 1800357102}
+  - 54: {fileID: 1800357101}
   m_Layer: 8
   m_Name: Lane4
   m_TagString: Untagged
@@ -7221,6 +7242,32 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1800357096}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!54 &1800357101
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1800357096}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: .0500000007
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &1800357102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1800357096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd03800fbfe0dbb4da00e4a80a669e86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1816971554
 GameObject:
   m_ObjectHideFlags: 0
@@ -7619,7 +7666,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Nazi: {fileID: 1678774727}
+  Lane: {fileID: 1800357102}
   HealthBar: {fileID: 38714012}
+  LifeText: {fileID: 1211583746}
+  PlayerName: Tjack
+  HealthInSeconds: 10
 --- !u!114 &1903268689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7637,13 +7688,9 @@ MonoBehaviour:
   runSpeed: 6
   acceleration: 15
   jumpHeight: 8
-  isDamaged: 0
   playerDirectionRight: 1
   playerStandingStill: 1
-  PlayerLane: {fileID: 1800357096}
-  gameManager: {fileID: 1594089847}
   nazi: {fileID: 1678774727}
-  PlayerName: Tjack
 --- !u!114 &1903268690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8081,9 +8128,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b73bc0e59a636f4dbad6801f8b6a032, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthBarLength: 10
-  txt_Life: {fileID: 1591620964}
-  PlayerName: Lucy
 --- !u!23 &1994445060
 Renderer:
   m_ObjectHideFlags: 0
@@ -8304,7 +8348,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Nazi: {fileID: 1678774727}
+  Lane: {fileID: 18790152}
   HealthBar: {fileID: 1036671402}
+  LifeText: {fileID: 1650660580}
+  PlayerName: Oxy
+  HealthInSeconds: 10
 --- !u!114 &2053174142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8321,13 +8369,9 @@ MonoBehaviour:
   runSpeed: 6
   acceleration: 15
   jumpHeight: 8
-  isDamaged: 0
   playerDirectionRight: 1
   playerStandingStill: 1
-  PlayerLane: {fileID: 18790146}
-  gameManager: {fileID: 1594089847}
   nazi: {fileID: 1678774727}
-  PlayerName: Oxy
 --- !u!114 &2053174143
 MonoBehaviour:
   m_ObjectHideFlags: 0
