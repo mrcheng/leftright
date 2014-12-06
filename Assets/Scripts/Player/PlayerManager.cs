@@ -65,14 +65,13 @@ public class PlayerManager : MonoBehaviour
         if (_takingDamage)
         {
             _health -= Time.deltaTime / HealthInSeconds;
-            if (_health < 0f)
+			UpdateHealth();
+			if (_health < 0f)
             {
                 _health = 0f;
                 Died();
             }
-
-            UpdateHealth();
-        }
+			        }
     }
 
     void UpdateHealth()
@@ -96,7 +95,7 @@ public class PlayerManager : MonoBehaviour
     {
         _isDead = true;
         Lane.RemoveLane();
-        LifeText.text = PlayerName.ToUpper() + " DEAD :(";
+		LifeText.text = PlayerName.ToUpper() + " DEAD :(";
         GameManager.Instance.PlayerDied(this);
     }
 
