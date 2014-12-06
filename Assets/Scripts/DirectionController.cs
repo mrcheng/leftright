@@ -2,35 +2,44 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class DirectionController : MonoBehaviour {
-
+public class DirectionController : MonoBehaviour
+{
     Animator anim;
 
     public bool naziDirectionRight = true;
-    public bool gameIsRunning = false;
     public float minTimeTurn = .5f;
     public float maxTimeTurn = 5.0f;
 
     // Gui text
     public Text naziInfo;
 
-    private int naziIdle = Animator.StringToHash("NaziIdle");
-    private int naziLeft = Animator.StringToHash("NaziTurnLeft");
-    private int naziRight = Animator.StringToHash("NaziTurnRight");
-    private float flipTimer = 0.0f; 
-    private float timeRange;
-
     // Audio
     public AudioSource snd_links;
     public AudioSource snd_rechts;
 
-    void Start()
+    bool _isRunning;
+    int naziIdle = Animator.StringToHash("NaziIdle");
+    int naziLeft = Animator.StringToHash("NaziTurnLeft");
+    int naziRight = Animator.StringToHash("NaziTurnRight");
+    float flipTimer;
+    float timeRange;
+    bool _isIdling;
+    public bool IsIdling
+    {
+        get { return _isIdling; }
+    }
+
+    void Awake()
     {
         anim = GetComponent<Animator>();
+    }
+
+    void Start()
+    {
+        _isIdling = true;
         anim.Play(naziIdle);
         naziInfo.text = "CHOOSING DIRECTION";
         timeRange = Random.Range(minTimeTurn, maxTimeTurn);
-        gameIsRunning = false;
     }
 
     void Update()
@@ -38,7 +47,7 @@ public class DirectionController : MonoBehaviour {
         flipTimer += Time.deltaTime;
         if (flipTimer > timeRange)
         {
-            if (gameIsRunning)
+            if (_isRunning)
                 Flip();
             else
                 anim.Play(naziIdle);
@@ -48,13 +57,15 @@ public class DirectionController : MonoBehaviour {
     }
 
     // Recieves message from GameController when game starts
-    void ActivateDirections()
+    public void ActivateDirections()
     {
-        gameIsRunning = true;
+        _isRunning = true;
     }
 
     void Flip()
     {
+        _isIdling = false;
+
         if (naziDirectionRight)
         {
             anim.Play(naziLeft);
@@ -70,5 +81,4 @@ public class DirectionController : MonoBehaviour {
             naziDirectionRight = true;
         }
     }
-
 }

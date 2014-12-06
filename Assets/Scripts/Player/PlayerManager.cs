@@ -31,8 +31,9 @@ public class PlayerManager : MonoBehaviour
         if (_isDead)
             return;
 
-        if (_playerController.playerDirectionRight != Nazi.naziDirectionRight ||
-            _playerController.playerStandingStill)
+        if (!Nazi.IsIdling &&
+            (_playerController.playerDirectionRight != Nazi.naziDirectionRight ||
+                _playerController.playerStandingStill))
         {
             if (!_takingDamage)
             {

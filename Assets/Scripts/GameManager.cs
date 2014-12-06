@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour {
     public Text startButtonText;
 
     // To be able to send start message to Directioncontroller.cs
-    public GameObject nazi;
+    public DirectionController Nazi;
 
     public GameObject GameOverButton;
     public Text GameOverText;
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour {
         StartMenuMusic.Stop();
         //GameStartMusic.Play();
         startGameButton.SetActive(false);
-        nazi.SendMessage("ActivateDirections"); // Sends message to DirectionController.cs to activate directions when game is starting
+        Nazi.ActivateDirections(); // Sends message to DirectionController.cs to activate directions when game is starting
     }
 
     void Update()
@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviour {
     public void GameTimer()
     {
         _timePlayed += Time.deltaTime;
-        txt_TimePlayed.text = ("Time played " + _timePlayed);
+        txt_TimePlayed.text = "Time played " + System.Math.Round(_timePlayed, 2);
     }
 
     void SpawnPlayers()

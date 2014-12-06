@@ -6380,14 +6380,12 @@ MonoBehaviour:
   freezePickup: {fileID: 1406146868}
   obsticleCube: {fileID: 12744094}
   obsticleCubeP2: {fileID: 1506742910}
-  gameIsRunning: 1
-  timePlayed: 0
   txt_TimePlayed: {fileID: 1880257948}
   GameStartMusic: {fileID: 1705956225}
   StartMenuMusic: {fileID: 79246410}
   startGameButton: {fileID: 1950021578}
   startButtonText: {fileID: 1781002404}
-  nazi: {fileID: 1678774726}
+  Nazi: {fileID: 1678774727}
   GameOverButton: {fileID: 20368817}
   GameOverText: {fileID: 525294473}
 --- !u!4 &1594089849
