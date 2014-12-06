@@ -79,8 +79,7 @@ public class PlayerManager : MonoBehaviour
     {
         LifeText.text = PlayerName + " time left: " + System.Math.Round(_health * HealthInSeconds, 2);
         _healthBar.Health = _health;
-        HealthBar.localScale = new Vector3(_health, 1f, 1f);
-        HealthBar.localScale.Scale(_healthBarOriginalScale);
+        HealthBar.localScale = new Vector3(_healthBarOriginalScale.x * _health, _healthBarOriginalScale.y, _healthBarOriginalScale.z);
     }
 
     void StartTakingDamage()
