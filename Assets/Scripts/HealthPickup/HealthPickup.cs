@@ -19,7 +19,8 @@ public class HealthPickup : MonoBehaviour
         var player = playerCollider.GetComponent<PlayerManager>();
         if (player == null)
             print("Collided with unexpected object: " + playerCollider.gameObject);
-        player.GiveHealth(1f);
+        else
+            player.GiveHealth(1f);
         Destroy(gameObject);
     }
 }
