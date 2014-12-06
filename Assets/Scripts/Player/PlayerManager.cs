@@ -10,6 +10,7 @@ public class PlayerManager : MonoBehaviour
     public RectTransform HealthBar;
     public Text LifeText;
     public string PlayerName;
+    public Color PlayerColor;
 
     public float HealthInSeconds = 10f;
 

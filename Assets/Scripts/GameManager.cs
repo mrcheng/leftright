@@ -148,6 +148,7 @@ public class GameManager : MonoBehaviour {
 
     void GameOver(PlayerManager winner)
     {
+        GameOverText.color = winner.PlayerColor;
         GameOverText.text = string.Format(_gameOverTextTemplate, winner.PlayerName);
         GameOverButton.SetActive(true);
     }

@@ -4558,6 +4558,7 @@ MonoBehaviour:
   HealthBar: {fileID: 739237659}
   LifeText: {fileID: 576412863}
   PlayerName: Mary
+  PlayerColor: {r: 0, g: 1, b: 0, a: 1}
   HealthInSeconds: 10
 --- !u!1 &971432616
 GameObject:
@@ -5778,7 +5779,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotatorSpeed: 20
-  freezePickupIsPickedUp: 0
   snd_pickupFreeze: {fileID: 499118618}
 --- !u!95 &1406146873
 Animator:
@@ -6763,6 +6763,7 @@ MonoBehaviour:
   HealthBar: {fileID: 1381776402}
   LifeText: {fileID: 1591620964}
   PlayerName: Lucy
+  PlayerColor: {r: 1, g: 0, b: 0, a: 1}
   HealthInSeconds: 10
 --- !u!1 &1591620963
 GameObject:
@@ -6858,13 +6859,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lucy: {fileID: 1591160890}
-  lucySpawnCoordinates: {x: 0, y: 5, z: 0}
   mary: {fileID: 956776958}
-  marySpawnCoordinates: {x: 0, y: 5, z: 1.10000002}
   oxy: {fileID: 2053174139}
-  oxySpawnCoordinates: {x: 0, y: 5, z: 2.20000005}
   tjack: {fileID: 1903268686}
-  tjackSpawnCoordinates: {x: 0, y: 5, z: 3.29999995}
   healthPickup: {fileID: 1713280623}
   freezePickup: {fileID: 1406146868}
   obsticleCube: {fileID: 12744094}
@@ -7605,7 +7602,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotatorSpeed: 100
-  healthPickupIsPickedUp: 0
   snd_pickupHealth: {fileID: 499118618}
 --- !u!95 &1713280626
 Animator:
@@ -8480,6 +8476,7 @@ MonoBehaviour:
   HealthBar: {fileID: 38714012}
   LifeText: {fileID: 1211583746}
   PlayerName: Tjack
+  PlayerColor: {r: 0, g: 0, b: 1, a: 1}
   HealthInSeconds: 10
 --- !u!114 &1903268689
 MonoBehaviour:
@@ -9189,6 +9186,7 @@ MonoBehaviour:
   HealthBar: {fileID: 1036671402}
   LifeText: {fileID: 1650660580}
   PlayerName: Oxy
+  PlayerColor: {r: 1, g: 1, b: 0, a: 1}
   HealthInSeconds: 10
 --- !u!114 &2053174142
 MonoBehaviour:

@@ -78,6 +78,7 @@ public class PlayerController : MonoBehaviour
         float speed = (_player.GetButton("Run")) ? runSpeed : walkSpeed;
         targetSpeed = _player.GetAxisRaw("Horizontal") * speed;
         currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
+        playerStandingStill = targetSpeed == 0f;
 
         // face direction
         float moveDir = _player.GetAxisRaw("Horizontal");
@@ -85,11 +86,6 @@ public class PlayerController : MonoBehaviour
         {
             transform.eulerAngles = (moveDir > 0) ? Vector3.up * 180 : Vector3.zero;
             playerDirectionRight = moveDir > 0;
-            playerStandingStill = false;
-        }
-        else
-        {
-            playerStandingStill = true;
         }
 
         // Set amount to move
