@@ -4,6 +4,8 @@ using System.Collections;
 [RequireComponent(typeof(PlayerPhysics))]
 public class PlayerController : MonoBehaviour {
 
+    public Rewired.Player _player;
+
     // Player Handling
     public float gravity = 20;
     public float walkSpeed = 8;
@@ -35,7 +37,6 @@ public class PlayerController : MonoBehaviour {
     public DirectionController nazi;
 
     public string PlayerName;
-    public string PlayerInputSuffix;
 
 	void Start() 
     {
@@ -73,7 +74,7 @@ public class PlayerController : MonoBehaviour {
             }
 
             // jump input
-            if (Input.GetButtonDown("Jump" + PlayerInputSuffix))
+            if (_player.GetButtonDown("Jump"))
             {
                 amountToMove.y = jumpHeight;
                 jumping = true;
@@ -87,12 +88,12 @@ public class PlayerController : MonoBehaviour {
         animator.SetFloat("Speed", animationSpeed);
 
         // Input
-        float speed = (Input.GetButton("Run" + PlayerInputSuffix)) ? runSpeed : walkSpeed;
-        targetSpeed = Input.GetAxisRaw("Horizontal" + PlayerInputSuffix) * speed;
+        float speed = (_player.GetButton("Run")) ? runSpeed : walkSpeed;
+        targetSpeed = _player.GetAxisRaw("Horizontal") * speed;
         currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
             
         // face direction
-        float moveDir = Input.GetAxisRaw("Horizontal" + PlayerInputSuffix);
+        float moveDir = _player.GetAxisRaw("Horizontal");
         if (moveDir != 0)
         {
             transform.eulerAngles = (moveDir > 0) ? Vector3.up * 180 : Vector3.zero;
