@@ -98,8 +98,8 @@ public class GameManager : MonoBehaviour {
     {
         var lucyInstance = (GameObject)Instantiate(lucy, lucySpawnCoordinates, Quaternion.identity);
         var maryInstance = (GameObject)Instantiate(mary, marySpawnCoordinates, Quaternion.identity);
-        var oxyInstance = (GameObject)Instantiate(oxy, marySpawnCoordinates, Quaternion.identity);
-        var tjackInstance = (GameObject)Instantiate(tjack, marySpawnCoordinates, Quaternion.identity);
+        var oxyInstance = (GameObject)Instantiate(oxy, oxySpawnCoordinates, Quaternion.identity);
+        var tjackInstance = (GameObject)Instantiate(tjack, tjackSpawnCoordinates, Quaternion.identity);
         lucyInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(0);
         maryInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(1);
         oxyInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(2);
