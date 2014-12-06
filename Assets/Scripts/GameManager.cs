@@ -42,6 +42,10 @@ public class GameManager : MonoBehaviour {
     // To be able to send start message to Directioncontroller.cs
     public GameObject nazi;
 
+    public GameObject GameOverButton;
+    public Text GameOverText;
+    string _gameOverTextTemplate;
+
     List<PlayerManager> _activePlayers;
 
     static GameManager _instance;
@@ -57,6 +61,8 @@ public class GameManager : MonoBehaviour {
 
 	void Start ()
     {
+        GameOverButton.SetActive(false);
+        _gameOverTextTemplate = GameOverText.text;
         startButtonText.text = "START";
         StartMenuMusic.Play();
         gameIsRunning = false;
@@ -179,10 +185,16 @@ public class GameManager : MonoBehaviour {
     {
         _activePlayers.Remove(player);
         if (_activePlayers.Count == 0)
-            GameOver();
+            GameOver(player);
     }
 
-    void GameOver()
+    void GameOver(PlayerManager winner)
+    {
+        GameOverText.text = string.Format(_gameOverTextTemplate, winner.PlayerName);
+        GameOverButton.SetActive(true);
+    }
+
+    public void Reset()
     {
         Application.LoadLevel(Application.loadedLevel);
     }

@@ -385,7 +385,6 @@ GameObject:
   - 222: {fileID: 20368821}
   - 114: {fileID: 20368820}
   - 114: {fileID: 20368819}
-  - 114: {fileID: 20368822}
   m_Layer: 5
   m_Name: btn_GameOver
   m_TagString: Untagged
@@ -452,7 +451,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1594089848}
-        m_MethodName: 
+        m_MethodName: Reset
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -492,17 +491,6 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 20368817}
---- !u!114 &20368822
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 20368817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a37c5c03993bee84f9ae7ef0c09cb875, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &21134381
 GameObject:
   m_ObjectHideFlags: 0
@@ -2505,7 +2493,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Lucy is the best!
+  m_Text: '{0} is the best!
 
     Fuck the rest!'
 --- !u!222 &525294474
@@ -6400,6 +6388,8 @@ MonoBehaviour:
   startGameButton: {fileID: 1950021578}
   startButtonText: {fileID: 1781002404}
   nazi: {fileID: 1678774726}
+  GameOverButton: {fileID: 20368817}
+  GameOverText: {fileID: 525294473}
 --- !u!4 &1594089849
 Transform:
   m_ObjectHideFlags: 0
