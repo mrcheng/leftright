@@ -2768,6 +2768,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Nazi: {fileID: 1678774727}
+  HealthBar: {fileID: 739237659}
 --- !u!1 &971432616
 GameObject:
   m_ObjectHideFlags: 0
@@ -4248,6 +4249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Nazi: {fileID: 1678774727}
+  HealthBar: {fileID: 1381776402}
 --- !u!1 &1591620963
 GameObject:
   m_ObjectHideFlags: 0

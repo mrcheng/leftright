@@ -5,6 +5,9 @@ public class PlayerManager : MonoBehaviour
 {
     public DirectionController Nazi;
 
+    // Master health bars
+    public RectTransform HealthBar;
+
     PlayerController _playerController;
     HealthBar _healthBar;
     bool _takingDamage;
@@ -35,7 +38,10 @@ public class PlayerManager : MonoBehaviour
         }
 
         if (_takingDamage)
+        {
             _healthBar.InflictDamage();
+            HealthBar.localScale = HealthBar.localScale - new Vector3(Time.deltaTime, 0, 0);
+        }
     }
 
     void StartTakingDamage()
