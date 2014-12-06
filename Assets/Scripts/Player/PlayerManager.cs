@@ -24,11 +24,18 @@ public class PlayerManager : MonoBehaviour
     bool _takingDamage;
     bool _isDead;
 
+    Vector3 _healthBarOriginalScale;
+
     void Awake()
     {
         _playerController = GetComponentInChildren<PlayerController>();
         _healthBar = GetComponentInChildren<HealthBar>();
         _health = 1f;
+    }
+
+    void Start()
+    {
+        _healthBarOriginalScale = HealthBar.localScale;
     }
 
     void Update()
@@ -72,7 +79,7 @@ public class PlayerManager : MonoBehaviour
     {
         LifeText.text = PlayerName + " time left: " + System.Math.Round(_health * HealthInSeconds, 2);
         _healthBar.Health = _health;
-        HealthBar.localScale = new Vector3(_health, 1f, 1f);
+        HealthBar.localScale = _healthBarOriginalScale.Scale(new Vector3(_health, 1f, 1f));
     }
 
     void StartTakingDamage()
