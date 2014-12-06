@@ -3872,7 +3872,6 @@ MonoBehaviour:
   jumpHeight: 8
   playerDirectionRight: 1
   playerStandingStill: 1
-  nazi: {fileID: 1678774727}
 --- !u!114 &956776961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5992,7 +5991,6 @@ MonoBehaviour:
   jumpHeight: 8
   playerDirectionRight: 1
   playerStandingStill: 1
-  nazi: {fileID: 1678774727}
 --- !u!114 &1591160893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6247,6 +6245,10 @@ MonoBehaviour:
   mary: {fileID: 956776958}
   marySpawnCoordinates: {x: 0, y: 5, z: 1.10000002}
   maryDead: 0
+  oxy: {fileID: 2053174139}
+  oxySpawnCoordinates: {x: 0, y: 5, z: 2.20000005}
+  tjack: {fileID: 1903268686}
+  tjackSpawnCoordinates: {x: 0, y: 5, z: 3.29999995}
   healthPickup: {fileID: 1713280623}
   healthPickupP2: {fileID: 1771046375}
   freezePickup: {fileID: 1406146868}
@@ -7888,7 +7890,6 @@ MonoBehaviour:
   jumpHeight: 8
   playerDirectionRight: 1
   playerStandingStill: 1
-  nazi: {fileID: 1678774727}
 --- !u!114 &1903268690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8569,7 +8570,6 @@ MonoBehaviour:
   jumpHeight: 8
   playerDirectionRight: 1
   playerStandingStill: 1
-  nazi: {fileID: 1678774727}
 --- !u!114 &2053174143
 MonoBehaviour:
   m_ObjectHideFlags: 0

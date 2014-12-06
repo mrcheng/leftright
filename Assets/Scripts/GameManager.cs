@@ -1,16 +1,19 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
     // Players
     public GameObject lucy;
     public Vector3 lucySpawnCoordinates;
-    public bool lucyDead = false;
     public GameObject mary;
     public Vector3 marySpawnCoordinates;
-    public bool maryDead = false;
+    public GameObject oxy;
+    public Vector3 oxySpawnCoordinates;
+    public GameObject tjack;
+    public Vector3 tjackSpawnCoordinates;
 
     // Pickups
     public GameObject healthPickup;
@@ -39,6 +42,8 @@ public class GameManager : MonoBehaviour {
     // To be able to send start message to Directioncontroller.cs
     public GameObject nazi;
 
+    List<PlayerManager> _activePlayers;
+
     static GameManager _instance;
     public static GameManager Instance
     {
@@ -52,8 +57,6 @@ public class GameManager : MonoBehaviour {
 
 	void Start ()
     {
-        lucyDead = false;
-        maryDead = false;
         startButtonText.text = "START";
         StartMenuMusic.Play();
         gameIsRunning = false;
@@ -63,8 +66,7 @@ public class GameManager : MonoBehaviour {
     public void StartGame()
     {
         gameIsRunning = true;
-        SpawnPlayer();
-
+        SpawnPlayers();
 
         StartCoroutine(SpawnHealthPickup());
         StartCoroutine(SpawnObsticleCube());
@@ -84,25 +86,31 @@ public class GameManager : MonoBehaviour {
     {
         if (gameIsRunning)
             GameTimer();
-        if (lucyDead && maryDead)
-        {
-            GameOver();
-        }
-            
     }
 
     public void GameTimer()
     {
         timePlayed += Time.deltaTime;
-        txt_TimePlayed.text = ("Time Played " + timePlayed);
+        txt_TimePlayed.text = ("Time played " + timePlayed);
     }
 
-    void SpawnPlayer()
+    void SpawnPlayers()
     {
         var lucyInstance = (GameObject)Instantiate(lucy, lucySpawnCoordinates, Quaternion.identity);
         var maryInstance = (GameObject)Instantiate(mary, marySpawnCoordinates, Quaternion.identity);
+        var oxyInstance = (GameObject)Instantiate(oxy, marySpawnCoordinates, Quaternion.identity);
+        var tjackInstance = (GameObject)Instantiate(tjack, marySpawnCoordinates, Quaternion.identity);
         lucyInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(0);
         maryInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(1);
+        oxyInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(2);
+        tjackInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(3);
+        _activePlayers = new List<PlayerManager>
+        {
+            lucyInstance.GetComponent<PlayerManager>(),
+            maryInstance.GetComponent<PlayerManager>(),
+            oxyInstance.GetComponent<PlayerManager>(),
+            tjackInstance.GetComponent<PlayerManager>()
+        };
     }
 
     IEnumerator SpawnHealthPickup()
@@ -167,19 +175,15 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    void LucyDead()
+    public void PlayerDied(PlayerManager player)
     {
-        lucyDead = true;
-    }
-
-    void MaryDead() 
-    {
-        maryDead = true;
+        _activePlayers.Remove(player);
+        if (_activePlayers.Count == 0)
+            GameOver();
     }
 
     void GameOver()
     {
         Application.LoadLevel(Application.loadedLevel);
     }
-
 }

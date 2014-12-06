@@ -84,7 +84,7 @@ public class PlayerManager : MonoBehaviour
         _isDead = true;
         Lane.RemoveLane();
         LifeText.text = PlayerName.ToUpper() + " DEAD :(";
-        GameManager.Instance.SendMessage(PlayerName + "Dead");
+        GameManager.Instance.PlayerDied(this);
     }
 
     // Recieves message from HealthPickup.cs when health pickup is picked up
