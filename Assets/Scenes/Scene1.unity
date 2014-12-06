@@ -1964,7 +1964,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthBarLength: 10
-  txt_LucyLife: {fileID: 1591620964}
+  txt_Life: {fileID: 1591620964}
+  PlayerName: Lucy
 --- !u!23 &878824908
 Renderer:
   m_ObjectHideFlags: 0
@@ -2098,7 +2099,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 956776958}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 167f9031ef24ab547afd6e46493873db, type: 3}
+  m_Script: {fileID: 11500000, guid: c0516777e56b3654594da6628eed88f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   gravity: 20
@@ -2109,9 +2110,11 @@ MonoBehaviour:
   isDamaged: 0
   playerDirectionRight: 1
   playerStandingStill: 1
-  Player2Lane: {fileID: 1008213355}
+  PlayerLane: {fileID: 1008213355}
   gameManager: {fileID: 1594089847}
   nazi: {fileID: 1678774727}
+  PlayerName: Mary
+  PlayerInputSuffix: P2
 --- !u!114 &956776961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2120,7 +2123,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 956776958}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 066a9af8ea406dc4b9853f03a386d731, type: 3}
+  m_Script: {fileID: 11500000, guid: 6cad4fec257bee7419289deb3e3aec7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   collisionMask:
@@ -2918,7 +2921,6 @@ MonoBehaviour:
   rotatorSpeed: 20
   freezePickupIsPickedUp: 0
   snd_pickupFreeze: {fileID: 499118618}
-  player2: {fileID: 956776958}
 --- !u!95 &1406146873
 Animator:
   serializedVersion: 3
@@ -3002,11 +3004,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1450069181}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f75dda38bda3c64297c1016c13f8c88, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b73bc0e59a636f4dbad6801f8b6a032, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthBarP2Length: 10
-  txt_MaryLife: {fileID: 576412863}
+  healthBarLength: 10
+  txt_Life: {fileID: 576412863}
+  PlayerName: Mary
 --- !u!23 &1450069184
 Renderer:
   m_ObjectHideFlags: 0
@@ -3452,9 +3455,11 @@ MonoBehaviour:
   isDamaged: 0
   playerDirectionRight: 1
   playerStandingStill: 1
-  Player1Lane: {fileID: 1033554890}
+  PlayerLane: {fileID: 1033554890}
   gameManager: {fileID: 1594089847}
   nazi: {fileID: 1678774727}
+  PlayerName: Lucy
+  PlayerInputSuffix: P1
 --- !u!114 &1591160893
 MonoBehaviour:
   m_ObjectHideFlags: 0

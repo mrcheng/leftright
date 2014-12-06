@@ -28,11 +28,14 @@ public class PlayerController : MonoBehaviour {
     // Components
     private PlayerPhysics playerPhysics;
     private Animator animator;
-    public GameObject Player1Lane; // to be able to send message to lane when player dies
+    public GameObject PlayerLane; // to be able to send message to lane when player dies
     public GameObject gameManager;
 
     //Reference to Nazi
     public DirectionController nazi;
+
+    public string PlayerName;
+    public string PlayerInputSuffix;
 
 	void Start() 
     {
@@ -70,7 +73,7 @@ public class PlayerController : MonoBehaviour {
             }
 
             // jump input
-            if (Input.GetButtonDown("JumpP1"))
+            if (Input.GetButtonDown("Jump" + PlayerInputSuffix))
             {
                 amountToMove.y = jumpHeight;
                 jumping = true;
@@ -84,12 +87,12 @@ public class PlayerController : MonoBehaviour {
         animator.SetFloat("Speed", animationSpeed);
 
         // Input
-        float speed = (Input.GetButton("RunP1")) ? runSpeed : walkSpeed;
-        targetSpeed = Input.GetAxisRaw("HorizontalP1") * speed;
+        float speed = (Input.GetButton("Run" + PlayerInputSuffix)) ? runSpeed : walkSpeed;
+        targetSpeed = Input.GetAxisRaw("Horizontal" + PlayerInputSuffix) * speed;
         currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
             
         // face direction
-        float moveDir = Input.GetAxisRaw("HorizontalP1");
+        float moveDir = Input.GetAxisRaw("Horizontal" + PlayerInputSuffix);
         if (moveDir != 0)
         {
             transform.eulerAngles = (moveDir > 0) ? Vector3.up * 180 : Vector3.zero;
@@ -128,9 +131,9 @@ public class PlayerController : MonoBehaviour {
     void PlayerDied()
     {
         // Sends message to LaneController.cs to remove lane on player death
-        Player1Lane.SendMessage("RemoveLane");
+        PlayerLane.SendMessage("RemoveLane");
         // Sends message to GameManager.cs to remove lane on player death
-        gameManager.SendMessage("LucyDead");
+        gameManager.SendMessage(PlayerName + "Dead");
     }
 
     // Recieves message from FreezePickup.cs (player1)

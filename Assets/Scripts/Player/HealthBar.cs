@@ -9,11 +9,12 @@ public class HealthBar : MonoBehaviour {
     private float healthBarThickness = 0.25f;
 
     // Gui text
-    public Text txt_LucyLife;
+    public Text txt_Life;
+    public string PlayerName;
 
     void Update()
     {
-        if (GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().isDamaged)
+        if (GetComponentInParent<PlayerController>().isDamaged)
         {
 
             gameObject.renderer.material.color = new Color(1f, 0.1f, 0.25f, 0.5f);
@@ -37,14 +38,14 @@ public class HealthBar : MonoBehaviour {
     {
         healthBarLength -= Time.deltaTime;
         transform.localScale = new Vector3(healthBarLength, healthBarHeight, healthBarThickness);
-        txt_LucyLife.text = "Lucy time left: " + healthBarLength;
+        txt_Life.text = PlayerName + " time left: " + healthBarLength;
     }
 
     public void PlayerDead()
     {
         // Sends message to PlayerController.cs
         gameObject.SendMessageUpwards("PlayerDied");
-        txt_LucyLife.text = "LUCY DEAD :(";
+        txt_Life.text = PlayerName.ToUpper() + " DEAD :(";
     }
 
     // Recieves message from HealthPickup.cs when health pickup is picked up
