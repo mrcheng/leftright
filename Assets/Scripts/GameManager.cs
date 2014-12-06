@@ -24,10 +24,6 @@ public class GameManager : MonoBehaviour {
     public GameObject obsticleCube;
     public GameObject obsticleCubeP2;
 
-    public bool gameIsRunning = false;
-
-    public float timePlayed;
-
     // Gui text
     public Text txt_TimePlayed;
 
@@ -46,6 +42,8 @@ public class GameManager : MonoBehaviour {
     public Text GameOverText;
     string _gameOverTextTemplate;
 
+    bool _gameIsRunning = false;
+    float _timePlayed;
     List<PlayerManager> _activePlayers;
 
     static GameManager _instance;
@@ -65,13 +63,12 @@ public class GameManager : MonoBehaviour {
         _gameOverTextTemplate = GameOverText.text;
         startButtonText.text = "START";
         StartMenuMusic.Play();
-        gameIsRunning = false;
 	}
 
     // This function is called from StartGameButton
     public void StartGame()
     {
-        gameIsRunning = true;
+        _gameIsRunning = true;
         SpawnPlayers();
 
         StartCoroutine(SpawnHealthPickup());
@@ -90,14 +87,14 @@ public class GameManager : MonoBehaviour {
 
     void Update()
     {
-        if (gameIsRunning)
+        if (_gameIsRunning)
             GameTimer();
     }
 
     public void GameTimer()
     {
-        timePlayed += Time.deltaTime;
-        txt_TimePlayed.text = ("Time played " + timePlayed);
+        _timePlayed += Time.deltaTime;
+        txt_TimePlayed.text = ("Time played " + _timePlayed);
     }
 
     void SpawnPlayers()
@@ -121,7 +118,7 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator SpawnHealthPickup()
     {
-        while (gameIsRunning)
+        while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(5, 10));
             var numOfHealthPickups = Random.Range(0,2);
@@ -134,7 +131,7 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator SpawnHealthPickupP2()
     {
-        while (gameIsRunning)
+        while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(5, 10));
             var numOfHealthPickups = Random.Range(0, 2);
@@ -147,7 +144,7 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator SpawnObsticleCube()
     {
-        while (gameIsRunning)
+        while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(10, 20));
             for (var i = 0; i < 1; i++)
@@ -159,7 +156,7 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator SpawnObsticleCubeP2()
     {
-        while (gameIsRunning)
+        while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(10, 20));
             for (var i = 0; i < 1; i++)
@@ -171,7 +168,7 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator SpawnFreezePickup()
     {
-        while (gameIsRunning)
+        while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(10, 20));
             for (var i = 0; i < 1; i++)
