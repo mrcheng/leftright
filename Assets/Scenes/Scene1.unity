@@ -2069,6 +2069,7 @@ GameObject:
   - 114: {fileID: 956776964}
   - 114: {fileID: 956776961}
   - 114: {fileID: 956776960}
+  - 114: {fileID: 956776966}
   m_Layer: 0
   m_Name: Mary
   m_TagString: Player2
@@ -2252,6 +2253,17 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
+--- !u!114 &956776966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 956776958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be4bfcefd86322a42b25f45d304679e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &971432616
 GameObject:
   m_ObjectHideFlags: 0
@@ -3413,6 +3425,7 @@ GameObject:
   - 114: {fileID: 1591160896}
   - 114: {fileID: 1591160893}
   - 114: {fileID: 1591160892}
+  - 114: {fileID: 1591160898}
   m_Layer: 0
   m_Name: Lucy
   m_TagString: Player
@@ -3598,6 +3611,17 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
+--- !u!114 &1591160898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1591160890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be4bfcefd86322a42b25f45d304679e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1591620963
 GameObject:
   m_ObjectHideFlags: 0
