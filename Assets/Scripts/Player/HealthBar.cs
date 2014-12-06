@@ -12,25 +12,14 @@ public class HealthBar : MonoBehaviour {
     public Text txt_Life;
     public string PlayerName;
 
-    void Update()
+    public bool TakingDamage
     {
-        if (GetComponentInParent<PlayerController>().isDamaged)
+        set
         {
-
-            gameObject.renderer.material.color = new Color(1f, 0.1f, 0.25f, 0.5f);
-
-            if (healthBarLength <= 0.0f)
-            {
-                PlayerDead();
-            }
+            if (value)
+                gameObject.renderer.material.color = new Color(1f, 0.1f, 0.25f, 0.5f);
             else
-            {
-                InflictDamage();
-            }
-        }
-        else
-        {
-            gameObject.renderer.material.color = new Color(0.25f, 1, 0.1f, 0.5f);
+                gameObject.renderer.material.color = new Color(0.25f, 1, 0.1f, 0.5f);
         }
     }
 
@@ -39,6 +28,8 @@ public class HealthBar : MonoBehaviour {
         healthBarLength -= Time.deltaTime;
         transform.localScale = new Vector3(healthBarLength, healthBarHeight, healthBarThickness);
         txt_Life.text = PlayerName + " time left: " + healthBarLength;
+        if (healthBarLength <= 0.0f)
+            PlayerDead();
     }
 
     public void PlayerDead()

@@ -2641,6 +2641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be4bfcefd86322a42b25f45d304679e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Nazi: {fileID: 1678774727}
 --- !u!1 &971432616
 GameObject:
   m_ObjectHideFlags: 0
@@ -3998,6 +3999,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be4bfcefd86322a42b25f45d304679e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Nazi: {fileID: 1678774727}
 --- !u!1 &1591620963
 GameObject:
   m_ObjectHideFlags: 0
