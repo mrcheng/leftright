@@ -16,6 +16,10 @@ public class PlayerManager : MonoBehaviour
     PlayerController _playerController;
     HealthBar _healthBar;
     float _health;
+    public float Health
+    {
+        get { return _health; }
+    }
     bool _takingDamage;
     bool _isDead;
 
@@ -88,9 +92,24 @@ public class PlayerManager : MonoBehaviour
         GameManager.Instance.PlayerDied(this);
     }
 
-    // Recieves message from HealthPickup.cs when health pickup is picked up
-    public void HealthPickupPickedUp()
+    public void GiveHealth(float seconds)
     {
-        _health += 1f / HealthInSeconds;
+        _health += seconds / HealthInSeconds;
+    }
+
+    public void Freeze(float seconds)
+    {
+        StartCoroutine(FreezeCoroutine(seconds));
+    }
+
+    IEnumerator FreezeCoroutine(float seconds)
+    {
+        float oldWalkSpeed = _playerController.walkSpeed;
+        float oldRunSpeed = _playerController.runSpeed;
+        _playerController.walkSpeed = 0f;
+        _playerController.runSpeed = 0f;
+        yield return new WaitForSeconds(seconds);
+        _playerController.walkSpeed = oldWalkSpeed;
+        _playerController.runSpeed = oldRunSpeed;
     }
 }

@@ -6,7 +6,7 @@ public class PlayerPhysics : MonoBehaviour {
 
     public LayerMask collisionMask;
 
-    private BoxCollider collider;
+    private BoxCollider _collider;
     private Vector3 s; //size
     private Vector3 c; //centre
 
@@ -29,11 +29,11 @@ public class PlayerPhysics : MonoBehaviour {
 
     void Start()
     {
-        collider = GetComponent<BoxCollider>();
+        _collider = GetComponent<BoxCollider>();
         colliderScale = transform.localScale.x;
 
-        originalSize = collider.size;
-        originalCentre = collider.center;
+        originalSize = _collider.size;
+        originalCentre = _collider.center;
         SetCollider(originalSize, originalCentre);
     }
 
@@ -123,8 +123,8 @@ public class PlayerPhysics : MonoBehaviour {
     // Set collider
     public void SetCollider (Vector3 size, Vector3 centre) 
     {
-        collider.size = size;
-        collider.center = centre;
+        _collider.size = size;
+        _collider.center = centre;
 
         s = size * colliderScale;
         c = centre * colliderScale;

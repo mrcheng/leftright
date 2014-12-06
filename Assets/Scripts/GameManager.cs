@@ -7,22 +7,16 @@ public class GameManager : MonoBehaviour {
 
     // Players
     public GameObject lucy;
-    public Vector3 lucySpawnCoordinates;
     public GameObject mary;
-    public Vector3 marySpawnCoordinates;
     public GameObject oxy;
-    public Vector3 oxySpawnCoordinates;
     public GameObject tjack;
-    public Vector3 tjackSpawnCoordinates;
 
     // Pickups
     public GameObject healthPickup;
-    public GameObject healthPickupP2;
     public GameObject freezePickup;
 
     // Obsticles
     public GameObject obsticleCube;
-    public GameObject obsticleCubeP2;
 
     // Gui text
     public Text txt_TimePlayed;
@@ -37,6 +31,8 @@ public class GameManager : MonoBehaviour {
 
     // To be able to send start message to Directioncontroller.cs
     public DirectionController Nazi;
+
+    public LaneController[] Lanes;
 
     public GameObject GameOverButton;
     public Text GameOverText;
@@ -74,13 +70,10 @@ public class GameManager : MonoBehaviour {
         StartCoroutine(SpawnHealthPickup());
         StartCoroutine(SpawnObsticleCube());
 
-        StartCoroutine(SpawnHealthPickupP2());
-        StartCoroutine(SpawnObsticleCubeP2());
-
         StartCoroutine(SpawnFreezePickup());
 
         StartMenuMusic.Stop();
-        //GameStartMusic.Play();
+        GameStartMusic.Play();
         startGameButton.SetActive(false);
         Nazi.ActivateDirections(); // Sends message to DirectionController.cs to activate directions when game is starting
     }
@@ -99,10 +92,10 @@ public class GameManager : MonoBehaviour {
 
     void SpawnPlayers()
     {
-        var lucyInstance = (GameObject)Instantiate(lucy, lucySpawnCoordinates, Quaternion.identity);
-        var maryInstance = (GameObject)Instantiate(mary, marySpawnCoordinates, Quaternion.identity);
-        var oxyInstance = (GameObject)Instantiate(oxy, oxySpawnCoordinates, Quaternion.identity);
-        var tjackInstance = (GameObject)Instantiate(tjack, tjackSpawnCoordinates, Quaternion.identity);
+        var lucyInstance = (GameObject)Instantiate(lucy, Lanes[0].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
+        var maryInstance = (GameObject)Instantiate(mary, Lanes[1].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
+        var oxyInstance = (GameObject)Instantiate(oxy, Lanes[2].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
+        var tjackInstance = (GameObject)Instantiate(tjack, Lanes[3].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
         lucyInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(0);
         maryInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(1);
         oxyInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(2);
@@ -120,25 +113,9 @@ public class GameManager : MonoBehaviour {
     {
         while (_gameIsRunning)
         {
-            yield return new WaitForSeconds(Random.Range(5, 10));
-            var numOfHealthPickups = Random.Range(0,2);
-            for (var i = 0; i < numOfHealthPickups; i++)
-            {
-                Instantiate(healthPickup, new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
-            }
-        }
-    }
-
-    IEnumerator SpawnHealthPickupP2()
-    {
-        while (_gameIsRunning)
-        {
-            yield return new WaitForSeconds(Random.Range(5, 10));
-            var numOfHealthPickups = Random.Range(0, 2);
-            for (var i = 0; i < numOfHealthPickups; i++)
-            {
-                Instantiate(healthPickupP2, new Vector3(Random.Range(-9, 9), 0.5f, 1.1f), Quaternion.identity);
-            }
+            yield return new WaitForSeconds(Random.Range(1, 10));
+            var lane = Lanes[Random.Range(0, Lanes.Length - 1)];
+            Instantiate(healthPickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
         }
     }
 
@@ -147,22 +124,8 @@ public class GameManager : MonoBehaviour {
         while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(10, 20));
-            for (var i = 0; i < 1; i++)
-            {
-                Instantiate(obsticleCube, new Vector3(Random.Range(-9, 9), 0.6f), Quaternion.identity);
-            }
-        }
-    }
-
-    IEnumerator SpawnObsticleCubeP2()
-    {
-        while (_gameIsRunning)
-        {
-            yield return new WaitForSeconds(Random.Range(10, 20));
-            for (var i = 0; i < 1; i++)
-            {
-                Instantiate(obsticleCubeP2, new Vector3(Random.Range(-9, 9), 0.6f, 1.1f), Quaternion.identity);
-            }
+            var lane = Lanes[Random.Range(0, Lanes.Length - 1)];
+            Instantiate(obsticleCube, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
         }
     }
 
@@ -170,11 +133,9 @@ public class GameManager : MonoBehaviour {
     {
         while (_gameIsRunning)
         {
-            yield return new WaitForSeconds(Random.Range(10, 20));
-            for (var i = 0; i < 1; i++)
-            {
-                Instantiate(freezePickup, new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
-            }
+            yield return new WaitForSeconds(Random.Range(5, 10));
+            var lane = Lanes[Random.Range(0, Lanes.Length - 1)];
+            Instantiate(freezePickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
         }
     }
 
@@ -194,5 +155,16 @@ public class GameManager : MonoBehaviour {
     public void Reset()
     {
         Application.LoadLevel(Application.loadedLevel);
+    }
+
+    public PlayerManager GetPlayerInLead()
+    {
+        PlayerManager lead = null;
+        foreach (var player in _activePlayers)
+        {
+            if (lead == null || player.Health > lead.Health)
+                lead = player;
+        }
+        return lead;
     }
 }
