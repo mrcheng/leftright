@@ -28,9 +28,6 @@ public class PlayerController : MonoBehaviour
     private PlayerPhysics playerPhysics;
     private Animator animator;
 
-    //Reference to Nazi
-    public DirectionController nazi;
-
     void Start()
     {
         playerPhysics = GetComponent<PlayerPhysics>();
