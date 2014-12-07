@@ -141,6 +141,7 @@ public class GameManager : MonoBehaviour {
 
     public void PlayerDied(PlayerManager player)
     {
+        // Prints #place of player when dead
 		player.LifeText.text += " #" + _activePlayers.Count.ToString();
 
         _activePlayers.Remove(player);

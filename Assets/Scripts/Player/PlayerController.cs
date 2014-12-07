@@ -110,10 +110,4 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Recieves message from FreezePickup.cs (player1)
-    //public void FreezePickupPickedUp()
-    //{
-    //    //Sends message to PlayerControllerP2.cs when freeze pickup is picked up from player1
-    //    BroadcastMessage("FreezePickupPickedUpP1");
-    //}
 }
