@@ -17,7 +17,10 @@ public class FreezePickup : MonoBehaviour
     {
         snd_pickupFreeze.Play();
         var player = GameManager.Instance.GetPlayerInLead();
-        player.Freeze(1f);
+        if (player == null)
+            print("No player in lead?");
+        else
+            player.Freeze(1f);
         Destroy(gameObject);
     }
 }
