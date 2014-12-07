@@ -141,6 +141,8 @@ public class GameManager : MonoBehaviour {
 
     public void PlayerDied(PlayerManager player)
     {
+		player.LifeText.text += " #" + _activePlayers.Count.ToString();
+
         _activePlayers.Remove(player);
         if (_activePlayers.Count == 0)
             GameOver(player);
