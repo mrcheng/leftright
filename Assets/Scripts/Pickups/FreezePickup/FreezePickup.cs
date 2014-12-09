@@ -23,7 +23,7 @@ public class FreezePickup : MonoBehaviour
         if (player == null)
             print("No player in lead?");
         else
-            player.Freeze(1f);
+            player.Freeze(2f);
         Destroy(gameObject);
     }
 }

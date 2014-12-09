@@ -7002,6 +7002,7 @@ MonoBehaviour:
   freezePickup: {fileID: 1406146868}
   speedPickup: {fileID: 996157909}
   damagePickup: {fileID: 1835783627}
+  score: 0
   GameStartMusic: {fileID: 1705956225}
   StartMenuMusic: {fileID: 79246410}
   txt_TimePlayed: {fileID: 1880257948}
