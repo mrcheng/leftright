@@ -1507,6 +1507,7 @@ Transform:
   m_Children:
   - {fileID: 1713280624}
   - {fileID: 1406146869}
+  - {fileID: 996157910}
   m_Father: {fileID: 785483208}
   m_RootOrder: 4
 --- !u!1 &144851031
@@ -4563,6 +4564,125 @@ Transform:
   - {fileID: 12744095}
   m_Father: {fileID: 785483208}
   m_RootOrder: 5
+--- !u!1 &996157909
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 100000, guid: 937c6e649d23a484e8ab6ee66de98f1d, type: 3}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 996157910}
+  - 33: {fileID: 996157916}
+  - 23: {fileID: 996157915}
+  - 95: {fileID: 996157914}
+  - 54: {fileID: 996157913}
+  - 136: {fileID: 996157912}
+  - 114: {fileID: 996157911}
+  m_Layer: 0
+  m_Name: SpeedOpponentPickup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &996157910
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 400000, guid: 937c6e649d23a484e8ab6ee66de98f1d, type: 3}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 996157909}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 5.28000021, y: .5, z: 0}
+  m_LocalScale: {x: .300000012, y: .300000012, z: .300000012}
+  m_Children: []
+  m_Father: {fileID: 117270851}
+  m_RootOrder: 2
+--- !u!114 &996157911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 996157909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58968c3e234b50642b74be1e2c12a72e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotatorSpeed: 20
+  snd_pickupSpeed: {fileID: 499118618}
+--- !u!136 &996157912
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 996157909}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: .5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &996157913
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 996157909}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: .0500000007
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!95 &996157914
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 9500000, guid: 937c6e649d23a484e8ab6ee66de98f1d,
+    type: 3}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 996157909}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 937c6e649d23a484e8ab6ee66de98f1d, type: 3}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 1
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+--- !u!23 &996157915
+Renderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 2300000, guid: 937c6e649d23a484e8ab6ee66de98f1d,
+    type: 3}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 996157909}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_LightmapIndex: 255
+  m_LightmapTilingOffset: {x: 1, y: 1, z: 0, w: 0}
+  m_Materials:
+  - {fileID: 2100000, guid: 05a72de1114853940987bed64df52947, type: 2}
+  m_SubsetIndices: 
+  m_StaticBatchRoot: {fileID: 0}
+  m_UseLightProbes: 0
+  m_LightProbeAnchor: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+--- !u!33 &996157916
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 3300000, guid: 937c6e649d23a484e8ab6ee66de98f1d,
+    type: 3}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 996157909}
+  m_Mesh: {fileID: 4300000, guid: 937c6e649d23a484e8ab6ee66de98f1d, type: 3}
 --- !u!1 &1008213355
 GameObject:
   m_ObjectHideFlags: 0
@@ -6750,6 +6870,7 @@ MonoBehaviour:
   tjack: {fileID: 1903268686}
   healthPickup: {fileID: 1713280623}
   freezePickup: {fileID: 1406146868}
+  speedPickup: {fileID: 996157909}
   obsticleCube: {fileID: 12744094}
   txt_TimePlayed: {fileID: 1880257948}
   GameStartMusic: {fileID: 1705956225}

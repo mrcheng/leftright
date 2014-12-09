@@ -109,12 +109,28 @@ public class PlayerManager : MonoBehaviour
         StartCoroutine(FreezeCoroutine(seconds));
     }
 
+    public void Speed(float seconds)
+    {
+        StartCoroutine(SpeedCoroutine(seconds));
+    }
+
     IEnumerator FreezeCoroutine(float seconds)
     {
         float oldWalkSpeed = _playerController.walkSpeed;
         float oldRunSpeed = _playerController.runSpeed;
         _playerController.walkSpeed = 0f;
         _playerController.runSpeed = 0f;
+        yield return new WaitForSeconds(seconds);
+        _playerController.walkSpeed = oldWalkSpeed;
+        _playerController.runSpeed = oldRunSpeed;
+    }
+
+    IEnumerator SpeedCoroutine(float seconds)
+    {
+        float oldWalkSpeed = _playerController.walkSpeed;
+        float oldRunSpeed = _playerController.runSpeed;
+        _playerController.walkSpeed = 6f;
+        _playerController.runSpeed = 12f;
         yield return new WaitForSeconds(seconds);
         _playerController.walkSpeed = oldWalkSpeed;
         _playerController.runSpeed = oldRunSpeed;

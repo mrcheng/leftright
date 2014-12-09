@@ -14,9 +14,10 @@ public class GameManager : MonoBehaviour {
     // Pickups
     public GameObject healthPickup;
     public GameObject freezePickup;
+    public GameObject speedPickup;
 
     // Obsticles
-    public GameObject obsticleCube;
+    //public GameObject obsticleCube;
 
     // Gui text
     public Text txt_TimePlayed;
@@ -68,9 +69,9 @@ public class GameManager : MonoBehaviour {
         SpawnPlayers();
 
         StartCoroutine(SpawnHealthPickup());
-        StartCoroutine(SpawnObsticleCube());
-
+        //StartCoroutine(SpawnObsticleCube());
         StartCoroutine(SpawnFreezePickup());
+        StartCoroutine(SpawnSpeedPickup());
 
         StartMenuMusic.Stop();
         GameStartMusic.Play();
@@ -114,28 +115,38 @@ public class GameManager : MonoBehaviour {
         while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(1, 10));
-            var lane = Lanes[Random.Range(0, Lanes.Length - 1)];
+            var lane = Lanes[Random.Range(0, Lanes.Length)];
             Instantiate(healthPickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
         }
     }
 
-    IEnumerator SpawnObsticleCube()
-    {
-        while (_gameIsRunning)
-        {
-            yield return new WaitForSeconds(Random.Range(10, 20));
-            var lane = Lanes[Random.Range(0, Lanes.Length - 1)];
-            Instantiate(obsticleCube, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
-        }
-    }
+    //IEnumerator SpawnObsticleCube()
+    //{
+    //    while (_gameIsRunning)
+    //    {
+    //        yield return new WaitForSeconds(Random.Range(10, 20));
+    //        var lane = Lanes[Random.Range(0, Lanes.Length - 1)];
+    //        Instantiate(obsticleCube, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
+    //    }
+    //}
 
     IEnumerator SpawnFreezePickup()
     {
         while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(5, 10));
-            var lane = Lanes[Random.Range(0, Lanes.Length - 1)];
+            var lane = Lanes[Random.Range(0, Lanes.Length)];
             Instantiate(freezePickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
+        }
+    }
+
+    IEnumerator SpawnSpeedPickup()
+    {
+        while (_gameIsRunning)
+        {
+            yield return new WaitForSeconds(Random.Range(6, 10));
+            var lane = Lanes[Random.Range(0, Lanes.Length)];
+            Instantiate(speedPickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
         }
     }
 
