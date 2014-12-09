@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SpeedPickup : MonoBehaviour {
+public class DamagePickup : MonoBehaviour 
+{
+
+    // Inflicts Damage to player who pick it up
 
     public int rotatorSpeed;
 
     // Audio
-    public AudioSource snd_pickupSpeed;
+    public AudioSource snd_pickupDamage;
 
     void Update()
     {
@@ -15,12 +18,12 @@ public class SpeedPickup : MonoBehaviour {
 
     void OnTriggerEnter(Collider playerCollider)
     {
-        snd_pickupSpeed.Play();
+        snd_pickupDamage.Play();
         var player = playerCollider.GetComponent<PlayerManager>();
         if (player == null)
             print("Collided with unexpected object: " + playerCollider.gameObject);
         else
-            player.Speed(3f);
+            player.InflictDamage(1f);
         Destroy(gameObject);
     }
 }

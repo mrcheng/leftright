@@ -3,6 +3,9 @@ using System.Collections;
 
 public class HealthPickup : MonoBehaviour
 {
+
+    // Gives the player who picks up more time
+
     public int rotatorSpeed;
 
     // Audio

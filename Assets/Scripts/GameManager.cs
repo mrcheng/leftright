@@ -15,29 +15,33 @@ public class GameManager : MonoBehaviour {
     public GameObject healthPickup;
     public GameObject freezePickup;
     public GameObject speedPickup;
+    public GameObject damagePickup;
 
     // Obsticles
     //public GameObject obsticleCube;
 
-    // Gui text
-    public Text txt_TimePlayed;
+    // Score
+    public float score;
 
     // Audio
     public AudioSource GameStartMusic;
     public AudioSource StartMenuMusic;
 
+    // Gui text
+    public Text txt_TimePlayed;
+    public Text GameOverText;
+    public Text HighScore;
+    string _gameOverTextTemplate;
+
     // Buttons
     public GameObject startGameButton;
     public Text startButtonText;
+    public GameObject GameOverButton;
 
     // To be able to send start message to Directioncontroller.cs
     public DirectionController Nazi;
 
     public LaneController[] Lanes;
-
-    public GameObject GameOverButton;
-    public Text GameOverText;
-    string _gameOverTextTemplate;
 
     bool _gameIsRunning = false;
     float _timePlayed;
@@ -52,6 +56,7 @@ public class GameManager : MonoBehaviour {
     void Awake()
     {
         _instance = this;
+        HighScore.text = "Highscore: " + PlayerPrefs.GetFloat("HighScore");
     }
 
 	void Start ()
@@ -72,6 +77,7 @@ public class GameManager : MonoBehaviour {
         //StartCoroutine(SpawnObsticleCube());
         StartCoroutine(SpawnFreezePickup());
         StartCoroutine(SpawnSpeedPickup());
+        StartCoroutine(SpawnDamagedPickup());
 
         StartMenuMusic.Stop();
         GameStartMusic.Play();
@@ -82,13 +88,16 @@ public class GameManager : MonoBehaviour {
     void Update()
     {
         if (_gameIsRunning)
+        {
             GameTimer();
+            score = _timePlayed;
+        }
     }
 
     public void GameTimer()
     {
         _timePlayed += Time.deltaTime;
-        txt_TimePlayed.text = "Time played " + System.Math.Round(_timePlayed, 2);
+        txt_TimePlayed.text = "Time played: " + System.Math.Round(_timePlayed, 2);
     }
 
     void SpawnPlayers()
@@ -150,6 +159,16 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    IEnumerator SpawnDamagedPickup()
+    {
+        while (_gameIsRunning)
+        {
+            yield return new WaitForSeconds(Random.Range(6, 12));
+            var lane = Lanes[Random.Range(0, Lanes.Length)];
+            Instantiate(damagePickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
+        }
+    }
+
     public void PlayerDied(PlayerManager player)
     {
         // Prints #place of player when dead
@@ -164,8 +183,17 @@ public class GameManager : MonoBehaviour {
     {
         _gameIsRunning = false;
         GameOverText.color = winner.PlayerColor;
-        GameOverText.text = string.Format(_gameOverTextTemplate, winner.PlayerName);
         GameOverButton.SetActive(true);
+        // High Score
+        if (score > PlayerPrefs.GetFloat("HighScore"))
+        {
+            PlayerPrefs.SetFloat("HighScore", score);
+            GameOverText.text = string.Format(_gameOverTextTemplate, winner.PlayerName + "New highscore: " + PlayerPrefs.GetFloat("HighScore"));
+        }
+        else 
+        {
+            GameOverText.text = string.Format(_gameOverTextTemplate, winner.PlayerName);
+        }
     }
 
     public void Reset()

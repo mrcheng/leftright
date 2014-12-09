@@ -3,6 +3,9 @@ using System.Collections;
 
 public class FreezePickup : MonoBehaviour
 {
+
+    // Freezes the player who is in lead for a second
+
     public int rotatorSpeed;
 
     // Audio

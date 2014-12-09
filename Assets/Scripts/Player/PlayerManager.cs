@@ -17,6 +17,7 @@ public class PlayerManager : MonoBehaviour
     PlayerController _playerController;
     HealthBar _healthBar;
     float _health;
+
     public float Health
     {
         get { return _health; }
@@ -112,6 +113,11 @@ public class PlayerManager : MonoBehaviour
     public void Speed(float seconds)
     {
         StartCoroutine(SpeedCoroutine(seconds));
+    }
+
+    public void InflictDamage(float seconds)
+    {
+        _health -= seconds / HealthInSeconds;
     }
 
     IEnumerator FreezeCoroutine(float seconds)
