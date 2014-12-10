@@ -10,8 +10,8 @@ public class DirectionController : MonoBehaviour
     public float minTimeTurn = .5f;
     public float maxTimeTurn = 5.0f;
 
-    // Gui text
-    public Text naziInfo;
+    // Text
+    public Text txt_commentator;
 
     // Audio
     public AudioSource snd_links;
@@ -38,7 +38,6 @@ public class DirectionController : MonoBehaviour
     {
         _isIdling = true;
         anim.Play(naziIdle);
-        naziInfo.text = "CHOOSING DIRECTION";
         timeRange = Random.Range(minTimeTurn, maxTimeTurn);
     }
 
@@ -47,8 +46,11 @@ public class DirectionController : MonoBehaviour
         flipTimer += Time.deltaTime;
         if (flipTimer > timeRange)
         {
-            if (_isRunning)
+            if (_isRunning) 
+            {
+                txt_commentator.text = "";
                 Flip();
+            } 
             else
                 anim.Play(naziIdle);
             flipTimer = 0.0f;
@@ -70,14 +72,12 @@ public class DirectionController : MonoBehaviour
         {
             anim.Play(naziLeft);
             snd_links.Play();
-            naziInfo.text = "LEFT";
             naziDirectionRight = false;
         }
         else
         {
             anim.Play(naziRight);
             snd_rechts.Play();
-            naziInfo.text = "RIGHT";
             naziDirectionRight = true;
         }
     }

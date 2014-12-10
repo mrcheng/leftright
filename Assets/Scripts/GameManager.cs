@@ -18,9 +18,6 @@ public class GameManager : MonoBehaviour {
     public GameObject damagePickup;
     public GameObject dizzyPickup;
 
-    // Obsticles
-    //public GameObject obsticleCube;
-
     // Score
     public float score;
 
@@ -32,6 +29,7 @@ public class GameManager : MonoBehaviour {
     public Text txt_TimePlayed;
     public Text GameOverText;
     public Text HighScore;
+    public Text txt_commentator;
     string _gameOverTextTemplate;
 
     // Buttons
@@ -58,6 +56,8 @@ public class GameManager : MonoBehaviour {
     {
         _instance = this;
         HighScore.text = "Highscore: " + PlayerPrefs.GetFloat("HighScore");
+        txt_commentator.text = "Prepare to follow your fearless leader! Press START to obey...";
+
     }
 
 	void Start ()
@@ -72,10 +72,12 @@ public class GameManager : MonoBehaviour {
     public void StartGame()
     {
         _gameIsRunning = true;
+
+        txt_commentator.text = "Be prepared, I'm choosing direction!";
+
         SpawnPlayers();
 
         StartCoroutine(SpawnHealthPickup());
-        //StartCoroutine(SpawnObsticleCube());
         StartCoroutine(SpawnFreezePickup());
         StartCoroutine(SpawnSpeedPickup());
         StartCoroutine(SpawnDamagedPickup());
@@ -131,16 +133,6 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    //IEnumerator SpawnObsticleCube()
-    //{
-    //    while (_gameIsRunning)
-    //    {
-    //        yield return new WaitForSeconds(Random.Range(10, 20));
-    //        var lane = Lanes[Random.Range(0, Lanes.Length - 1)];
-    //        Instantiate(obsticleCube, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
-    //    }
-    //}
-
     IEnumerator SpawnFreezePickup()
     {
         while (_gameIsRunning)
@@ -185,7 +177,7 @@ public class GameManager : MonoBehaviour {
     {
         // Prints #place of player when dead
 		player.LifeText.text += " #" + _activePlayers.Count.ToString();
-
+        txt_commentator.text = player.PlayerName + " died!";
         _activePlayers.Remove(player);
         if (_activePlayers.Count == 0)
             GameOver(player);
@@ -200,11 +192,13 @@ public class GameManager : MonoBehaviour {
         if (score > PlayerPrefs.GetFloat("HighScore"))
         {
             PlayerPrefs.SetFloat("HighScore", score);
-            GameOverText.text = string.Format(_gameOverTextTemplate, winner.PlayerName + "New highscore: " + PlayerPrefs.GetFloat("HighScore"));
+            txt_commentator.text = "Congratulations " + winner.PlayerName + "!";
+            GameOverText.text = winner.PlayerName + " got a new highscore: " + PlayerPrefs.GetFloat("HighScore");
         }
         else 
         {
-            GameOverText.text = string.Format(_gameOverTextTemplate, winner.PlayerName);
+            GameOverText.text = "RESTART";
+            txt_commentator.text = "Congratulations " + winner.PlayerName + "!";
         }
     }
 

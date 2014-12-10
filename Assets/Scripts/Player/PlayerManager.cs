@@ -6,9 +6,13 @@ public class PlayerManager : MonoBehaviour
 {
     public DirectionController Nazi;
     public LaneController Lane;
+
     // Master health bars
     public RectTransform HealthBar;
+
+    // Texts
     public Text LifeText;
+    public Text txt_commentator;
     public string PlayerName;
 
     // Sets the player color for game over text
@@ -108,6 +112,7 @@ public class PlayerManager : MonoBehaviour
     public void GiveHealth(float seconds)
     {
         _health += seconds / HealthInSeconds;
+        txt_commentator.text = PlayerName + " recieved health!";
     }
 
     public void Freeze(float seconds)
@@ -123,6 +128,7 @@ public class PlayerManager : MonoBehaviour
     public void InflictDamage(float seconds)
     {
         _health -= seconds / HealthInSeconds;
+        txt_commentator.text = PlayerName + " got damaged!";
     }
 
     public void Dizzy(float seconds)
