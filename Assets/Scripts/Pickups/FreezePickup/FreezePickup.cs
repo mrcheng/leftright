@@ -4,7 +4,7 @@ using System.Collections;
 public class FreezePickup : MonoBehaviour
 {
 
-    // Freezes the player who is in lead for a second
+    // Freezes the player who is in lead for a while
 
     public int rotatorSpeed;
 

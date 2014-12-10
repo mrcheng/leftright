@@ -10,7 +10,10 @@ public class PlayerManager : MonoBehaviour
     public RectTransform HealthBar;
     public Text LifeText;
     public string PlayerName;
+
+    // Sets the player color for game over text
     public Color PlayerColor;
+    public GameObject meshRenderer; // To be able to get the color from mesh to do crazy color effects ;)
 
     public float HealthInSeconds = 10f;
 
@@ -32,6 +35,8 @@ public class PlayerManager : MonoBehaviour
         _playerController = GetComponentInChildren<PlayerController>();
         _healthBar = GetComponentInChildren<HealthBar>();
         _health = 1f;
+        // Sets the meshrenderer to theselected color in inspector
+        //meshRenderer.renderer.material.color = PlayerColor;
     }
 
     void Start()
@@ -120,6 +125,11 @@ public class PlayerManager : MonoBehaviour
         _health -= seconds / HealthInSeconds;
     }
 
+    public void Dizzy(float seconds)
+    {
+        StartCoroutine(DizzyCoroutine(seconds));
+    }
+
     IEnumerator FreezeCoroutine(float seconds)
     {
         float oldWalkSpeed = _playerController.walkSpeed;
@@ -140,5 +150,23 @@ public class PlayerManager : MonoBehaviour
         yield return new WaitForSeconds(seconds);
         _playerController.walkSpeed = oldWalkSpeed;
         _playerController.runSpeed = oldRunSpeed;
+    }
+
+    IEnumerator DizzyCoroutine(float seconds)
+    {
+        // THIS IS NOT YET IMPLEMENTED!
+        print(PlayerName + " is dizzy!!!");
+
+        //if (_playerController.playerDirectionRight)
+        //    _playerController.playerDirectionRight = false;
+        //if (!_playerController.playerDirectionRight)
+        //    _playerController.playerDirectionRight = true;
+
+        //float t = (Mathf.PingPong(Time.time * seconds, 1.0f));
+        //meshRenderer.renderer.material.color = Color.Lerp(new Color(0, 0, 0, 0), new Color(1, 1, 1, 1), t);
+
+        meshRenderer.renderer.material.color = new Color(1, 1, 1, 0); // Player white when dizzy
+        yield return new WaitForSeconds(seconds);
+        meshRenderer.renderer.material.color = PlayerColor; // Player normal color
     }
 }

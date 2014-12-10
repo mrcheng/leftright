@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour {
     public GameObject freezePickup;
     public GameObject speedPickup;
     public GameObject damagePickup;
+    public GameObject dizzyPickup;
 
     // Obsticles
     //public GameObject obsticleCube;
@@ -78,6 +79,7 @@ public class GameManager : MonoBehaviour {
         StartCoroutine(SpawnFreezePickup());
         StartCoroutine(SpawnSpeedPickup());
         StartCoroutine(SpawnDamagedPickup());
+        StartCoroutine(SpawnDizzyPickup());
 
         StartMenuMusic.Stop();
         GameStartMusic.Play();
@@ -166,6 +168,16 @@ public class GameManager : MonoBehaviour {
             yield return new WaitForSeconds(Random.Range(6, 12));
             var lane = Lanes[Random.Range(0, Lanes.Length)];
             Instantiate(damagePickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
+        }
+    }
+
+    IEnumerator SpawnDizzyPickup()
+    {
+        while (_gameIsRunning)
+        {
+            yield return new WaitForSeconds(Random.Range(6, 12));
+            var lane = Lanes[Random.Range(0, Lanes.Length)];
+            Instantiate(dizzyPickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
         }
     }
 
