@@ -4559,6 +4559,7 @@ GameObject:
   - 54: {fileID: 996157913}
   - 136: {fileID: 996157912}
   - 114: {fileID: 996157911}
+  - 114: {fileID: 996157917}
   m_Layer: 0
   m_Name: SpeedOpponentPickup
   m_TagString: Untagged
@@ -4664,6 +4665,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 996157909}
   m_Mesh: {fileID: 4300000, guid: 937c6e649d23a484e8ab6ee66de98f1d, type: 3}
+--- !u!114 &996157917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 996157909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdebb4f39d42714dbc617ec445ced96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _despawnInSeconds: 5
 --- !u!1 &1008213355
 GameObject:
   m_ObjectHideFlags: 0
@@ -5646,6 +5659,7 @@ GameObject:
   - 54: {fileID: 1406146871}
   - 136: {fileID: 1406146870}
   - 114: {fileID: 1406146872}
+  - 114: {fileID: 1406146876}
   m_Layer: 0
   m_Name: FreezeOpponentPickup
   m_TagString: Untagged
@@ -5752,6 +5766,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1406146868}
   m_Mesh: {fileID: 4300000, guid: 937c6e649d23a484e8ab6ee66de98f1d, type: 3}
+--- !u!114 &1406146876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1406146868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdebb4f39d42714dbc617ec445ced96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _despawnInSeconds: 5
 --- !u!1 &1407574862
 GameObject:
   m_ObjectHideFlags: 0
@@ -6927,6 +6953,7 @@ GameObject:
   - 54: {fileID: 1606352307}
   - 136: {fileID: 1606352306}
   - 114: {fileID: 1606352305}
+  - 114: {fileID: 1606352311}
   m_Layer: 0
   m_Name: DizzyOpponentPickup
   m_TagString: Untagged
@@ -7033,6 +7060,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1606352303}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1606352311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1606352303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdebb4f39d42714dbc617ec445ced96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _despawnInSeconds: 5
 --- !u!1 &1607219353
 GameObject:
   m_ObjectHideFlags: 0
@@ -7747,6 +7786,7 @@ GameObject:
   - 114: {fileID: 1713280625}
   - 54: {fileID: 1713280629}
   - 136: {fileID: 1713280630}
+  - 114: {fileID: 1713280631}
   m_Layer: 0
   m_Name: HealthPickup
   m_TagString: Untagged
@@ -7852,6 +7892,18 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1713280631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1713280623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdebb4f39d42714dbc617ec445ced96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _despawnInSeconds: 5
 --- !u!1 &1732100344
 GameObject:
   m_ObjectHideFlags: 0
@@ -8380,6 +8432,7 @@ GameObject:
   - 54: {fileID: 1835783630}
   - 136: {fileID: 1835783629}
   - 114: {fileID: 1835783631}
+  - 114: {fileID: 1835783635}
   m_Layer: 0
   m_Name: DamagePickup
   m_TagString: Untagged
@@ -8485,6 +8538,18 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1835783627}
   m_Mesh: {fileID: 4300000, guid: 937c6e649d23a484e8ab6ee66de98f1d, type: 3}
+--- !u!114 &1835783635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1835783627}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bdebb4f39d42714dbc617ec445ced96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _despawnInSeconds: 5
 --- !u!1 &1845055707
 GameObject:
   m_ObjectHideFlags: 0

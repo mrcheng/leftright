@@ -163,14 +163,6 @@ public class PlayerManager : MonoBehaviour
         // THIS IS NOT YET IMPLEMENTED!
         print(PlayerName + " is dizzy!!!");
 
-        //if (_playerController.playerDirectionRight)
-        //    _playerController.playerDirectionRight = false;
-        //if (!_playerController.playerDirectionRight)
-        //    _playerController.playerDirectionRight = true;
-
-        //float t = (Mathf.PingPong(Time.time * seconds, 1.0f));
-        //meshRenderer.renderer.material.color = Color.Lerp(new Color(0, 0, 0, 0), new Color(1, 1, 1, 1), t);
-
         meshRenderer.renderer.material.color = new Color(1, 1, 1, 0); // Player white when dizzy
         yield return new WaitForSeconds(seconds);
         meshRenderer.renderer.material.color = PlayerColor; // Player normal color

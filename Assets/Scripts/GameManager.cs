@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour {
     public Text GameOverText;
     public Text HighScore;
     public Text txt_commentator;
-    string _gameOverTextTemplate;
+    //string _gameOverTextTemplate;
 
     // Buttons
     public GameObject startGameButton;
@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour {
 	void Start ()
     {
         GameOverButton.SetActive(false);
-        _gameOverTextTemplate = GameOverText.text;
+        //_gameOverTextTemplate = GameOverText.text;
         startButtonText.text = "START";
         StartMenuMusic.Play();
 	}

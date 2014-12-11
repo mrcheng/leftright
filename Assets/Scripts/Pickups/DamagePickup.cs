@@ -3,7 +3,6 @@ using System.Collections;
 
 public class DamagePickup : MonoBehaviour 
 {
-
     // Inflicts Damage to player who pick it up
 
     public int rotatorSpeed;

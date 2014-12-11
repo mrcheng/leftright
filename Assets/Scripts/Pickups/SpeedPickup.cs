@@ -3,7 +3,6 @@ using System.Collections;
 
 public class SpeedPickup : MonoBehaviour 
 {
-
     // The player who picks up gets increased speed
 
     public int rotatorSpeed;

@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class DizzyPickup : MonoBehaviour 
 {
-
     // Makes the player who is in lead dizzy for a while
 
     public int rotatorSpeed;
