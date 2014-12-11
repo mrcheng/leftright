@@ -63,7 +63,6 @@ public class GameManager : MonoBehaviour {
 	void Start ()
     {
         GameOverButton.SetActive(false);
-        //_gameOverTextTemplate = GameOverText.text;
         startButtonText.text = "START";
         StartMenuMusic.Play();
 	}

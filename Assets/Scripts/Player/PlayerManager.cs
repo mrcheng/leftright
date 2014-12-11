@@ -39,8 +39,6 @@ public class PlayerManager : MonoBehaviour
         _playerController = GetComponentInChildren<PlayerController>();
         _healthBar = GetComponentInChildren<HealthBar>();
         _health = 1f;
-        // Sets the meshrenderer to theselected color in inspector
-        //meshRenderer.renderer.material.color = PlayerColor;
     }
 
     void Start()
@@ -81,7 +79,7 @@ public class PlayerManager : MonoBehaviour
                 _health = 0f;
                 Died();
             }
-			        }
+        }
     }
 
     void UpdateHealth()
