@@ -37,6 +37,12 @@ public class GameManager : MonoBehaviour {
     public Text startButtonText;
     public GameObject GameOverButton;
 
+    public GameObject closeSettings;
+    public GameObject openSettings;
+    public GameObject SettingsScreen;
+    public InputField userNameInput;
+    public GameObject btn_setUserName;
+
     // To be able to send start message to Directioncontroller.cs
     public DirectionController Nazi;
 
@@ -55,17 +61,48 @@ public class GameManager : MonoBehaviour {
     void Awake()
     {
         _instance = this;
-        HighScore.text = "Highscore: " + PlayerPrefs.GetFloat("HighScore");
         txt_commentator.text = "Prepare to follow your fearless leader! Press START to obey...";
 
     }
 
 	void Start ()
     {
+        SettingsScreen.SetActive(false);
         GameOverButton.SetActive(false);
         startButtonText.text = "START";
         StartMenuMusic.Play();
+        userNameInput.text = PlayerPrefs.GetString("UserName");
+        HighScore.text = "Highscore: " + PlayerPrefs.GetFloat("HighScore") + (" ") + PlayerPrefs.GetString("UserName"); // Hmmmmm
 	}
+
+    // Called from settings button in game window
+    public void OpenSettings()
+    {
+        SettingsScreen.SetActive(true);
+        _gameIsRunning = false;
+        HighScore.text = "Highscore: " + PlayerPrefs.GetFloat("HighScore") + (" ") + PlayerPrefs.GetString("UserName"); // Hmmmmm
+    }
+
+    // Called from let's play button in settings window
+    public void CloseSettings()
+    {
+        SettingsScreen.SetActive(false);
+        _gameIsRunning = true;
+    }
+
+    // Called from clear high score button in settings window
+    public void ClearHighScore()
+    {
+        PlayerPrefs.DeleteKey("HighScore");
+        HighScore.text = "Highscore: 0";
+    }
+
+    // Called ok button in settings window
+    public void SetUserName()
+    {
+        //userNameInput.
+        PlayerPrefs.SetString("UserName", userNameInput.text);
+    }
 
     // This function is called from StartGameButton
     public void StartGame()
