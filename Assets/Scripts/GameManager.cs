@@ -32,6 +32,10 @@ public class GameManager : MonoBehaviour {
     public Text txt_commentator;
     //string _gameOverTextTemplate;
 
+    // Settings menu
+    public Slider numberOfPlayerSlider;
+    public Text txt_numberOfPlayers;
+
     // Buttons
     public GameObject startGameButton;
     public Text startButtonText;
@@ -73,6 +77,7 @@ public class GameManager : MonoBehaviour {
         StartMenuMusic.Play();
         userNameInput.text = PlayerPrefs.GetString("UserName");
         HighScore.text = "Highscore: " + PlayerPrefs.GetFloat("HighScore") + (" ") + PlayerPrefs.GetString("UserName"); // Hmmmmm
+        numberOfPlayerSlider.value = PlayerPrefs.GetFloat("NumberOfPlayers", numberOfPlayerSlider.value);
 	}
 
     // Called from settings button in game window
@@ -97,11 +102,17 @@ public class GameManager : MonoBehaviour {
         HighScore.text = "Highscore: 0";
     }
 
-    // Called ok button in settings window
+    // Called from 'ok' button in settings window
     public void SetUserName()
     {
-        //userNameInput.
         PlayerPrefs.SetString("UserName", userNameInput.text);
+    }
+
+    // From 'numbers of players' slider in settings window
+    public void SetNumbersOfPlayers()
+    {
+        txt_numberOfPlayers.text = ("" + numberOfPlayerSlider.value);
+        PlayerPrefs.SetFloat("NumberOfPlayers", numberOfPlayerSlider.value);
     }
 
     // This function is called from StartGameButton
@@ -143,13 +154,17 @@ public class GameManager : MonoBehaviour {
     void SpawnPlayers()
     {
         var lucyInstance = (GameObject)Instantiate(lucy, Lanes[0].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
-        var maryInstance = (GameObject)Instantiate(mary, Lanes[1].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
-        var oxyInstance = (GameObject)Instantiate(oxy, Lanes[2].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
-        var tjackInstance = (GameObject)Instantiate(tjack, Lanes[3].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
         lucyInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(0);
+
+        var maryInstance = (GameObject)Instantiate(mary, Lanes[1].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
         maryInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(1);
+
+        var oxyInstance = (GameObject)Instantiate(oxy, Lanes[2].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
         oxyInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(2);
+
+        var tjackInstance = (GameObject)Instantiate(tjack, Lanes[3].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
         tjackInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(3);
+        
         _activePlayers = new List<PlayerManager>
         {
             lucyInstance.GetComponent<PlayerManager>(),

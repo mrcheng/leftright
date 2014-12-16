@@ -1600,7 +1600,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1954569462}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
   m_AnchoredPosition: {x: -295, y: 112}
@@ -2463,7 +2463,7 @@ RectTransform:
   - {fileID: 1809986986}
   - {fileID: 404431872}
   m_Father: {fileID: 1954569462}
-  m_RootOrder: 2
+  m_RootOrder: 11
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
   m_AnchoredPosition: {x: 0, y: -174}
@@ -2508,19 +2508,20 @@ MonoBehaviour:
   m_FillRect: {fileID: 494230320}
   m_HandleRect: {fileID: 795605737}
   m_Direction: 0
-  m_MinValue: 0
+  m_MinValue: 1
   m_MaxValue: 8
   m_WholeNumbers: 1
-  m_Value: 0
+  m_Value: 2
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: 
+      - m_Target: {fileID: 1594089848}
+        m_MethodName: SetNumbersOfPlayers
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2699,7 +2700,7 @@ RectTransform:
   m_Children:
   - {fileID: 1586815764}
   m_Father: {fileID: 1954569462}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
   m_AnchoredPosition: {x: 283, y: 86}
@@ -3173,7 +3174,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1954569462}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
   m_AnchoredPosition: {x: -74, y: 105}
@@ -4616,7 +4617,7 @@ RectTransform:
   - {fileID: 152544598}
   - {fileID: 61056766}
   m_Father: {fileID: 1954569462}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
   m_AnchoredPosition: {x: -303, y: 14}
@@ -6070,7 +6071,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1954569462}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
   m_AnchoredPosition: {x: 21, y: -160}
@@ -6434,7 +6435,7 @@ RectTransform:
   - {fileID: 966049393}
   - {fileID: 1855415211}
   m_Father: {fileID: 1954569462}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
   m_AnchoredPosition: {x: -81, y: 81}
@@ -6755,7 +6756,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Ok, Let's play!
+  m_Text: Back to game!
 --- !u!222 &1237797310
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7775,7 +7776,7 @@ RectTransform:
   m_Children:
   - {fileID: 1376937920}
   m_Father: {fileID: 1954569462}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -383, y: -233}
@@ -8569,6 +8570,8 @@ MonoBehaviour:
   GameOverText: {fileID: 525294473}
   HighScore: {fileID: 1376937921}
   txt_commentator: {fileID: 610592556}
+  numberOfPlayerSlider: {fileID: 410019564}
+  txt_numberOfPlayers: {fileID: 1661923284}
   startGameButton: {fileID: 1950021578}
   startButtonText: {fileID: 1781002404}
   GameOverButton: {fileID: 20368817}
@@ -8902,7 +8905,7 @@ RectTransform:
   m_Children:
   - {fileID: 906183397}
   m_Father: {fileID: 1954569462}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
   m_AnchoredPosition: {x: 19, y: 81}
@@ -9171,6 +9174,72 @@ Transform:
   - {fileID: 2037957419}
   m_Father: {fileID: 813845936}
   m_RootOrder: 1
+--- !u!1 &1661923282
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 1661923283}
+  - 222: {fileID: 1661923285}
+  - 114: {fileID: 1661923284}
+  m_Layer: 5
+  m_Name: txt_numberOfPlayersText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1661923283
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1661923282}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1954569462}
+  m_RootOrder: 12
+  m_AnchorMin: {x: .5, y: .5}
+  m_AnchorMax: {x: .5, y: .5}
+  m_AnchoredPosition: {x: 0, y: -42}
+  m_SizeDelta: {x: 160, y: 30}
+  m_Pivot: {x: .5, y: .5}
+--- !u!114 &1661923284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1661923282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 110
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 10
+    m_MaxSize: 40
+    m_Alignment: 1
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 1
+    m_LineSpacing: 1
+  m_Text: 8
+--- !u!222 &1661923285
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1661923282}
 --- !u!1 &1675077219
 GameObject:
   m_ObjectHideFlags: 0
@@ -9349,7 +9418,7 @@ RectTransform:
   - {fileID: 2138951823}
   - {fileID: 693169368}
   m_Father: {fileID: 1954569462}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
   m_AnchoredPosition: {x: -337, y: 14}
@@ -11544,7 +11613,6 @@ RectTransform:
   m_Children:
   - {fileID: 1177575340}
   - {fileID: 1764165674}
-  - {fileID: 410019563}
   - {fileID: 1686840158}
   - {fileID: 822955184}
   - {fileID: 165372398}
@@ -11554,6 +11622,8 @@ RectTransform:
   - {fileID: 1483415144}
   - {fileID: 453603009}
   - {fileID: 1619105274}
+  - {fileID: 410019563}
+  - {fileID: 1661923283}
   m_Father: {fileID: 348997814}
   m_RootOrder: 10
   m_AnchorMin: {x: 0, y: 0}
