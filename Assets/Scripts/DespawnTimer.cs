@@ -17,10 +17,4 @@ public class DespawnTimer : MonoBehaviour
         Destroy(gameObject);
     }
 
-    //public void PlayerDeadDespawnPickup()
-    //{
-    //    print("I destroyed pickup on player death");
-    //    Destroy(gameObject);
-    //}
-
 }
