@@ -97,7 +97,6 @@ public class GameManager : MonoBehaviour {
     public void CloseSettings()
     {
         SettingsScreen.SetActive(false);
-        _gameIsRunning = true;
     }
 
     // Called from clear high score button in settings window
