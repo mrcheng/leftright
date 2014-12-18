@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour {
     // Settings menu
     public Slider numberOfPlayerSlider;
     public Text txt_numberOfPlayers;
+    public Slider audioLevel;
+    public AudioListener audioMasterVolume;
 
     // Buttons
     public GameObject startGameButton;
@@ -77,7 +79,10 @@ public class GameManager : MonoBehaviour {
         StartMenuMusic.Play();
         userNameInput.text = PlayerPrefs.GetString("UserName");
         HighScore.text = "Highscore: " + PlayerPrefs.GetFloat("HighScore") + (" ") + PlayerPrefs.GetString("UserName"); // Hmmmmm
+        txt_numberOfPlayers.text = ("" + numberOfPlayerSlider.value);
         numberOfPlayerSlider.value = PlayerPrefs.GetFloat("NumberOfPlayers", numberOfPlayerSlider.value);
+        audioLevel.value = PlayerPrefs.GetFloat("AudioLevel", audioLevel.value);
+        AudioListener.volume = audioLevel.value;
 	}
 
     // Called from settings button in game window
@@ -113,6 +118,12 @@ public class GameManager : MonoBehaviour {
     {
         txt_numberOfPlayers.text = ("" + numberOfPlayerSlider.value);
         PlayerPrefs.SetFloat("NumberOfPlayers", numberOfPlayerSlider.value);
+    }
+
+    public void SetAudioLevel()
+    {
+        PlayerPrefs.SetFloat("AudioLevel", audioLevel.value);
+        AudioListener.volume = audioLevel.value;
     }
 
     // This function is called from StartGameButton
