@@ -8,7 +8,7 @@ public class PlayerManager : MonoBehaviour
     public LaneController Lane;
 
     // Master health bars
-    public RectTransform HealthBar;
+    public Transform HealthBar;
 
     // Texts
     public Text LifeText;
