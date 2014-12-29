@@ -49,6 +49,10 @@ public class GameManager : MonoBehaviour {
     public InputField userNameInput;
     public GameObject btn_setUserName;
 
+    public GameObject closeStart;
+    public GameObject openStart;
+    public GameObject StartScreen;
+
     // To be able to send start message to Directioncontroller.cs
     public DirectionController Nazi;
 
@@ -73,6 +77,7 @@ public class GameManager : MonoBehaviour {
 
 	void Start ()
     {
+        StartScreen.SetActive(false); // this should be active first time when starting game
         SettingsScreen.SetActive(false);
         GameOverButton.SetActive(false);
         startButtonText.text = "START";
@@ -93,10 +98,24 @@ public class GameManager : MonoBehaviour {
         HighScore.text = "Highscore: " + PlayerPrefs.GetFloat("HighScore") + (" ") + PlayerPrefs.GetString("UserName"); // Hmmmmm
     }
 
-    // Called from let's play button in settings window
+    // Called from close settings button in settings window
     public void CloseSettings()
     {
         SettingsScreen.SetActive(false);
+    }
+
+    // Called from start menu button in game window
+    public void OpenStart()
+    {
+        StartScreen.SetActive(true);
+        _gameIsRunning = false;
+        //HighScore.text = "Highscore: " + PlayerPrefs.GetFloat("HighScore") + (" ") + PlayerPrefs.GetString("UserName"); // Hmmmmm
+    }
+
+    // Called from close start menu button in settings window
+    public void CloseStart()
+    {
+        StartScreen.SetActive(false);
     }
 
     // Called from clear high score button in settings window
@@ -143,6 +162,7 @@ public class GameManager : MonoBehaviour {
         StartMenuMusic.Stop();
         GameStartMusic.Play();
         startGameButton.SetActive(false);
+        openStart.SetActive(false);
         Nazi.ActivateDirections(); // Sends message to DirectionController.cs to activate directions when game is starting
     }
 
@@ -249,6 +269,7 @@ public class GameManager : MonoBehaviour {
         _gameIsRunning = false;
         GameOverText.color = winner.PlayerColor;
         GameOverButton.SetActive(true);
+        openStart.SetActive(true);
         // High Score
         if (score > PlayerPrefs.GetFloat("HighScore"))
         {
