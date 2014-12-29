@@ -10,6 +10,9 @@ public class HealthPickup : MonoBehaviour
     // Audio
     public AudioSource snd_pickupHealth;
 
+    // Particles
+    public ParticleSystem healthParticles;
+
     void Update()
     {
         transform.Rotate(new Vector3(1, 1, 1) * Time.deltaTime * rotatorSpeed);
@@ -17,6 +20,7 @@ public class HealthPickup : MonoBehaviour
 
     void OnTriggerEnter(Collider playerCollider)
     {
+        healthParticles.enableEmission = true;
         snd_pickupHealth.Play();
         var player = playerCollider.GetComponent<PlayerManager>();
         if (player == null)
