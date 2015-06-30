@@ -11,9 +11,9 @@ public class HealthBar : MonoBehaviour
         set
         {
             if (value)
-                gameObject.renderer.material.color = new Color(1f, 0.1f, 0.25f, 0.5f);
+                gameObject.GetComponent<Renderer>().material.color = new Color(1f, 0.1f, 0.25f, 0.5f);
             else
-                gameObject.renderer.material.color = new Color(0.25f, 1, 0.1f, 0.5f);
+                gameObject.GetComponent<Renderer>().material.color = new Color(0.25f, 1, 0.1f, 0.5f);
         }
     }
 

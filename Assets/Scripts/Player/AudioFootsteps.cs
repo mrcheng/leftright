@@ -11,21 +11,21 @@ public class AudioFootsteps : MonoBehaviour {
 
     void PlayWalkFootsteps()
     {
-        audio.clip = footsteps_walk[Random.Range(0, footsteps_walk.Length)];
-        audio.Play();
+        GetComponent<AudioSource>().clip = footsteps_walk[Random.Range(0, footsteps_walk.Length)];
+        GetComponent<AudioSource>().Play();
     }
 
     void PlayLandingFootstep()
     {
-        audio.clip = footstep_land;
-        audio.Play();
+        GetComponent<AudioSource>().clip = footstep_land;
+        GetComponent<AudioSource>().Play();
     }
 
     void PlayRunFootsteps()
     {
-        audio.clip = footsteps_run[Random.Range(0, footsteps_run.Length)];
-        audio.volume = 1.0f;
-        audio.Play();
+        GetComponent<AudioSource>().clip = footsteps_run[Random.Range(0, footsteps_run.Length)];
+        GetComponent<AudioSource>().volume = 1.0f;
+        GetComponent<AudioSource>().Play();
     }
 
 }

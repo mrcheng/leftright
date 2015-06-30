@@ -5,7 +5,7 @@ public class LaneController : MonoBehaviour
 {
     public void RemoveLane()
     {
-        rigidbody.useGravity = true;
-        rigidbody.isKinematic = false;
+        GetComponent<Rigidbody>().useGravity = true;
+        GetComponent<Rigidbody>().isKinematic = false;
     }
 }

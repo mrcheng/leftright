@@ -161,8 +161,8 @@ public class PlayerManager : MonoBehaviour
         // THIS IS NOT YET IMPLEMENTED!
         print(PlayerName + " is dizzy!!!");
 
-        meshRenderer.renderer.material.color = new Color(1, 1, 1, 0); // Player white when dizzy
+        meshRenderer.GetComponent<Renderer>().material.color = new Color(1, 1, 1, 0); // Player white when dizzy
         yield return new WaitForSeconds(seconds);
-        meshRenderer.renderer.material.color = PlayerColor; // Player normal color
+        meshRenderer.GetComponent<Renderer>().material.color = PlayerColor; // Player normal color
     }
 }
