@@ -84,8 +84,9 @@ namespace LeftRight.Rebuild
 
         void IssueCue()
         {
-            // The prototype alternates directions; only its wait is random.
-            DirectionRight = !DirectionRight;
+            // Every activation gets a fresh 50/50 opening cue. Once play is underway,
+            // retain the prototype's alternation with a newly sampled delay per cue.
+            DirectionRight = IsIdling ? UnityEngine.Random.Range(0, 2) == 1 : !DirectionRight;
             IsIdling = false;
             flipTimer = 0f;
             CurrentInterval = UnityEngine.Random.Range(minTimeTurn, maxTimeTurn);

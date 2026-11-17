@@ -132,6 +132,8 @@ namespace LeftRight.Editor
             StreetlightLighting.AddTo(root.gameObject);
             RoundStartSetup.AddTo(root.gameObject);
             RecruitRig.AddTo(root.gameObject);
+            SpikeCourseSetup.AddTo(root.gameObject);
+            FlagLetters.AddTo(root.gameObject);
             PrefabUtility.SaveAsPrefabAssetAndConnect(root.gameObject,
                 "Assets/Rebuild/Prefabs/OutpostEnvironment.prefab", InteractionMode.AutomatedAction);
             EditorSceneManager.MarkSceneDirty(scene);
@@ -298,7 +300,7 @@ namespace LeftRight.Editor
             var cameraObject = new GameObject("Main Camera");
             cameraObject.tag = "MainCamera";
             cameraObject.transform.SetParent(lighting, false);
-            cameraObject.transform.localPosition = new Vector3(.181506f, 8.775165f, -12.370951f);
+            cameraObject.transform.localPosition = new Vector3(0, 7.567722f, -11.445186f);
             cameraObject.transform.localRotation = Quaternion.Euler(24.408024f, 0, 0);
             var camera = cameraObject.AddComponent<Camera>();
             camera.fieldOfView = 60;

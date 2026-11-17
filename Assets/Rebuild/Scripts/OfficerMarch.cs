@@ -17,7 +17,7 @@ namespace LeftRight.Rebuild
         public Transform rightArmSwing;
         public float kneeLiftDegrees = 82f;
         public float armSwingDegrees = 12f;
-        public float bodyBounce = .015f;
+        public float bodyBounce = .065f;
         public bool playFootsteps = true;
         [Range(0, 1)] public float footstepVolume = .18f;
 

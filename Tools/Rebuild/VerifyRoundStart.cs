@@ -46,18 +46,19 @@ try
  while(!start.HasStarted && AudioSettings.dspTime<expected+2) await Task.Delay(10);
  Check(start.HasStarted && !start.IsCountingDown && audio.MusicHasStarted,"Music and round activate at the scheduled start");
  Check(cueTimes.Count==1 && Math.Abs(cueTimes[0]-expected)<.15,"First pointing cue starts on the scheduled opening beat");
- Check(!officer.DirectionRight && !officer.IsIdling && lights.leftLight.enabled && !lights.rightLight.enabled,
-    "First cue points left with only the left tower lit");
+ bool firstRight=officer.DirectionRight;
+ Check(!officer.IsIdling && lights.leftLight.enabled==!firstRight && lights.rightLight.enabled==firstRight,
+    "First random cue lights only the matching tower");
  await Task.Delay(60);
  double beat=((double)audio.music.timeSamples/audio.music.clip.frequency-audio.palette.titleFirstBeatSeconds)*audio.palette.titleBeatsPerMinute/60;
  Check(beat>=-.05 && beat<.65,"Music begins at its measured first beat rather than playing the pre-beat pickup");
  Check(Math.Abs(march.BeatPosition-beat)<.2,"Marching shares the music's opening-beat position");
- Check(audio.voice.clip==audio.palette.leftCall,"First cue uses the original left voice call");
+ Check(audio.voice.clip==(firstRight?audio.palette.rightCall:audio.palette.leftCall),"First random cue uses the matching original voice call");
  await Task.Delay(200);
  Check(Quaternion.Angle(march.leftHip.localRotation,Quaternion.identity)>45,"First high-knee step rises immediately after the opening beat");
  double first=cueTimes[0];
  while(cueTimes.Count<2 && AudioSettings.dspTime<first+6) await Task.Delay(20);
- Check(cueTimes.Count==2 && cueTimes[1]-first>=2 && cueTimes[1]-first<5.2 && officer.DirectionRight,
+ Check(cueTimes.Count==2 && cueTimes[1]-first>=2 && cueTimes[1]-first<5.2 && officer.DirectionRight!=firstRight,
     "Later direction changes retain the prototype's random two-to-five-second alternation");
  start.BeginRound();
  Check(!officer.IsRunning && officer.IsIdling && !lights.leftLight.enabled && !lights.rightLight.enabled,

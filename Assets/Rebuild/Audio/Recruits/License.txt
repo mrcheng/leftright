@@ -1,0 +1,1 @@
+These six derived audio effects use CC0 1.0 Universal source recordings. See source.json for authors, source pages and the exact selected recordings. https://creativecommons.org/publicdomain/zero/1.0/

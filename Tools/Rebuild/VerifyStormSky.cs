@@ -22,7 +22,7 @@ Check(RenderSettings.sun!=null && RenderSettings.sun.intensity>=.85f,"Evening su
 Check(RenderSettings.ambientSkyColor.grayscale>.4f,"Cool ambient fill keeps shadowed scenery readable");
 Check(RenderSettings.fog && RenderSettings.fogStartDistance>=30 && RenderSettings.fogEndDistance>RenderSettings.fogStartDistance,"Damp atmospheric haze is configured");
 Check(Quaternion.Angle(camera.transform.rotation,Quaternion.Euler(24.408024f,0,0))<.001f
-    && Vector3.Distance(camera.transform.position,new Vector3(.181506f,8.775165f,-12.370951f))<.001f,
+    && Vector3.Distance(camera.transform.position,new Vector3(0,7.567722f,-11.445186f))<.001f,
     "User's close, horizontally straight framing is preserved");
 var previous=RenderTexture.active;
 var previousTarget=camera.targetTexture;

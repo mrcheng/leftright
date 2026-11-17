@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEditor;
 using LeftRight.Rebuild;
 
 if(!EditorApplication.isPlaying) throw new Exception("Enter Play Mode on Main first.");
+UnityEngine.Object.FindAnyObjectByType<RebuildRoundStart>().BeginRound();
 var checks=new List<string>();
 void Check(bool condition,string description)
 {
@@ -19,8 +21,28 @@ Check(march!=null && march.leftHip!=null && march.rightHip!=null && march.leftKn
 var stand=GameObject.Find("Command post").transform.Find("CommandStand").GetComponentInChildren<Renderer>();
 float stageHeight=march.transform.position.y;
 Check(stand.bounds.size.y<.8f && stand.bounds.max.y<.5f,"Lectern is removed, leaving only the command platform");
-var leftBoot=march.leftKnee.GetComponentInChildren<Renderer>();
-var rightBoot=march.rightKnee.GetComponentInChildren<Renderer>();
+var skin=march.GetComponentInChildren<SkinnedMeshRenderer>();
+float FootMin(bool left)
+{
+ var knee=left?march.leftKnee:march.rightKnee;
+ if(skin==null) return knee.GetComponentInChildren<Renderer>().bounds.min.y;
+ var mesh=new Mesh();
+ try
+ {
+  skin.BakeMesh(mesh);
+  var vertices=mesh.vertices;var weights=skin.sharedMesh.boneWeights;
+  string foot=left?"Foot.L":"Foot.R";
+  float min=float.MaxValue;
+  for(int i=0;i<vertices.Length;i++)
+  {
+   var w=weights[i];
+   if(skin.bones[w.boneIndex0].name==foot)
+    min=Mathf.Min(min,(skin.transform.position+skin.transform.rotation*vertices[i]).y);
+  }
+  return min;
+ }
+ finally {UnityEngine.Object.DestroyImmediate(mesh);}
+}
 var rootPosition=march.transform.position;
 var audio=march.audioOutput;
 var source=audio.music;
@@ -46,10 +68,10 @@ try
    if((step%2+2)%2==0 && leftAngle>75 && rightAngle<1 && march.leftHip.position.y-march.leftKnee.position.y<.16f) leftHigh=true;
    if((step%2+2)%2==1 && rightAngle>75 && leftAngle<1 && march.rightHip.position.y-march.rightKnee.position.y<.16f) rightHigh=true;
   }
-  if((fraction<.05 || fraction>.95) && leftBoot.bounds.min.y<stageHeight+.04f && rightBoot.bounds.min.y<stageHeight+.04f)
+  if((fraction<.05 || fraction>.95) && FootMin(true)<stageHeight+.04f && FootMin(false)<stageHeight+.04f)
    groundedOnBeat=true;
   if(leftAngle>5 && rightAngle>5) neverBothHigh=false;
-  if(Mathf.Min(leftBoot.bounds.min.y,rightBoot.bounds.min.y)<stageHeight-.02f) neverBelowStage=false;
+  if(Mathf.Min(FootMin(true),FootMin(false))<stageHeight-.02f) neverBelowStage=false;
   if(audio.effects.isPlaying) footsteps=true;
  }
  Check(leftHigh,"Left knee rises near hip height between music beats");

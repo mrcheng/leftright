@@ -58,36 +58,77 @@ namespace LeftRight.Editor
 
         static void Configure(GameObject officer, OutpostAudio audio)
         {
-            PrepareMaterials();
             foreach (Transform child in officer.transform.Cast<Transform>().ToArray())
                 UnityEngine.Object.DestroyImmediate(child.gameObject);
-            var body = Model("OfficerPlaceholder", officer.transform);
+            officer.transform.localScale = Vector3.one;
+            const string recruitArt = "Assets/Rebuild/Art/Recruits/";
+            var palette = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, float[]>>(
+                File.ReadAllText("SourceArt/Characters/recruit-palette.json"));
+            foreach (var entry in palette)
+            {
+                string path = recruitArt + "Materials/" + entry.Key + ".mat";
+                var material = AssetDatabase.LoadAssetAtPath<Material>(path);
+                if (material == null)
+                {
+                    material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                    AssetDatabase.CreateAsset(material, path);
+                }
+                material.SetColor("_BaseColor", new Color(entry.Value[0], entry.Value[1], entry.Value[2]));
+                material.SetFloat("_Smoothness", .12f);
+                EditorUtility.SetDirty(material);
+            }
+            var conversion = new GameObject("Instructor model - 125 percent recruit scale").transform;
+            conversion.SetParent(officer.transform, false);
+            conversion.localRotation = Quaternion.Euler(0, 180, 0);
+            conversion.localScale = Vector3.one * .775f;
+            string modelPath = recruitArt + "Models/RecruitInstructor.fbx";
+            var importer = (ModelImporter)AssetImporter.GetAtPath(modelPath);
+            if (importer.importAnimation || importer.animationType != ModelImporterAnimationType.Generic)
+            {
+                importer.importAnimation = false;
+                importer.animationType = ModelImporterAnimationType.Generic;
+                importer.SaveAndReimport();
+            }
+            var model = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(modelPath), conversion);
+            // The procedural pivots reparent bones; save a concrete rig rather than nested-FBX overrides.
+            PrefabUtility.UnpackPrefabInstance(model, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+            foreach (var renderer in model.GetComponentsInChildren<Renderer>())
+                renderer.sharedMaterials = renderer.sharedMaterials.Select(m =>
+                    AssetDatabase.LoadAssetAtPath<Material>(recruitArt + "Materials/" + m.name + ".mat")).ToArray();
+            var skin = model.GetComponentInChildren<SkinnedMeshRenderer>();
+            // The FBX root has its own import rotation; lift via the logical conversion instead.
+            conversion.position += Vector3.up * (officer.transform.position.y - skin.bounds.min.y);
+            var bones = model.GetComponentsInChildren<Transform>();
+            Transform Bone(string name) => bones.Single(t => t.name == name);
+            Transform Wrap(string name, Transform bone, Transform parent)
+            {
+                var pivot = new GameObject(name).transform;
+                pivot.SetParent(parent, false);
+                pivot.position = bone.position;
+                pivot.rotation = officer.transform.rotation;
+                bone.SetParent(pivot, true);
+                return pivot;
+            }
             var directions = officer.GetComponent<OfficerDirections>() ?? officer.AddComponent<OfficerDirections>();
-            directions.playOnStart = false;
             var march = officer.GetComponent<OfficerMarch>() ?? officer.AddComponent<OfficerMarch>();
+            directions.playOnStart = false;
             directions.audioOutput = audio;
             march.directions = directions;
+            march.bodyBounce = .065f;
             march.audioOutput = audio;
             march.masterBeat = audio != null ? audio.GetComponentInParent<MasterBeat>() : null;
-            march.body = body;
-            Transform Joint(string name, Transform parent, Vector3 position)
-            {
-                var joint = new GameObject(name).transform;
-                joint.SetParent(parent, false);
-                joint.localPosition = position;
-                return joint;
-            }
+            march.body = Wrap("Torso bounce", Bone("Abdomen"), officer.transform);
             for (int side = 0; side < 2; side++)
             {
                 bool left = side == 0;
+                string suffix = left ? ".L" : ".R";
                 string name = left ? "Left" : "Right";
-                var shoulder = Joint(name + " shoulder", officer.transform, new Vector3(left ? -.35f : .35f, 1.53f, 0));
-                var swing = Joint(name + " arm march swing", shoulder, Vector3.zero);
-                Model("OfficerArm", swing);
-                var hip = Joint(name + " hip", officer.transform, new Vector3(left ? -.17f : .17f, 1.06f, 0));
-                Model("OfficerThigh", hip);
-                var knee = Joint(name + " knee", hip, new Vector3(0, -.5f, 0));
-                Model("OfficerShin", knee);
+                var shoulder = new GameObject(name + " shoulder").transform;
+                shoulder.SetParent(officer.transform, false);
+                shoulder.position = Bone("UpperArm" + suffix).position;
+                var swing = Wrap(name + " arm march swing", Bone("UpperArm" + suffix), shoulder);
+                var hip = Wrap(name + " hip", Bone("UpperLeg" + suffix), officer.transform);
+                var knee = Wrap(name + " knee", Bone("LowerLeg" + suffix), hip);
                 if (left)
                 {
                     directions.leftShoulder = shoulder;
@@ -113,26 +154,6 @@ namespace LeftRight.Editor
             palette.roundBeatsPerMinute = (float)beats["round"]["beatsPerMinute"];
             palette.roundFirstBeatSeconds = (float)beats["round"]["firstBeatSeconds"];
             EditorUtility.SetDirty(palette);
-        }
-
-        static void PrepareMaterials()
-        {
-            var palette = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, float[]>>(
-                File.ReadAllText("SourceArt/Environment/outpost-palette.json"));
-            foreach (string name in new[] { "Uniform", "Leather", "Shirt", "Skin", "Brass", "Olive" })
-            {
-                string path = Art + "Materials/" + name + ".mat";
-                var material = AssetDatabase.LoadAssetAtPath<Material>(path);
-                if (material == null)
-                {
-                    material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-                    AssetDatabase.CreateAsset(material, path);
-                }
-                var color = palette[name];
-                material.SetColor("_BaseColor", new Color(color[0], color[1], color[2]));
-                material.SetFloat("_Smoothness", .12f);
-                EditorUtility.SetDirty(material);
-            }
         }
 
         static Transform Model(string name, Transform parent)

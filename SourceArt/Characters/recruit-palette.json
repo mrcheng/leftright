@@ -136,5 +136,53 @@
     0.105,
     0.0945,
     1
+  ],
+  "Recruit_Instructor_Skin": [
+    0.7,
+    0.51,
+    0.34,
+    1
+  ],
+  "Recruit_Instructor_Hair": [
+    0.035,
+    0.025,
+    0.02,
+    1
+  ],
+  "Recruit_Instructor_Uniform": [
+    0.055,
+    0.06,
+    0.065,
+    1
+  ],
+  "Recruit_Instructor_Trousers": [
+    0.0385,
+    0.041999999999999996,
+    0.0455,
+    1
+  ],
+  "Recruit_Instructor_Boots": [
+    0.025,
+    0.025,
+    0.028,
+    1
+  ],
+  "Recruit_Instructor_Trim": [
+    0.55,
+    0.55,
+    0.51,
+    1
+  ],
+  "Recruit_CombatBoots": [
+    0.025,
+    0.028,
+    0.03,
+    1
+  ],
+  "Recruit_BootSoles": [
+    0.045,
+    0.048,
+    0.05,
+    1
   ]
 }

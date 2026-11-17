@@ -1,0 +1,51 @@
+{
+  "license": "CC0-1.0",
+  "sources": [
+    {
+      "clips": [
+        "RifleScream"
+      ],
+      "creator": "wuxiascrub",
+      "url": "https://opengameart.org/content/female-high-pitched-scream-sfx"
+    },
+    {
+      "clips": [
+        "MedicScream"
+      ],
+      "creator": "AuraVoice / NocturnalVanguard",
+      "url": "https://opengameart.org/content/female-scream-1"
+    },
+    {
+      "clips": [
+        "SniperScream",
+        "MortarScream"
+      ],
+      "creator": "JohnsonBrandEditing; extracted/normalized by congusbongus",
+      "url": "https://opengameart.org/content/aargh-male-screams",
+      "note": "Only aargh3 and aargh5 used. These are CC0 per bundled aargh.txt; other recordings in archive have separate licenses."
+    },
+    {
+      "clips": [
+        "SpikeImpact"
+      ],
+      "creator": "Independent.nu Ljudbank; uploaded by qubodup",
+      "url": "https://opengameart.org/content/8-wet-squish-slurp-impacts"
+    },
+    {
+      "clips": [
+        "Squeeze"
+      ],
+      "creator": "Independent.nu Ljudbank; uploaded by qubodup",
+      "url": "https://opengameart.org/content/2-wooden-squish-splatter-sequences"
+    }
+  ],
+  "processing": "Trimmed, mono 44.1kHz PCM, limited peak and fade-out.",
+  "sha256": {
+    "MedicScream.wav": "89f20e2302f3a81f782da2069cf892fa0cab4a42b9267a20c1dc2fecce988121",
+    "MortarScream.wav": "0c95adb80ef1809958208ad7c87801871ece9b11ccf1be8f56c9b1ba86fd0a62",
+    "RifleScream.wav": "5841242fb3f60f5b5fcabfd0a9da7bb1ed7a230727524581e681df78e4d1856c",
+    "SniperScream.wav": "5975f9fdd248818498bf96ef66ac6de450f112fe8ea7eead5adf8c8ab938f878",
+    "SpikeImpact.wav": "f91f0146ca92a6d0a013aaadfa47fd223695a1d20fe27c842418fee2d4cbc22e",
+    "Squeeze.wav": "af9901fe16a2faf2adaa51ac96e603521ca013747f3a3ccf59701e9a9ebfdc34"
+  }
+}

@@ -3,17 +3,19 @@ from pathlib import Path
 import bpy
 import math
 import json
+import sys
 from mathutils import Matrix, Vector
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT/'Assets/Rebuild/Art/Recruits/Models'
 OUT.mkdir(parents=True, exist_ok=True)
-PALETTE = {}
+PALETTE = json.loads((ROOT/'SourceArt/Characters/recruit-palette.json').read_text()) if (ROOT/'SourceArt/Characters/recruit-palette.json').exists() else {}
 ROLES = [
     ('Rifle', 'Soldier_Female', (.23,.31,.17,1), (.66,.43,.26,1), (.20,.07,.025,1)),
     ('Sniper', 'BlueSoldier_Male', (.16,.24,.29,1), (.43,.29,.18,1), (.055,.035,.025,1)),
     ('Mortar', 'Soldier_Male', (.43,.36,.16,1), (.72,.53,.34,1), (.10,.065,.025,1)),
     ('Medic', 'BlueSoldier_Female', (.37,.15,.135,1), (.78,.59,.43,1), (.065,.045,.03,1)),
+    ('Instructor', 'Soldier_Male', (.055,.060,.065,1), (.70,.51,.34,1), (.035,.025,.02,1)),
 ]
 
 def mat(name, color):
@@ -46,6 +48,7 @@ def tube(name, a, b, radius, material):
     return o
 
 for role, source, uniform, skin, hair in ROLES:
+    if '--' in sys.argv and sys.argv[sys.argv.index('--')+1:] and role not in sys.argv[sys.argv.index('--')+1:]: continue
     bpy.ops.wm.open_mainfile(filepath=str(ROOT/'SourceArt/Characters/Quaternius'/f'{source}.blend'))
     rig=next(o for o in bpy.data.objects if o.type=='ARMATURE')
     body=next(o for o in bpy.data.objects if o.type=='MESH')
@@ -57,6 +60,7 @@ for role, source, uniform, skin, hair in ROLES:
     bpy.context.view_layer.update()
     # Lower the source T-pose arms in armature space, then bake a neutral rest pose.
     for suffix, angle in [('L',83),('R',-83)]:
+        if role=='Instructor': angle=90 if suffix=='L' else -90
         bone=rig.pose.bones['UpperArm.'+suffix]
         pivot=bone.head.copy()
         bone.matrix=Matrix.Translation(pivot) @ Matrix.Rotation(math.radians(angle),4,'Y') @ Matrix.Translation(-pivot) @ bone.matrix
@@ -69,6 +73,16 @@ for role, source, uniform, skin, hair in ROLES:
     bpy.ops.object.mode_set(mode='POSE')
     bpy.ops.pose.armature_apply(selected=False)
     bpy.ops.object.mode_set(mode='OBJECT')
+    # Source feet are root-level IK controls. Our runtime rotates the leg bones
+    # directly, so feet must inherit the lower leg instead of remaining on the floor.
+    bpy.ops.object.mode_set(mode='EDIT')
+    for suffix in ['L','R']:
+        foot=rig.data.edit_bones['Foot.'+suffix]
+        rest=foot.matrix.copy()
+        foot.parent=rig.data.edit_bones['LowerLeg.'+suffix]
+        foot.use_connect=False
+        foot.matrix=rest
+    bpy.ops.object.mode_set(mode='OBJECT')
     mod=body.modifiers.new('Recruit skeleton','ARMATURE');mod.object=rig
     rig.name='RecruitSkeleton'
     colors = {
@@ -80,7 +94,27 @@ for role, source, uniform, skin, hair in ROLES:
     for slot in body.material_slots:
         name=slot.material.name.split('.')[0]
         slot.material=colors.get(name,colors['Main'])
-    for p in body.data.polygons:p.use_smooth=False
+    for p in body.data.polygons:
+        p.use_smooth=False
+        if sum(body.data.vertices[v].co.z for v in p.vertices)/len(p.vertices)<(.45 if role=='Instructor' else .32):
+            p.material_index=next(i for i,m in enumerate(body.data.materials) if m==colors['Black'])
+    if role!='Instructor':
+        boot_material=mat('CombatBoots',(.025,.028,.030,1))
+        sole_material=mat('BootSoles',(.045,.048,.05,1))
+        boots=[]
+        for suffix,x in [('L',.264),('R',-.264)]:
+            parts=[box('Combat boot ankle.'+suffix,(x,.035,.19),(.29,.29,.39),boot_material,.025),
+                box('Combat boot toe.'+suffix,(x,-.11,.075),(.30,.48,.18),boot_material,.035),
+                box('Combat boot sole.'+suffix,(x,-.10,.005),(.32,.50,.05),sole_material,.012)]
+            for o in parts:
+                group=o.vertex_groups.new(name='Foot.'+suffix)
+                group.add(list(range(len(o.data.vertices))),1,'REPLACE')
+            boots.extend(parts)
+        bpy.ops.object.select_all(action='DESELECT')
+        body.select_set(True)
+        for o in boots:o.select_set(True)
+        bpy.context.view_layer.objects.active=body
+        bpy.ops.object.join()
     steel=mat('Gunmetal',(.085,.11,.105,1))
     wood=mat('Stock',(.27,.14,.065,1))
     canvas=mat('Webbing',(.34,.32,.21,1))
@@ -90,7 +124,7 @@ for role, source, uniform, skin, hair in ROLES:
     def pack():
         gear.append(box('Field pack',(0,.37,1.72),(.66,.30,.65),canvas))
         for x in [-.23,.23]:gear.append(box('Pack webbing',(x,.535,1.72),(.065,.025,.59),wood,.005))
-    pack()
+    if role!='Instructor': pack()
     # Equipment is attached to the torso, leaving the marching arms free.
     if role in ['Rifle','Sniper']:
         x=-.43 if role=='Rifle' else .43
@@ -107,13 +141,22 @@ for role, source, uniform, skin, hair in ROLES:
         gear.append(tube('Mortar muzzle rim',(.34,.62,2.51),(.34,.62,2.63),.17,steel))
         gear.append(box('Mortar base plate',(-.24,.62,1.40),(.65,.09,.67),steel))
         for x in [-.14,.09]:gear.append(tube('Mortar support leg',(x,.66,1.7),(x,.66,2.33),.04,canvas))
-    else:
+    elif role=='Medic':
         gear.append(box('Medical satchel',(-.50,-.02,1.12),(.42,.28,.44),pale))
         gear.append(box('Medical insignia vertical',(-.50,-.17,1.12),(.07,.025,.24),badge,.003))
         gear.append(box('Medical insignia horizontal',(-.50,-.18,1.12),(.24,.025,.07),badge,.003))
         gear.append(box('Medical pack panel',(0,.535,1.72),(.34,.035,.34),pale))
         gear.append(box('Pack insignia vertical',(0,.56,1.72),(.065,.025,.23),badge,.003))
         gear.append(box('Pack insignia horizontal',(0,.565,1.72),(.23,.025,.065),badge,.003))
+    elif role=='Instructor':
+        black=mat('Instructor_Boots',(.025,.025,.028,1))
+        silver=mat('Instructor_Trim',(.55,.55,.51,1))
+        gear.append(box('Black leather belt',(0,-.015,1.23),(.80,.49,.11),black))
+        gear.append(box('Square belt buckle',(0,-.28,1.23),(.15,.035,.09),silver,.008))
+        for x in [-.16,.16]:
+            gear.append(box('Light collar tab',(x,-.19,1.96),(.14,.04,.10),silver,.008))
+            gear.append(box('Tunic pocket',(x,-.235,1.67),(.21,.04,.17),colors['Main'],.01))
+        for z in [1.40,1.57,1.74,1.90]:gear.append(box('Tunic button',(0,-.265,z),(.035,.022,.035),silver,.003))
     # Different headgear also keeps roles readable when seen from the front.
     if role in ['Rifle','Mortar']:
         bpy.ops.mesh.primitive_uv_sphere_add(segments=10, ring_count=4, radius=1,location=(0,0,2.96))
@@ -122,6 +165,11 @@ for role, source, uniform, skin, hair in ROLES:
         gear_head=[helmet,box('Helmet brim',(0,-.08,2.91),(.99,.84,.065),colors['Main'])]
     else:
         gear_head=[box('Field cap',(0,.0,3.0),(.79,.69,.21),colors['Main'],.07),box('Cap peak',(0,-.39,2.93),(.63,.28,.065),colors['Main'])]
+    if role=='Instructor':
+        gear_head=[box('Black peaked officer cap',(0,0,3.04),(.91,.78,.23),colors['Main'],.06),
+            box('Cap leather band',(0,-.025,2.94),(.84,.73,.09),black),
+            box('Long black cap peak',(0,-.43,2.91),(.74,.40,.065),black),
+            box('Cap silver badge',(0,-.40,3.04),(.12,.035,.10),silver,.008)]
     for o in gear+gear_head:
         world=o.matrix_world.copy()
         o.parent=rig;o.parent_type='BONE';o.parent_bone='Head' if o in gear_head else 'Torso'

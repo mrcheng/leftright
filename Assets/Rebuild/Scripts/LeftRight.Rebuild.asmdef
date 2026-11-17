@@ -1,6 +1,6 @@
 {
   "name": "LeftRight.Rebuild",
   "rootNamespace": "LeftRight.Rebuild",
-  "references": [],
+  "references": ["Unity.InputSystem"],
   "autoReferenced": true
 }

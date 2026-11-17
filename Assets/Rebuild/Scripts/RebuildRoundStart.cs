@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace LeftRight.Rebuild
@@ -13,6 +14,8 @@ namespace LeftRight.Rebuild
         public bool HasStarted { get; private set; }
         public bool IsCountingDown { get; private set; }
         public double ScheduledStartDspTime { get; private set; }
+        public event Action Preparing;
+        public event Action Cancelled;
 
         void Start()
         {
@@ -25,6 +28,7 @@ namespace LeftRight.Rebuild
             ScheduledStartDspTime = AudioSettings.dspTime + Mathf.Max(0, leadInSeconds);
             audioOutput.ScheduleTitleOnFirstBeat(ScheduledStartDspTime);
             IsCountingDown = true;
+            Preparing?.Invoke();
         }
 
         public void CancelStart()
@@ -35,6 +39,7 @@ namespace LeftRight.Rebuild
             if (masterBeat != null) masterBeat.ResetClock();
             officer.ResetDirections();
             march.ResetMarch();
+            Cancelled?.Invoke();
         }
 
         void Update()

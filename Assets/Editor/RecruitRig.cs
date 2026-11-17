@@ -24,6 +24,7 @@ namespace LeftRight.Editor
             try
             {
                 AddTo(prefab);
+                SpikeCourseSetup.AddTo(prefab);
                 PrefabUtility.SaveAsPrefabAsset(prefab, path);
             }
             finally { PrefabUtility.UnloadPrefabContents(prefab); }
@@ -74,7 +75,7 @@ namespace LeftRight.Editor
                 recruit.transform.SetParent(group, false);
                 // Locate by name so unrelated lane props cannot change character assignment.
                 var lane = lanes.Find("Player lane " + (i + 1));
-                recruit.transform.localPosition = new Vector3(-2.4f + i * 1.6f, .65f, lane.localPosition.z);
+                recruit.transform.localPosition = new Vector3(0, .65f, lane.localPosition.z);
                 var conversion = new GameObject("Model orientation").transform;
                 conversion.SetParent(recruit.transform, false);
                 conversion.localRotation = Quaternion.Euler(0, 180, 0);
@@ -89,6 +90,8 @@ namespace LeftRight.Editor
                 Transform Bone(string bone) => transforms.Single(t => t.name == bone);
                 var march = recruit.AddComponent<RecruitMarch>();
                 march.role = roles[i];
+                march.walkingBodyBob = .13f;
+                march.inPlaceBodyBob = .045f;
                 march.female = i == 0 || i == 3;
                 march.masterBeat = clock;
                 march.directions = officer;

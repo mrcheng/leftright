@@ -33,10 +33,13 @@ try
 {
     officer.StopDirections();
     UnityEngine.Random.InitState(719);
-    var expected = Enumerable.Range(0, 4).Select(_ => UnityEngine.Random.Range(2f, 5f)).ToArray();
+    var expected = new float[4];
+    expected[0] = UnityEngine.Random.Range(2f, 5f);
+    bool firstRight = UnityEngine.Random.Range(0, 2) == 1;
+    for(int i=1;i<4;i++) expected[i] = UnityEngine.Random.Range(2f, 5f);
     UnityEngine.Random.InitState(719);
     officer.ActivateDirections();
-    Check(officer.IsIdling && officer.DirectionRight, "Initial state is neutral, with the first change set up to point left");
+    Check(officer.IsIdling, "Initial state is neutral before the random first cue");
     Check(!floodlights.leftLight.enabled && !floodlights.rightLight.enabled, "Both tower lights are off before the first direction cue");
     Check(Quaternion.Angle(officer.leftShoulder.localRotation, Quaternion.identity) < .001f && Quaternion.Angle(officer.rightShoulder.localRotation, Quaternion.identity) < .001f,
         "Both arms rest down before the first cue");
@@ -47,7 +50,7 @@ try
         float timeout = Time.realtimeSinceStartup + 12f;
         while (seen.Count <= cue && Time.realtimeSinceStartup < timeout) await Task.Delay(20);
         Check(seen.Count == cue + 1, "Cue " + (cue + 1) + " arrives automatically");
-        bool right = cue % 2 == 1;
+        bool right = cue % 2 == 0 ? firstRight : !firstRight;
         Check(seen[cue].right == right && officer.DirectionRight == right && !officer.IsIdling,
             "Cue " + (cue + 1) + ": direction alternates " + (right ? "right" : "left"));
         Check(floodlights.leftLight.enabled == !right && floodlights.rightLight.enabled == right,
@@ -77,7 +80,10 @@ try
         var resting = right ? officer.leftShoulder : officer.rightShoulder;
         Check(Quaternion.Angle(resting.localRotation, Quaternion.identity) < .001f,
             "Cue " + (cue + 1) + ": unused arm lowers to the side");
-        Vector3 meshOffset = moving.GetComponentInChildren<Renderer>().bounds.center - moving.position;
+        var skin = officer.GetComponentInChildren<SkinnedMeshRenderer>();
+        Vector3 meshOffset = skin != null
+            ? officer.GetComponentsInChildren<Transform>().Single(t => t.name == (right ? "Fist.R" : "Fist.L")).position - moving.position
+            : moving.GetComponentInChildren<Renderer>().bounds.center - moving.position;
         Check(Vector3.Dot(meshOffset.normalized, right ? Vector3.right : Vector3.left) > .98f,
             "Cue " + (cue + 1) + ": visible mesh points in the required world direction");
         Quaternion held = moving.localRotation;
@@ -92,7 +98,7 @@ try
     Check(!floodlights.leftLight.enabled && !floodlights.rightLight.enabled, "Stopping the sequence turns both tower lights off");
     officer.ActivateDirections();
     Check(officer.IsIdling && officer.DirectionRight && Quaternion.Angle(officer.leftShoulder.localRotation, Quaternion.identity) < .001f,
-        "Restart resets to neutral and prepares the original first-left sequence");
+        "Restart resets to neutral before sampling a fresh opening direction");
     Check(!floodlights.leftLight.enabled && !floodlights.rightLight.enabled, "Restart resets both tower lights to neutral/off");
 }
 finally

@@ -15,6 +15,14 @@ void Check(bool condition, string message)
 }
 var recruits = UnityEngine.Object.FindObjectsByType<RecruitMarch>().OrderBy(r => r.role).ToArray();
 var start = UnityEngine.Object.FindAnyObjectByType<RebuildRoundStart>();
+start.CancelStart();
+var players = recruits.Select(r => r.player).ToArray();
+var speeds = players.Select(p => p != null ? p.walkSpeed : 0).ToArray();
+Action<bool> follow = right => {
+    foreach (var player in players) if (player != null) player.InputOverride = right ? 1 : -1;
+};
+foreach (var player in players) if (player != null) player.walkSpeed = 0;
+start.officer.DirectionChanged += follow;
 Check(recruits.Length == 4 && UnityEngine.Object.FindObjectsByType<OfficerDirections>().Length == 1,
     "Four recruits plus one officer occupy the course");
 Check(recruits.Count(r => r.female) == 2 && recruits.Select(r => r.role).Distinct().Count() == 4,
@@ -40,9 +48,10 @@ try
     }
     start.BeginRound();
     await Task.Delay(500);
-    Check(recruits.All(r => r.BeatPosition == 0 && Quaternion.Angle(r.transform.localRotation, Quaternion.identity) < .01),
-        "Recruits stand at attention through the countdown");
+    Check(recruits.All(r => r.BeatPosition < 0 && Quaternion.Angle(r.transform.localRotation, Quaternion.identity) < .01),
+        "Recruits march facing forward during the silent countdown");
     while (!start.HasStarted) await Task.Delay(10);
+    await Task.Delay(180); // Let the high-knee idle gait blend into the moving drill gait.
     bool[] lifted = new bool[4], planted = Enumerable.Repeat(true,4).ToArray();
     bool straight = true, shared = true;
     float until = Time.realtimeSinceStartup + 2.5f;
@@ -72,7 +81,7 @@ try
     Check(shared, "Every recruit follows the master beat throughout the march");
     Check(planted.All(v => v), "A supporting boot stays on the platform while the other leg lifts");
     for (int i = 0; i < recruits.Length; i++)
-        Check(Vector3.Distance(roots[i], recruits[i].transform.position) < .00001f, recruits[i].role + " marches in place without drifting off the lane");
+        Check(Vector3.Distance(roots[i], recruits[i].transform.position) < .00001f, recruits[i].role + " animation does not drift when movement speed is zero");
     bool sawLeft = false, sawRight = false;
     until = Time.realtimeSinceStartup + 6;
     while ((!sawLeft || !sawRight) && Time.realtimeSinceStartup < until)
@@ -94,5 +103,10 @@ try
     Check(recruits.All(r => r.BeatPosition == 0 && Quaternion.Angle(r.transform.localRotation,Quaternion.identity) < .01),
         "Cancelled rounds return all recruits to attention");
 }
-finally { start.BeginRound(); }
+finally
+{
+    start.officer.DirectionChanged -= follow;
+    for (int i=0;i<players.Length;i++) if (players[i] != null) { players[i].walkSpeed = speeds[i]; players[i].InputOverride = null; }
+    start.BeginRound();
+}
 return new { checksPassed = checks.Count, checks };

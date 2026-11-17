@@ -12,6 +12,13 @@ namespace LeftRight.Rebuild
         public UnityEvent onBeat = new UnityEvent();
 
         public bool IsPlaying => isActiveAndEnabled && audioOutput != null && audioOutput.MusicHasStarted;
+        public bool IsCountingIn => isActiveAndEnabled && audioOutput != null && audioOutput.music.isPlaying &&
+            audioOutput.MusicStartDspTime > AudioSettings.dspTime;
+        // Negative beats animate the silent lead-in and meet the music at beat zero.
+        // Beat notifications and gameplay penalties still begin with audible music.
+        public double AnimationBeatPosition => IsCountingIn
+            ? (AudioSettings.dspTime - audioOutput.MusicStartDspTime) * BeatsPerMinute / 60.0
+            : BeatPosition;
         public double BeatsPerMinute { get; private set; }
         public double SecondsPerBeat => BeatsPerMinute > 0 ? 60.0 / BeatsPerMinute : 0;
         public double BeatPosition { get; private set; }

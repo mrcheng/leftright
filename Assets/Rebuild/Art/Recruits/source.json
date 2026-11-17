@@ -10,5 +10,6 @@
     "BlueSoldier_Male.blend": "ee9c0780a297c333aab1c59694afc4ad1d13fb0374327287c1ec8425be18337f",
     "Soldier_Female.blend": "da6393f7e3e65f3d7095246191a45ed17643aea2f5bfb3d2599a98a1fc82f0cb",
     "Soldier_Male.blend": "3afb689cbb780e0b6e7cd672862ccf84c6607754d971355f4fad440024ab5fdf"
-  }
+  },
+  "instructor": "Additional Soldier_Male adaptation: black officer uniform and peaked cap, source in RecruitInstructor.blend; same CC0 base, scaled to 125% of standard recruits."
 }
