@@ -23,6 +23,7 @@ try
   Check(feet[i][0].IsChildOf(players[i].march.leftKnee)&&feet[i][1].IsChildOf(players[i].march.rightKnee),players[i].march.role+" feet inherit the lower-leg motion");
  }
  round.BeginRound();
+ while(!round.HasStarted)await Task.Delay(10);
  bool[] leftHigh=new bool[4],rightHigh=new bool[4];
  bool attached=true,grounded=true;
  var mesh=new Mesh();

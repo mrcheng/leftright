@@ -65,10 +65,12 @@ namespace LeftRight.Editor
                 string name = "Recruit" + roles[i];
                 string modelPath = Art + "Models/" + name + ".fbx";
                 var importer = (ModelImporter)AssetImporter.GetAtPath(modelPath);
-                if (importer.animationType != ModelImporterAnimationType.Generic || importer.importAnimation)
+                if (importer.animationType != ModelImporterAnimationType.Generic || importer.importAnimation || !importer.isReadable)
                 {
                     importer.animationType = ModelImporterAnimationType.Generic;
                     importer.importAnimation = false;
+                    // Corpse settling bakes and flattens both the skin and rigid equipment meshes.
+                    importer.isReadable = true;
                     importer.SaveAndReimport();
                 }
                 var recruit = new GameObject(roles[i] + (i == 0 || i == 3 ? " - female" : " - male"));

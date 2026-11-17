@@ -29,7 +29,7 @@ try
         "Left and right input move recruits immediately during the lead-in");
     Check(Vector3.Dot(-players[0].transform.forward,Vector3.right)>.98f && Vector3.Dot(-players[1].transform.forward,Vector3.left)>.98f,
         "Recruits turn toward input before the first officer cue");
-    bool highLeft=false,highRight=false,straight=true,planted=true;
+    bool highLeft=false,highRight=false,straight=true,planted=true,idleStill=true,walkingAnimated=false;
     var mesh=new Mesh();
     try
     {
@@ -38,26 +38,39 @@ try
         {
             await Task.Delay(20);
             var idle=players[2].march;
-            highLeft|=Quaternion.Angle(hipRest[2],idle.leftHip.localRotation)>75 && Quaternion.Angle(kneeRest[2],idle.leftKnee.localRotation)>75;
-            highRight|=Quaternion.Angle(rightRest[2],idle.rightHip.localRotation)>75;
+            idleStill&=Quaternion.Angle(hipRest[2],idle.leftHip.localRotation)<.01f &&
+                Quaternion.Angle(rightRest[2],idle.rightHip.localRotation)<.01f && idle.BeatPosition==0;
             var moving=players[0].march;
             straight&=Quaternion.Angle(hipRest[0],moving.leftHip.localRotation)<=30.1f && Quaternion.Angle(kneeRest[0],moving.leftKnee.localRotation)<=5.1f;
+            walkingAnimated|=Quaternion.Angle(hipRest[0],moving.leftHip.localRotation)>20;
             var skin=idle.GetComponentInChildren<SkinnedMeshRenderer>();skin.BakeMesh(mesh);
             float sole=mesh.vertices.Min(v=>(skin.transform.position+skin.transform.rotation*v).y);
             planted&=sole>.61f && sole<.72f;
         }
     }
     finally { UnityEngine.Object.DestroyImmediate(mesh); }
-    Check(highLeft && highRight,"Idle recruits alternate high knees during the lead-in");
-    Check(straight,"Moving recruits use the straighter military gait");
+    Check(idleStill,"Idle recruits remain still throughout the silent lead-in");
+    Check(straight&&walkingAnimated,"Moving recruits animate the normal walking gait before music starts");
     Check(planted,"High-knee marching keeps a supporting boot on the platform");
     Check(Mathf.Abs(players[2].transform.localPosition.x)<.001f && Mathf.Abs(players[3].transform.localPosition.x)<.001f,
         "Idle high knees do not move recruits away from center");
     Check(course.traps.All(t=>t.MissedBeats==0),"Pre-music marching and movement do not trigger penalties");
+    players[1].InputOverride=0;
+    await Task.Delay(80);
+    Check(Quaternion.Angle(hipRest[1],players[1].march.leftHip.localRotation)<.01f,
+        "Releasing movement before the music returns to standing still");
     while(!round.HasStarted) await Task.Delay(10);
     await Task.Delay(180);
     Check(players.All(p=>Math.Abs(p.march.BeatPosition-round.masterBeat.BeatPosition)<.2),
         "Both gaits join the master music beat at the opening downbeat");
+    float idleUntil=Time.realtimeSinceStartup+1.2f;
+    while(Time.realtimeSinceStartup<idleUntil)
+    {
+        await Task.Delay(20);
+        highLeft|=Quaternion.Angle(hipRest[2],players[2].march.leftHip.localRotation)>75;
+        highRight|=Quaternion.Angle(rightRest[2],players[2].march.rightHip.localRotation)>75;
+    }
+    Check(highLeft&&highRight,"Stationary recruits begin alternating high knees when the music starts");
     players[0].InputOverride=0;
     var held=players[0].transform.position;
     bool returnedHigh=false;

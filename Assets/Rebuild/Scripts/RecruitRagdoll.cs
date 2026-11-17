@@ -9,6 +9,10 @@ namespace LeftRight.Rebuild
     public sealed class RecruitRagdoll : MonoBehaviour
     {
         public bool IsActive => physicsRoot != null;
+        public bool IsSettled { get; private set; }
+        public float settledThickness = .06f;
+        public float fallSeconds = 1.6f;
+        public float flattenSeconds = .4f;
         GameObject physicsRoot;
         readonly List<Transform> bones = new List<Transform>();
         readonly List<Transform> proxies = new List<Transform>();
@@ -16,10 +20,22 @@ namespace LeftRight.Rebuild
         Transform[] skeleton;
         Vector3[] restPositions;
         Quaternion[] restRotations;
+        float age, floorHeight, originalBottom, originalHeight;
+        Renderer[] originalRenderers;
+        bool[] originalVisibility;
+        readonly List<Mesh> settledMeshes = new List<Mesh>();
+        readonly List<Vector3[]> settledVertices = new List<Vector3[]>();
+        readonly List<Vector3[]> settledWorking = new List<Vector3[]>();
+        readonly Dictionary<Renderer, Vector3[]> headTemplates = new Dictionary<Renderer, Vector3[]>();
+        readonly Dictionary<Renderer, bool[]> headVertices = new Dictionary<Renderer, bool[]>();
+        Transform headBone;
 
         public void Activate(bool fromLeft)
         {
             if (IsActive) return;
+            age = 0; IsSettled = false;
+            var player = GetComponent<RecruitController>();
+            floorHeight = player.course.traps[player.playerIndex].transform.position.y + .006f;
             skeleton = GetComponentInChildren<SkinnedMeshRenderer>().bones;
             restPositions = new Vector3[skeleton.Length]; restRotations = new Quaternion[skeleton.Length];
             var named = new Dictionary<string, Transform>();
@@ -28,6 +44,8 @@ namespace LeftRight.Rebuild
                 restPositions[i] = skeleton[i].localPosition; restRotations[i] = skeleton[i].localRotation;
                 named[skeleton[i].name] = skeleton[i];
             }
+            headBone = named["Head"];
+            CaptureHeadPlane();
             physicsRoot = new GameObject(name + " flattened ragdoll physics");
             var bodies = new Dictionary<string, Rigidbody>();
             var colliders = new List<Collider>();
@@ -91,20 +109,134 @@ namespace LeftRight.Rebuild
         void LateUpdate()
         {
             if (!IsActive) return;
+            age += Time.unscaledDeltaTime;
             // Parent parts precede their limbs, so child world poses are applied last.
             for (int i = 0; i < bones.Count; i++)
                 bones[i].SetPositionAndRotation(proxies[i].position, proxies[i].rotation * offsets[i]);
+            if (age >= fallSeconds && settledMeshes.Count == 0) BakeSettledBody();
+            if (settledMeshes.Count > 0 && !IsSettled)
+            {
+                float blend = Mathf.SmoothStep(0, 1, (age - fallSeconds) / Mathf.Max(.01f, flattenSeconds));
+                for (int i = 0; i < settledMeshes.Count; i++)
+                {
+                    for (int v = 0; v < settledVertices[i].Length; v++)
+                    {
+                        var position = settledVertices[i][v];
+                        float layer = (position.y - originalBottom) / originalHeight;
+                        position.y = Mathf.Lerp(position.y, floorHeight + layer * settledThickness, blend);
+                        settledWorking[i][v] = position;
+                    }
+                    settledMeshes[i].vertices = settledWorking[i];
+                    settledMeshes[i].RecalculateNormals(); settledMeshes[i].RecalculateBounds();
+                }
+                IsSettled = blend >= 1;
+            }
+        }
+
+        void BakeSettledBody()
+        {
+            // Physics gives the fall its loose pose, then the cartoon crush must win over
+            // capsule thickness: otherwise boots, heads and rifles can stand upright again.
+            // Bake every visible part into one common world-height band, preserving colors
+            // and the fallen silhouette while giving the whole corpse paper-like thickness.
+            foreach (var body in physicsRoot.GetComponentsInChildren<Rigidbody>())
+            {
+                body.linearVelocity = Vector3.zero; body.angularVelocity = Vector3.zero;
+                body.isKinematic = true;
+            }
+            originalRenderers = GetComponentsInChildren<Renderer>();
+            originalVisibility = new bool[originalRenderers.Length];
+            originalBottom = float.MaxValue; float top = float.MinValue;
+            for (int i = 0; i < originalRenderers.Length; i++)
+            {
+                var renderer = originalRenderers[i]; originalVisibility[i] = renderer.enabled;
+                if (!renderer.enabled) continue;
+                Mesh mesh;
+                bool skinned = renderer is SkinnedMeshRenderer;
+                if (skinned)
+                {
+                    mesh = new Mesh(); ((SkinnedMeshRenderer)renderer).BakeMesh(mesh);
+                }
+                else
+                {
+                    var filter = renderer.GetComponent<MeshFilter>();
+                    if (filter == null || filter.sharedMesh == null) continue;
+                    mesh = Instantiate(filter.sharedMesh);
+                }
+                mesh.name = renderer.name + " flattened corpse";
+                var vertices = mesh.vertices;
+                for (int v = 0; v < vertices.Length; v++)
+                {
+                    // BakeMesh already includes imported renderer scale; static FBX vertices do not.
+                    vertices[v] = skinned ? renderer.transform.position + renderer.transform.rotation * vertices[v]
+                        : renderer.transform.TransformPoint(vertices[v]);
+                    // Use the squeezed head's face-up plane, not the tumbling proxy's
+                    // sideways plane. The original compression becomes vertical thickness
+                    // on the planks, instead of squeezing the face across the wrong axis.
+                    if (headTemplates.TryGetValue(renderer, out var template) && headVertices[renderer][v])
+                        vertices[v] = headBone.position + template[v];
+                    originalBottom = Mathf.Min(originalBottom, vertices[v].y); top = Mathf.Max(top, vertices[v].y);
+                }
+                mesh.vertices = vertices;
+                var part = new GameObject(renderer.name + " settled flat");
+                part.transform.SetParent(physicsRoot.transform, false);
+                part.AddComponent<MeshFilter>().sharedMesh = mesh;
+                part.AddComponent<MeshRenderer>().sharedMaterials = renderer.sharedMaterials;
+                settledMeshes.Add(mesh); settledVertices.Add(vertices); settledWorking.Add(new Vector3[vertices.Length]);
+                renderer.enabled = false;
+            }
+            originalHeight = Mathf.Max(.001f, top - originalBottom);
+        }
+
+        void CaptureHeadPlane()
+        {
+            Quaternion layFaceUp = Quaternion.FromToRotation(-transform.forward, Vector3.up);
+            foreach (var renderer in GetComponentsInChildren<Renderer>())
+            {
+                Mesh mesh; bool temporary = renderer is SkinnedMeshRenderer;
+                if (temporary) { mesh = new Mesh(); ((SkinnedMeshRenderer)renderer).BakeMesh(mesh); }
+                else
+                {
+                    var filter = renderer.GetComponent<MeshFilter>();
+                    if (filter == null || filter.sharedMesh == null) continue;
+                    mesh = filter.sharedMesh;
+                }
+                var vertices = mesh.vertices;
+                var template = new Vector3[vertices.Length]; var mask = new bool[vertices.Length];
+                BoneWeight[] weights = temporary ? ((SkinnedMeshRenderer)renderer).sharedMesh.boneWeights : null;
+                Transform[] skinBones = temporary ? ((SkinnedMeshRenderer)renderer).bones : null;
+                for (int v = 0; v < vertices.Length; v++)
+                {
+                    mask[v] = temporary ? skinBones[weights[v].boneIndex0] == headBone : renderer.transform.IsChildOf(headBone);
+                    Vector3 world = temporary ? renderer.transform.position + renderer.transform.rotation * vertices[v]
+                        : renderer.transform.TransformPoint(vertices[v]);
+                    template[v] = layFaceUp * (world - headBone.position);
+                }
+                headTemplates[renderer] = template; headVertices[renderer] = mask;
+                if (temporary) Destroy(mesh);
+            }
         }
 
         public void ResetRagdoll()
         {
             if (!IsActive) return;
             physicsRoot.SetActive(false); Destroy(physicsRoot); physicsRoot = null;
+            if (originalRenderers != null)
+                for (int i = 0; i < originalRenderers.Length; i++)
+                    if (originalRenderers[i] != null) originalRenderers[i].enabled = originalVisibility[i];
+            ClearSettledMeshes(); IsSettled = false;
             for (int i = 0; i < skeleton.Length; i++)
                 skeleton[i].SetLocalPositionAndRotation(restPositions[i], restRotations[i]);
             bones.Clear(); proxies.Clear(); offsets.Clear();
         }
 
-        void OnDestroy() { if (physicsRoot != null) Destroy(physicsRoot); }
+        void ClearSettledMeshes()
+        {
+            foreach (var mesh in settledMeshes) if (mesh != null) Destroy(mesh);
+            settledMeshes.Clear(); settledVertices.Clear(); settledWorking.Clear();
+            headTemplates.Clear(); headVertices.Clear();
+        }
+
+        void OnDestroy() { ClearSettledMeshes(); if (physicsRoot != null) Destroy(physicsRoot); }
     }
 }

@@ -48,8 +48,8 @@ try
     }
     start.BeginRound();
     await Task.Delay(500);
-    Check(recruits.All(r => r.BeatPosition < 0 && Quaternion.Angle(r.transform.localRotation, Quaternion.identity) < .01),
-        "Recruits march facing forward during the silent countdown");
+    Check(recruits.All(r => r.BeatPosition == 0 && Quaternion.Angle(r.transform.localRotation, Quaternion.identity) < .01),
+        "Idle recruits stand still during the silent countdown");
     while (!start.HasStarted) await Task.Delay(10);
     await Task.Delay(180); // Let the high-knee idle gait blend into the moving drill gait.
     bool[] lifted = new bool[4], planted = Enumerable.Repeat(true,4).ToArray();

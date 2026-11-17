@@ -93,16 +93,5 @@ namespace LeftRight.Rebuild
             round.audioOutput.StopPlayback();
         }
 
-        void OnGUI()
-        {
-            var style = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 16 };
-            GUI.Label(new Rect(0, Screen.height - 34, Screen.width, 28),
-                "Move: A / D", style);
-            if (IsGameOver)
-            {
-                style.fontSize = 30;
-                GUI.Label(new Rect(0, Screen.height * .4f, Screen.width, 100), "Game over\nEnter to restart", style);
-            }
-        }
     }
 }

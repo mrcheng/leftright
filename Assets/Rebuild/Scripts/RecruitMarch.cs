@@ -60,9 +60,17 @@ namespace LeftRight.Rebuild
                 if (directions != null && !directions.IsRunning) ResetMarch();
                 return;
             }
+            // Silent lead-in permits player-controlled walking, but idle drill starts
+            // only with audible music. Releasing input before that returns to attention.
+            if (masterBeat.IsCountingIn && (player == null || !player.IsMoving))
+            {
+                ResetMarch();
+                return;
+            }
             BeatPosition = masterBeat.AnimationBeatPosition;
             bool inPlace = player == null || !player.IsMoving;
-            inPlaceBlend = Mathf.MoveTowards(inPlaceBlend, inPlace ? 1 : 0, Time.unscaledDeltaTime / .12f);
+            inPlaceBlend = masterBeat.IsCountingIn ? 0 :
+                Mathf.MoveTowards(inPlaceBlend, inPlace ? 1 : 0, Time.unscaledDeltaTime / .12f);
             float bend = Mathf.Lerp(kneeBendDegrees, inPlaceKneeBendDegrees, inPlaceBlend);
             float stride = (float)Math.Sin(BeatPosition * Math.PI);
             float left = Mathf.Max(0, stride), right = Mathf.Max(0, -stride);

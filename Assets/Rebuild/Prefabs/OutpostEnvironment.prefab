@@ -3655,6 +3655,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e000fca888b0fe945a2593a82d0a540f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
+  settledThickness: 0.06
+  fallSeconds: 1.6
+  flattenSeconds: 0.4
 --- !u!1 &2538402470439436682
 GameObject:
   m_ObjectHideFlags: 0
@@ -10672,6 +10675,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e000fca888b0fe945a2593a82d0a540f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
+  settledThickness: 0.06
+  fallSeconds: 1.6
+  flattenSeconds: 0.4
 --- !u!1 &6389602884641725751
 GameObject:
   m_ObjectHideFlags: 0
@@ -10904,6 +10910,7 @@ GameObject:
   - component: {fileID: 226349629807214999}
   - component: {fileID: 990741086452730322}
   - component: {fileID: 5352378083007867055}
+  - component: {fileID: 5762068223470358062}
   m_Layer: 0
   m_Name: OutpostEnvironment
   m_TagString: Untagged
@@ -11030,6 +11037,23 @@ MonoBehaviour:
   splatterMaterial: {fileID: 2100000, guid: 14284a2eb5c6e9d44ad11c3da8854e71, type: 2}
   lifetimeSeconds: 11
   splatSize: 0.1
+--- !u!114 &5762068223470358062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6663512733640326206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b4422849492a84888ddf656a167ce1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.GameViewSettings
+  course: {fileID: 990741086452730322}
+  gameCamera: {fileID: 2350197880109829823}
+  followSmoothSeconds: 0.85
+  onlineDistance: 10
+  onlineFieldOfView: 52
 --- !u!1 &6664416983528790334
 GameObject:
   m_ObjectHideFlags: 0
@@ -13273,6 +13297,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e000fca888b0fe945a2593a82d0a540f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
+  settledThickness: 0.06
+  fallSeconds: 1.6
+  flattenSeconds: 0.4
 --- !u!1 &7834705374476359181
 GameObject:
   m_ObjectHideFlags: 0
@@ -14336,6 +14363,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e000fca888b0fe945a2593a82d0a540f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
+  settledThickness: 0.06
+  fallSeconds: 1.6
+  flattenSeconds: 0.4
 --- !u!1 &8379380904712704064
 GameObject:
   m_ObjectHideFlags: 0

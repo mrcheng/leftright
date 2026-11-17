@@ -36,8 +36,15 @@ try
  Check(trap.HasReturned,"Spikes retract while the ragdoll remains behind");
  Check(player.transform.Find("Model orientation").localScale.z<.5f,"Corpse retains its squeezed proportions");
  Check(!player.IsMoving&&!player.march.enabled,"Death physics cannot restore movement or marching");
+ Check(player.ragdoll.IsSettled,"Limp fall settles into the final flattened corpse");
+ var flatParts=UnityEngine.Object.FindObjectsByType<MeshRenderer>()
+    .Where(r=>r.transform.root.name.Contains("flattened ragdoll physics")).ToArray();
+ float bottom=flatParts.Min(r=>r.bounds.min.y),top=flatParts.Max(r=>r.bounds.max.y);
+ Check(flatParts.Length>1&&top-bottom<=.061f,"Whole corpse including boots and equipment fits one six-centimetre layer");
+ Check(Mathf.Abs(bottom-trap.transform.position.y-.006f)<.002f,"Paper-like corpse lies against the walkway surface");
  round.BeginRound();await Task.Delay(80);
  Check(!player.ragdoll.IsActive&&!player.IsEliminated&&player.march.enabled,"Restart restores normal animation and disables death physics");
+ Check(skin.enabled,"Restart restores the original skinned renderer after the settled corpse is removed");
  Check(UnityEngine.Object.FindObjectsByType<Rigidbody>().All(b=>!b.transform.root.name.Contains("flattened ragdoll physics")),"Restart removes every physics proxy");
  Check(UnityEngine.Object.FindObjectsByType<BloodSplash>().Length==0,"Restart removes both first-hit and final-squeeze blood");
 }
