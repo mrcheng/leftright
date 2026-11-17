@@ -12,6 +12,8 @@ namespace LeftRight.Rebuild
         public float reactionBeats = .5f;
         public bool IsGameOver { get; private set; }
         public int AliveCount { get; private set; }
+        public RecruitController Winner { get; private set; }
+        public event System.Action<RecruitController> Completed;
         long pendingBeat = -1;
         double cueBeat;
         double animationTime;
@@ -41,6 +43,7 @@ namespace LeftRight.Rebuild
         {
             pendingBeat = -1;
             IsGameOver = false;
+            Winner = null;
             AliveCount = players.Length;
             foreach (var player in players) player.ResetPlayer();
             foreach (var trap in traps) trap.ResetTrap();
@@ -90,12 +93,24 @@ namespace LeftRight.Rebuild
                 if (!players[i].IsEliminated)
                 {
                     traps[i].ResolveContact(players[i]);
-                    if (players[i].IsEliminated) AliveCount--;
                 }
-            if (AliveCount > 0) return;
+            AliveCount = 0;
+            foreach (var player in players) if (!player.IsEliminated) AliveCount++;
+            // Resolve after every lane, so simultaneous final deaths produce a draw.
+            // A single-recruit test round must still allow that recruit to play normally.
+            if (AliveCount > 1 || (AliveCount == 1 && players.Length == 1)) return;
+            Winner = null;
+            foreach (var player in players) if (!player.IsEliminated) Winner = player;
             IsGameOver = true;
             round.officer.StopDirections();
             round.audioOutput.StopPlayback();
+            if (Winner != null)
+            {
+                Winner.StopForVictory();
+                for (int i = 0; i < players.Length; i++)
+                    if (players[i] == Winner) traps[i].RetractForVictory();
+            }
+            Completed?.Invoke(Winner);
         }
 
     }

@@ -3656,8 +3656,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
   settledThickness: 0.06
-  fallSeconds: 1.6
-  flattenSeconds: 0.4
+  fallSpeed: 1
 --- !u!1 &2538402470439436682
 GameObject:
   m_ObjectHideFlags: 0
@@ -6698,7 +6697,6 @@ MonoBehaviour:
   finalGap: 0.25
   pillarThickness: 0.3
   bloodMaterial: {fileID: 2100000, guid: 4c40bd68df9632847b8b8a3d130d0ae0, type: 2}
-  squeezeHoldSeconds: 0.35
   returnSeconds: 1.2
 --- !u!1 &4420746659350640934
 GameObject:
@@ -8932,7 +8930,6 @@ MonoBehaviour:
   finalGap: 0.25
   pillarThickness: 0.3
   bloodMaterial: {fileID: 2100000, guid: 4c40bd68df9632847b8b8a3d130d0ae0, type: 2}
-  squeezeHoldSeconds: 0.35
   returnSeconds: 1.2
 --- !u!1 &5722150183747251752
 GameObject:
@@ -10043,7 +10040,6 @@ MonoBehaviour:
   finalGap: 0.25
   pillarThickness: 0.3
   bloodMaterial: {fileID: 2100000, guid: 4c40bd68df9632847b8b8a3d130d0ae0, type: 2}
-  squeezeHoldSeconds: 0.35
   returnSeconds: 1.2
 --- !u!1 &6189781931565374855
 GameObject:
@@ -10676,8 +10672,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
   settledThickness: 0.06
-  fallSeconds: 1.6
-  flattenSeconds: 0.4
+  fallSpeed: 1
 --- !u!1 &6389602884641725751
 GameObject:
   m_ObjectHideFlags: 0
@@ -10911,6 +10906,7 @@ GameObject:
   - component: {fileID: 990741086452730322}
   - component: {fileID: 5352378083007867055}
   - component: {fileID: 5762068223470358062}
+  - component: {fileID: 9172920809540155542}
   m_Layer: 0
   m_Name: OutpostEnvironment
   m_TagString: Untagged
@@ -11054,6 +11050,24 @@ MonoBehaviour:
   followSmoothSeconds: 0.85
   onlineDistance: 10
   onlineFieldOfView: 52
+--- !u!114 &9172920809540155542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6663512733640326206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ddc3b1f1607ce24b815ac52a800d6a4, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.VictoryDirector
+  course: {fileID: 990741086452730322}
+  view: {fileID: 5762068223470358062}
+  gameCamera: {fileID: 2350197880109829823}
+  victoryDelaySeconds: 1
+  sequences:
+  - {fileID: 11400000, guid: b0bc1ef88ac892c43b749caf5a15c013, type: 2}
 --- !u!1 &6664416983528790334
 GameObject:
   m_ObjectHideFlags: 0
@@ -13298,8 +13312,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
   settledThickness: 0.06
-  fallSeconds: 1.6
-  flattenSeconds: 0.4
+  fallSpeed: 1
 --- !u!1 &7834705374476359181
 GameObject:
   m_ObjectHideFlags: 0
@@ -14364,8 +14377,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
   settledThickness: 0.06
-  fallSeconds: 1.6
-  flattenSeconds: 0.4
+  fallSpeed: 1
 --- !u!1 &8379380904712704064
 GameObject:
   m_ObjectHideFlags: 0
@@ -14941,7 +14953,6 @@ MonoBehaviour:
   finalGap: 0.25
   pillarThickness: 0.3
   bloodMaterial: {fileID: 2100000, guid: 4c40bd68df9632847b8b8a3d130d0ae0, type: 2}
-  squeezeHoldSeconds: 0.35
   returnSeconds: 1.2
 --- !u!1 &8719601071612190633
 GameObject:

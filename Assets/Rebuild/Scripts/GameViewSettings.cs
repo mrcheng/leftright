@@ -16,6 +16,7 @@ namespace LeftRight.Rebuild
         public float onlineFieldOfView = 52f;
         public GameViewMode Mode { get; private set; }
         public bool SettingsOpen { get; private set; }
+        public bool CinematicActive { get; set; }
         Vector3 widePosition, velocity;
         Quaternion wideRotation;
         float wideFieldOfView, fieldVelocity;
@@ -50,6 +51,7 @@ namespace LeftRight.Rebuild
 
         void LateUpdate()
         {
+            if (CinematicActive) return;
             var player = LocalPlayer;
             bool close = Mode == GameViewMode.Online && player != null &&
                 (course.round.IsCountingDown || course.round.HasStarted);

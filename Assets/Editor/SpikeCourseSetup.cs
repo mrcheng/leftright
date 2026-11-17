@@ -111,6 +111,7 @@ namespace LeftRight.Editor
             HealthPowerupSetup.AddTo(environment);
             LensSplatterSetup.AddTo(environment);
             GameViewSetup.AddTo(environment);
+            VictorySetup.AddTo(environment);
         }
     }
 }

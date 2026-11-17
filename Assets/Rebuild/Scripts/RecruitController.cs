@@ -175,6 +175,16 @@ namespace LeftRight.Rebuild
             releasedAfterSqueeze = true;
         }
 
+        public void StopForVictory()
+        {
+            Horizontal = 0;
+            pinnedBank = null; squeezeLeft = squeezeRight = null;
+            Quaternion facing = transform.rotation;
+            march.enabled = false;
+            march.ResetMarch();
+            transform.rotation = facing;
+        }
+
         public void ReleaseAfterSqueeze(float laneSurfaceY)
         {
             if (!IsEliminated) return;

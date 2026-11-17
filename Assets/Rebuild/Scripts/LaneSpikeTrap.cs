@@ -28,6 +28,7 @@ namespace LeftRight.Rebuild
         Vector3 leftOpen, rightOpen;
         float travel;
         RecruitController victim;
+        bool victoryReturn;
         BloodSplash blood;
         BloodSplash firstHitBlood;
 
@@ -46,6 +47,7 @@ namespace LeftRight.Rebuild
             PendingRecoverySteps = 0;
             lastRecoveryBeat = long.MinValue;
             victim = null; HasFinishedSqueeze = HasReturned = false;
+            victoryReturn = false;
             if (blood != null) { blood.gameObject.SetActive(false); Destroy(blood.gameObject); blood = null; }
             if (firstHitBlood != null) { firstHitBlood.gameObject.SetActive(false); Destroy(firstHitBlood.gameObject); firstHitBlood = null; }
             ApplyPose();
@@ -59,6 +61,12 @@ namespace LeftRight.Rebuild
         }
 
         public void FinishSqueeze() => TargetTravel = MaximumTravel;
+
+        public void RetractForVictory()
+        {
+            // Only the survivor's lane uses this; dead lanes finish their normal crush.
+            victoryReturn = true; TargetTravel = 0; PendingRecoverySteps = 0;
+        }
 
         public float RecoverBeats(int beats)
         {
@@ -88,7 +96,7 @@ namespace LeftRight.Rebuild
 
         public void Animate(float deltaTime)
         {
-            float speed = HasFinishedSqueeze && TargetTravel == 0
+            float speed = (HasFinishedSqueeze || victoryReturn) && TargetTravel == 0
                 ? MaximumTravel / Mathf.Max(.01f, returnSeconds) : inwardPerMiss / Mathf.Max(.01f, slideSeconds);
             travel = Mathf.MoveTowards(travel, TargetTravel, speed * deltaTime);
             ApplyPose();
@@ -104,7 +112,7 @@ namespace LeftRight.Rebuild
                 TargetTravel = 0;
                 victim.ReleaseAfterSqueeze(transform.position.y);
             }
-            if (HasFinishedSqueeze && !HasReturned && TargetTravel == 0 && travel == 0)
+            if ((HasFinishedSqueeze || victoryReturn) && !HasReturned && TargetTravel == 0 && travel == 0)
             {
                 HasReturned = true;
             }
