@@ -7,6 +7,7 @@ namespace LeftRight.Rebuild
         public OutpostAudio audioOutput;
         public OfficerDirections officer;
         public OfficerMarch march;
+        public MasterBeat masterBeat;
         public float leadInSeconds = 3f;
         public bool playOnStart = true;
         public bool HasStarted { get; private set; }
@@ -31,6 +32,7 @@ namespace LeftRight.Rebuild
             IsCountingDown = false;
             HasStarted = false;
             audioOutput.StopPlayback();
+            if (masterBeat != null) masterBeat.ResetClock();
             officer.ResetDirections();
             march.ResetMarch();
         }

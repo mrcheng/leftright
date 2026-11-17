@@ -7,6 +7,7 @@ namespace LeftRight.Rebuild
     {
         public OfficerDirections directions;
         public OutpostAudio audioOutput;
+        public MasterBeat masterBeat;
         public Transform body;
         public Transform leftHip;
         public Transform rightHip;
@@ -37,14 +38,9 @@ namespace LeftRight.Rebuild
         void LateUpdate()
         {
             var music = audioOutput.music;
-            if (music.clip == null || !audioOutput.MusicHasStarted) return;
+            if (masterBeat == null || !masterBeat.IsPlaying) return;
             var timing = audioOutput.palette;
-            bool round = music.clip == timing.roundMusic;
-            double bpm = round ? timing.roundBeatsPerMinute : timing.titleBeatsPerMinute;
-            double firstBeat = round ? timing.roundFirstBeatSeconds : timing.titleFirstBeatSeconds;
-            // The decoded sample clock follows pause, seeking, pitch, and track changes.
-            double seconds = (double)music.timeSamples / music.clip.frequency;
-            BeatPosition = (seconds - firstBeat) * bpm / 60.0;
+            BeatPosition = masterBeat.BeatPosition;
             long beat = (long)Math.Floor(BeatPosition);
             if (previousClip != music.clip)
             {

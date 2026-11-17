@@ -1,0 +1,140 @@
+{
+  "Recruit_Rifle_Skin": [
+    0.66,
+    0.43,
+    0.26,
+    1
+  ],
+  "Recruit_Eyes": [
+    0.88,
+    0.88,
+    0.76,
+    1
+  ],
+  "Recruit_Rifle_Hair": [
+    0.2,
+    0.07,
+    0.025,
+    1
+  ],
+  "Recruit_Rifle_Uniform": [
+    0.23,
+    0.31,
+    0.17,
+    1
+  ],
+  "Recruit_Rifle_Trousers": [
+    0.161,
+    0.217,
+    0.119,
+    1
+  ],
+  "Recruit_Leather": [
+    0.065,
+    0.057,
+    0.043,
+    1
+  ],
+  "Recruit_Gunmetal": [
+    0.085,
+    0.11,
+    0.105,
+    1
+  ],
+  "Recruit_Stock": [
+    0.27,
+    0.14,
+    0.065,
+    1
+  ],
+  "Recruit_Webbing": [
+    0.34,
+    0.32,
+    0.21,
+    1
+  ],
+  "Recruit_Dressing": [
+    0.78,
+    0.76,
+    0.6,
+    1
+  ],
+  "Recruit_MedicMark": [
+    0.43,
+    0.075,
+    0.055,
+    1
+  ],
+  "Recruit_Sniper_Skin": [
+    0.43,
+    0.29,
+    0.18,
+    1
+  ],
+  "Recruit_Sniper_Hair": [
+    0.055,
+    0.035,
+    0.025,
+    1
+  ],
+  "Recruit_Sniper_Uniform": [
+    0.16,
+    0.24,
+    0.29,
+    1
+  ],
+  "Recruit_Sniper_Trousers": [
+    0.11199999999999999,
+    0.16799999999999998,
+    0.20299999999999999,
+    1
+  ],
+  "Recruit_Mortar_Skin": [
+    0.72,
+    0.53,
+    0.34,
+    1
+  ],
+  "Recruit_Mortar_Hair": [
+    0.1,
+    0.065,
+    0.025,
+    1
+  ],
+  "Recruit_Mortar_Uniform": [
+    0.43,
+    0.36,
+    0.16,
+    1
+  ],
+  "Recruit_Mortar_Trousers": [
+    0.301,
+    0.252,
+    0.11199999999999999,
+    1
+  ],
+  "Recruit_Medic_Skin": [
+    0.78,
+    0.59,
+    0.43,
+    1
+  ],
+  "Recruit_Medic_Hair": [
+    0.065,
+    0.045,
+    0.03,
+    1
+  ],
+  "Recruit_Medic_Uniform": [
+    0.37,
+    0.15,
+    0.135,
+    1
+  ],
+  "Recruit_Medic_Trousers": [
+    0.259,
+    0.105,
+    0.0945,
+    1
+  ]
+}

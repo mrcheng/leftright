@@ -9,6 +9,7 @@ namespace LeftRight.Rebuild
         public AudioSource voice;
         public AudioSource effects;
         public double MusicStartDspTime { get; private set; }
+        public int PlaybackVersion { get; private set; }
         public bool MusicHasStarted => music.isPlaying && AudioSettings.dspTime >= MusicStartDspTime;
 
         void Start()
@@ -23,6 +24,7 @@ namespace LeftRight.Rebuild
         public void PlayRoundMusic() => PlayMusic(palette.roundMusic);
         public void ScheduleTitleOnFirstBeat(double dspTime)
         {
+            PlaybackVersion++;
             music.Stop();
             music.clip = palette.titleMusic;
             music.loop = true;
@@ -33,6 +35,7 @@ namespace LeftRight.Rebuild
 
         public void StopPlayback()
         {
+            PlaybackVersion++;
             music.Stop();
             voice.Stop();
             effects.Stop();
@@ -56,6 +59,7 @@ namespace LeftRight.Rebuild
         void PlayMusic(AudioClip clip)
         {
             if (music.clip == clip && music.isPlaying) return;
+            PlaybackVersion++;
             music.Stop();
             MusicStartDspTime = 0;
             music.clip = clip;

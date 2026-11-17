@@ -33,6 +33,9 @@ namespace LeftRight.Editor
             start.audioOutput = environment.GetComponentInChildren<OutpostAudio>();
             start.officer = environment.GetComponentInChildren<OfficerDirections>();
             start.march = environment.GetComponentInChildren<OfficerMarch>();
+            start.masterBeat = environment.GetComponent<MasterBeat>() ?? environment.AddComponent<MasterBeat>();
+            start.masterBeat.audioOutput = start.audioOutput;
+            start.march.masterBeat = start.masterBeat;
             start.officer.playOnStart = false;
             start.leadInSeconds = 3f;
         }

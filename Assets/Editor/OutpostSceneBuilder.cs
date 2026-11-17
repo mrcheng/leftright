@@ -131,6 +131,7 @@ namespace LeftRight.Editor
             TowerFloodlights.AddTo(root.gameObject);
             StreetlightLighting.AddTo(root.gameObject);
             RoundStartSetup.AddTo(root.gameObject);
+            RecruitRig.AddTo(root.gameObject);
             PrefabUtility.SaveAsPrefabAssetAndConnect(root.gameObject,
                 "Assets/Rebuild/Prefabs/OutpostEnvironment.prefab", InteractionMode.AutomatedAction);
             EditorSceneManager.MarkSceneDirty(scene);

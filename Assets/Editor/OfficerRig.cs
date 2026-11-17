@@ -68,6 +68,7 @@ namespace LeftRight.Editor
             directions.audioOutput = audio;
             march.directions = directions;
             march.audioOutput = audio;
+            march.masterBeat = audio != null ? audio.GetComponentInParent<MasterBeat>() : null;
             march.body = body;
             Transform Joint(string name, Transform parent, Vector3 position)
             {
