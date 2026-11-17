@@ -84,8 +84,11 @@ public class GameManager : MonoBehaviour {
         StartMenuMusic.Play();
         userNameInput.text = PlayerPrefs.GetString("UserName");
         HighScore.text = "Highscore: " + PlayerPrefs.GetFloat("HighScore") + (" ") + PlayerPrefs.GetString("UserName"); // Hmmmmm
-        txt_numberOfPlayers.text = ("" + numberOfPlayerSlider.value);
-        numberOfPlayerSlider.value = PlayerPrefs.GetFloat("NumberOfPlayers", numberOfPlayerSlider.value);
+        numberOfPlayerSlider.minValue = 1;
+        numberOfPlayerSlider.maxValue = Mathf.Min(PlayerTemplates.Length, Lanes.Length);
+        numberOfPlayerSlider.wholeNumbers = true;
+        numberOfPlayerSlider.SetValueWithoutNotify(PlayerPrefs.GetFloat("NumberOfPlayers", numberOfPlayerSlider.value));
+        SetNumbersOfPlayers();
         audioLevel.value = PlayerPrefs.GetFloat("AudioLevel", audioLevel.value);
         AudioListener.volume = audioLevel.value;
 	}
@@ -134,8 +137,11 @@ public class GameManager : MonoBehaviour {
     // From 'numbers of players' slider in settings window
     public void SetNumbersOfPlayers()
     {
-        txt_numberOfPlayers.text = ("" + numberOfPlayerSlider.value);
-        PlayerPrefs.SetFloat("NumberOfPlayers", numberOfPlayerSlider.value);
+        int count = SelectedPlayerCount;
+        numberOfPlayerSlider.SetValueWithoutNotify(count);
+        txt_numberOfPlayers.text = count.ToString();
+        PlayerPrefs.SetFloat("NumberOfPlayers", count);
+        if (_activePlayers == null) ApplyPlayerCount(count);
     }
 
     public void SetAudioLevel()
@@ -182,27 +188,34 @@ public class GameManager : MonoBehaviour {
         txt_TimePlayed.text = "Time played: " + System.Math.Round(_timePlayed, 2);
     }
 
+    GameObject[] PlayerTemplates => new[] { lucy, mary, oxy, tjack };
+
+    int SelectedPlayerCount => Mathf.Clamp(Mathf.RoundToInt(numberOfPlayerSlider.value),
+        1, Mathf.Min(PlayerTemplates.Length, Lanes.Length));
+
+    void ApplyPlayerCount(int count)
+    {
+        for (int i = 0; i < Lanes.Length; i++)
+        {
+            bool participating = i < count;
+            Lanes[i].gameObject.SetActive(participating);
+        }
+    }
+
     void SpawnPlayers()
     {
-        var lucyInstance = (GameObject)Instantiate(lucy, Lanes[0].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
-        lucyInstance.GetComponent<PlayerController>().PlayerIndex = 0;
-
-        var maryInstance = (GameObject)Instantiate(mary, Lanes[1].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
-        maryInstance.GetComponent<PlayerController>().PlayerIndex = 1;
-
-        var oxyInstance = (GameObject)Instantiate(oxy, Lanes[2].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
-        oxyInstance.GetComponent<PlayerController>().PlayerIndex = 2;
-
-        var tjackInstance = (GameObject)Instantiate(tjack, Lanes[3].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
-        tjackInstance.GetComponent<PlayerController>().PlayerIndex = 3;
-        
-        _activePlayers = new List<PlayerManager>
+        int count = SelectedPlayerCount;
+        ApplyPlayerCount(count);
+        var templates = PlayerTemplates;
+        _activePlayers = new List<PlayerManager>(count);
+        for (int i = 0; i < count; i++)
         {
-            lucyInstance.GetComponent<PlayerManager>(),
-            maryInstance.GetComponent<PlayerManager>(),
-            oxyInstance.GetComponent<PlayerManager>(),
-            tjackInstance.GetComponent<PlayerManager>()
-        };
+            var instance = Instantiate(templates[i], Lanes[i].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
+            instance.GetComponent<PlayerController>().PlayerIndex = i;
+            var player = instance.GetComponent<PlayerManager>();
+            player.Lane = Lanes[i];
+            _activePlayers.Add(player);
+        }
     }
 
     IEnumerator SpawnHealthPickup()
@@ -210,7 +223,8 @@ public class GameManager : MonoBehaviour {
         while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(1, 10));
-            var lane = Lanes[Random.Range(0, Lanes.Length)];
+            if (!_gameIsRunning || _activePlayers.Count == 0) yield break;
+            var lane = _activePlayers[Random.Range(0, _activePlayers.Count)].Lane;
             Instantiate(healthPickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
         }
     }
@@ -220,7 +234,8 @@ public class GameManager : MonoBehaviour {
         while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(5, 10));
-            var lane = Lanes[Random.Range(0, Lanes.Length)];
+            if (!_gameIsRunning || _activePlayers.Count == 0) yield break;
+            var lane = _activePlayers[Random.Range(0, _activePlayers.Count)].Lane;
             Instantiate(freezePickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
         }
     }
@@ -230,7 +245,8 @@ public class GameManager : MonoBehaviour {
         while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(6, 10));
-            var lane = Lanes[Random.Range(0, Lanes.Length)];
+            if (!_gameIsRunning || _activePlayers.Count == 0) yield break;
+            var lane = _activePlayers[Random.Range(0, _activePlayers.Count)].Lane;
             Instantiate(speedPickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
         }
     }
@@ -240,7 +256,8 @@ public class GameManager : MonoBehaviour {
         while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(6, 12));
-            var lane = Lanes[Random.Range(0, Lanes.Length)];
+            if (!_gameIsRunning || _activePlayers.Count == 0) yield break;
+            var lane = _activePlayers[Random.Range(0, _activePlayers.Count)].Lane;
             Instantiate(damagePickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
         }
     }
@@ -250,16 +267,15 @@ public class GameManager : MonoBehaviour {
         while (_gameIsRunning)
         {
             yield return new WaitForSeconds(Random.Range(6, 12));
-            var lane = Lanes[Random.Range(0, Lanes.Length)];
+            if (!_gameIsRunning || _activePlayers.Count == 0) yield break;
+            var lane = _activePlayers[Random.Range(0, _activePlayers.Count)].Lane;
             Instantiate(dizzyPickup, lane.transform.position + new Vector3(Random.Range(-9, 9), 0.5f), Quaternion.identity);
         }
     }
 
     public void PlayerDied(PlayerManager player)
     {
-        // Prints #place of player when dead
-		player.LifeText.text += " #" + _activePlayers.Count.ToString();
-        txt_commentator.text = player.PlayerName + " died!";
+        txt_commentator.text = player.PlayerName + " died! #" + _activePlayers.Count;
         _activePlayers.Remove(player);
         if (_activePlayers.Count == 0)
             GameOver(player);

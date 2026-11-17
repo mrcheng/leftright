@@ -1,18 +1,13 @@
 using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
 
 public class PlayerManager : MonoBehaviour
 {
     public DirectionController Nazi;
     public LaneController Lane;
 
-    // Master health bars
-    public Transform HealthBar;
-
     // Texts
-    public Text LifeText;
-    public Text txt_commentator;
+    public UnityEngine.UI.Text txt_commentator;
     public string PlayerName;
 
     // Sets the player color for game over text
@@ -23,7 +18,8 @@ public class PlayerManager : MonoBehaviour
     public float HealthInSeconds = 10f;
 
     PlayerController _playerController;
-    HealthBar _healthBar;
+    Collider _playerCollider;
+    float _fallDeathHeight;
     float _health;
 
     public float Health
@@ -33,18 +29,16 @@ public class PlayerManager : MonoBehaviour
     bool _takingDamage;
     bool _isDead;
 
-    Vector3 _healthBarOriginalScale;
-
     void Awake()
     {
         _playerController = GetComponentInChildren<PlayerController>();
-        _healthBar = GetComponentInChildren<HealthBar>();
         _health = 1f;
     }
 
     void Start()
     {
-        _healthBarOriginalScale = HealthBar.localScale;
+        _playerCollider = _playerController.GetComponent<Collider>();
+        _fallDeathHeight = Lane.GetComponent<Collider>().bounds.min.y;
         if (BodyMaterial != null) meshRenderer.GetComponent<Renderer>().sharedMaterial = BodyMaterial;
         UpdateHealth();
     }
@@ -54,66 +48,48 @@ public class PlayerManager : MonoBehaviour
         if (_isDead)
             return;
 
-        if (!Nazi.IsIdling &&
+        // Once the whole player is below the platform, they cannot land on it.
+        // Use its starting height so a falling lane cannot move this boundary.
+        if (_playerCollider.bounds.max.y < _fallDeathHeight)
+        {
+            ChangeHealth(-_health);
+            return;
+        }
+
+        _takingDamage = !Nazi.IsIdling &&
             (_playerController.playerDirectionRight != Nazi.naziDirectionRight ||
-                _playerController.playerStandingStill))
-        {
-            if (!_takingDamage)
-            {
-                _takingDamage = true;
-                StartTakingDamage();
-            }
-        }
-        else
-        {
-            if (_takingDamage)
-            {
-                _takingDamage = false;
-                StopTakingDamage();
-            }
-        }
+                _playerController.playerStandingStill);
 
         if (_takingDamage)
         {
-            _health -= Time.deltaTime / HealthInSeconds;
-			UpdateHealth();
-			if (_health < 0f)
-            {
-                _health = 0f;
-                Died();
-            }
+            ChangeHealth(-Time.deltaTime / HealthInSeconds);
         }
     }
 
     void UpdateHealth()
     {
-        LifeText.text = PlayerName + " time left: " + System.Math.Round(_health * HealthInSeconds, 2);
-        _healthBar.Health = _health;
-        HealthBar.localScale = new Vector3(_healthBarOriginalScale.x * _health, _healthBarOriginalScale.y, _healthBarOriginalScale.z);
+        Lane.SetHealth(_health);
     }
 
-    void StartTakingDamage()
+    void ChangeHealth(float amount)
     {
-        _healthBar.TakingDamage = true;
-    }
-
-    void StopTakingDamage()
-    {
-        _healthBar.TakingDamage = false;
+        if (_isDead) return;
+        _health = Mathf.Clamp01(_health + amount);
+        UpdateHealth();
+        if (_health <= 0f) Died();
     }
 
     void Died()
     {
         _isDead = true;
         Lane.RemoveLane();
-		LifeText.text = PlayerName.ToUpper() + " DEAD :(";
         GameManager.Instance.PlayerDied(this);
     }
 
     public void GiveHealth(float seconds)
     {
-        _health += seconds / HealthInSeconds;
         txt_commentator.text = PlayerName + " recieved health!";
+        ChangeHealth(seconds / HealthInSeconds);
     }
 
     public void Freeze(float seconds)
@@ -128,8 +104,8 @@ public class PlayerManager : MonoBehaviour
 
     public void InflictDamage(float seconds)
     {
-        _health -= seconds / HealthInSeconds;
         txt_commentator.text = PlayerName + " got damaged!";
+        ChangeHealth(-seconds / HealthInSeconds);
     }
 
     public void Dizzy(float seconds)

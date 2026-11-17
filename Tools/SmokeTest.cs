@@ -76,7 +76,7 @@ try
         var animator = player.GetComponent<Animator>();
         Check(animator != null && animator.runtimeAnimatorController != null && animator.runtimeAnimatorController.animationClips.Length > 0,
             $"Player {player.PlayerIndex + 1}: animation controller and clips survive import");
-        Check(player.GetComponentInChildren<HealthBar>() != null, $"Player {player.PlayerIndex + 1}: overhead health bar survives the rig rebuild");
+        Check(player.GetComponentsInChildren<Transform>().All(t => t.name != "HealthBar"), $"Player {player.PlayerIndex + 1}: redundant overhead health bar is removed");
         var skin = player.GetComponentInChildren<SkinnedMeshRenderer>();
         Check(skin.sharedMaterial == player.GetComponent<PlayerManager>().BodyMaterial,
             $"Player {player.PlayerIndex + 1}: original body material is applied");
@@ -117,7 +117,7 @@ try
     manager.Nazi.SendMessage("Flip");
     before = health.Health;
     await Task.Delay(150);
-    Check(health.Health < before, "Following the wrong direction damages the player and updates both health bars");
+    Check(health.Health < before, "Following the wrong direction damages the player and shrinks the platform");
     foreach (var player in controllers) player.GetComponent<PlayerManager>().InflictDamage(1000f);
     await Task.Delay(250);
     Check(manager.GameOverButton.activeSelf, "All players dying shows the game-over/restart UI");

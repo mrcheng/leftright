@@ -19,8 +19,6 @@ public class DirectionController : MonoBehaviour
 
     bool _isRunning;
     int naziIdle = Animator.StringToHash("NaziIdle");
-    int naziLeft = Animator.StringToHash("NaziTurnLeft");
-    int naziRight = Animator.StringToHash("NaziTurnRight");
     float flipTimer;
     float timeRange;
     bool _isIdling;
@@ -68,17 +66,19 @@ public class DirectionController : MonoBehaviour
     {
         _isIdling = false;
 
-        if (naziDirectionRight)
+        // The idle/turn clips rotate around several axes. Once a direction is
+        // chosen, keep the mesh's local up axis exactly along the walking axis.
+        anim.enabled = false;
+        naziDirectionRight = !naziDirectionRight;
+        transform.rotation = Quaternion.Euler(0f, 0f, naziDirectionRight ? -90f : 90f);
+
+        if (!naziDirectionRight)
         {
-            anim.Play(naziLeft);
             snd_links.Play();
-            naziDirectionRight = false;
         }
         else
         {
-            anim.Play(naziRight);
             snd_rechts.Play();
-            naziDirectionRight = true;
         }
     }
 }
