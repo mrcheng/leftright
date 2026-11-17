@@ -1,0 +1,9 @@
+{
+  "name": "LeftRight.Prototype",
+  "rootNamespace": "LeftRight.Prototype",
+  "references": [
+    "Unity.InputSystem",
+    "Unity.ugui"
+  ],
+  "autoReferenced": true
+}
