@@ -54,6 +54,10 @@ namespace LeftRight.Rebuild
 
         void LateUpdate()
         {
+            if(player!=null&&(player.IsJumping||player.LandingAmount>0))
+            {
+                AnimateJump();return;
+            }
             if (masterBeat == null || (!masterBeat.IsPlaying && !masterBeat.IsCountingIn))
             {
                 // Pause holds the drill pose; a cancelled/restarting round returns to attention.
@@ -103,6 +107,24 @@ namespace LeftRight.Rebuild
         {
             var axis = foot.parent.InverseTransformDirection(transform.right);
             foot.localRotation = Quaternion.AngleAxis(angle, axis) * neutral;
+        }
+
+        void AnimateJump()
+        {
+            float tuck=player.IsJumping?Mathf.Sin(player.JumpPhase*Mathf.PI):0;
+            float land=player.LandingAmount;
+            float hip=35*tuck+18*land,knee=70*tuck+36*land;
+            Rotate(0,hip);Rotate(1,hip);Rotate(2,-knee);Rotate(3,-knee);
+            Rotate(4,-65*tuck);Rotate(5,-65*tuck);
+            SetFoot(leftFoot,leftFootRest,knee-hip);SetFoot(rightFoot,rightFootRest,knee-hip);
+            // Jump height belongs to the controller. Disable planted-foot correction
+            // while airborne, otherwise it would visually straighten out the tuck.
+            visualRoot.localPosition=visualRestPosition;
+            visualRoot.position-=Vector3.up*(.08f*land);
+            torso.localPosition=torsoRestPosition;
+            if(player.IsMoving)
+                transform.localRotation=Quaternion.Slerp(transform.localRotation,
+                    restFacing*Quaternion.Euler(0,player.DirectionRight?-90:90,0),1-Mathf.Exp(-18*Time.unscaledDeltaTime));
         }
 
         void Rotate(int index, float angle)

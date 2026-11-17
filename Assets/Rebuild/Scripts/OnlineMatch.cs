@@ -39,6 +39,7 @@ namespace LeftRight.Rebuild
             ? manager.ServerTime.Time : manager.LocalTime.Time - manager.NetworkTimeSystem.LocalBufferSec;
         public int RoundNumber { get; private set; }
         public float? TestInput { get; set; }
+        public bool TestJumpRequested { get; set; }
         public int ReceivedSnapshots { get; private set; }
         NetworkManager manager;
         GameObject networkRoot, remoteRoot;
@@ -48,11 +49,13 @@ namespace LeftRight.Rebuild
         readonly Dictionary<ulong,int> slots = new Dictionary<ulong,int>();
         readonly Dictionary<ulong,float> inputSeen = new Dictionary<ulong,float>();
         readonly Dictionary<ulong,int> inputSequence = new Dictionary<ulong,int>();
+        readonly Dictionary<ulong,int> jumpSequence = new Dictionary<ulong,int>();
         readonly Dictionary<int,HealthCratePickup> crates = new Dictionary<int,HealthCratePickup>();
         readonly Dictionary<HealthCratePickup,int> hostCrateIds = new Dictionary<HealthCratePickup,int>();
         int nextCrateId;
         readonly int[] recoveryVersions = new int[4];
         int outgoingInput, cueVersion, remoteCue = -1, remoteRound, stateSerial, lastState;
+        int outgoingJump;
         float nextSnapshot, nextInput, connectDeadline;
         double victoryAt;
         bool resultReceived, stopping;
@@ -160,7 +163,7 @@ namespace LeftRight.Rebuild
             transport.DisconnectTimeoutMS = 5000;
             manager = networkRoot.AddComponent<NetworkManager>();
             manager.NetworkConfig = new NetworkConfig { NetworkTransport = transport, EnableSceneManagement = false,
-                ConnectionApproval = true, TickRate = 30, ProtocolVersion = 1 };
+                ConnectionApproval = true, TickRate = 30, ProtocolVersion = 2 };
             transport.SetConnectionData("127.0.0.1", port, "0.0.0.0");
             manager.OnClientConnectedCallback += Connected;
             manager.OnClientDisconnectCallback += Disconnected;
@@ -245,12 +248,18 @@ namespace LeftRight.Rebuild
             if (!manager.IsHost && connectDeadline > 0 && Time.unscaledTime > connectDeadline && ReceivedSnapshots == 0)
             { Leave(UsesRelay?"Connection timed out. Ask your friend for a new code.":"Connection timed out. Check the host address and firewall."); return; }
             if (!RoundActive) return;
+            bool jumpPressed=TestJumpRequested||(!IsHost&&course.players[LocalSlot].ReadJumpPressed());
+            TestJumpRequested=false;
+            if(jumpPressed){if(IsHost)course.players[0].TryJump();else outgoingJump++;}
             if (!IsHost && Time.unscaledTime >= nextInput && manager.IsConnectedClient)
             {
                 nextInput = Time.unscaledTime + 1f/30;
                 float input = TestInput ?? course.players[LocalSlot].ReadNetworkInput();
                 using var writer = new FastBufferWriter(16,Allocator.Temp);
                 writer.WriteValueSafe(++outgoingInput); writer.WriteValueSafe(Mathf.Clamp(input,-1,1));
+                // Repeat the press counter in subsequent input packets: packet loss
+                // cannot lose the button edge or turn a held key into auto-jumping.
+                writer.WriteValueSafe(outgoingJump);
                 manager.CustomMessagingManager.SendNamedMessage(InputMessage,NetworkManager.ServerClientId,writer,NetworkDelivery.UnreliableSequenced);
             }
             if (IsHost)
@@ -283,11 +292,14 @@ namespace LeftRight.Rebuild
         {
             // The sender's connection owns a slot. A packet cannot name another recruit,
             // send transforms, choose the cue, heal, or declare itself the winner.
-            if (!IsHost || !RoundActive || !slots.TryGetValue(sender,out int slot) || slot == 0 || reader.Length < 8 || reader.Length > 32) return;
+            if (!IsHost || !RoundActive || !slots.TryGetValue(sender,out int slot) || slot == 0 || reader.Length < 12 || reader.Length > 32) return;
             reader.ReadValueSafe(out int sequence); reader.ReadValueSafe(out float input);
+            reader.ReadValueSafe(out int jump);
             if (float.IsNaN(input) || float.IsInfinity(input) || (inputSequence.TryGetValue(sender,out int last) && sequence <= last)) return;
             inputSequence[sender] = sequence; inputSeen[sender] = Time.unscaledTime;
             course.players[slot].InputOverride = Mathf.Clamp(input,-1,1);
+            if(jump>0&&(!jumpSequence.TryGetValue(sender,out int previousJump)||jump>previousJump))
+            {jumpSequence[sender]=jump;course.players[slot].TryJump();}
         }
 
         OnlineState Capture()
@@ -298,6 +310,7 @@ namespace LeftRight.Rebuild
                 winner = Array.IndexOf(course.players,course.Winner), sequence = Array.IndexOf(victory.sequences,victory.SelectedSequence) };
             state.survivalSeconds=menu.Scores.ElapsedSeconds;state.survivalTimes=menu.Scores.Times;
             state.players = course.players.Select((p,i) => new OnlinePlayerState { x = p.transform.position.x, horizontal = p.Horizontal,
+                jumping=p.IsJumping,jumpPhase=p.JumpPhase,
                 pinned = p.IsPinned, eliminated = p.IsEliminated, fromLeft = p.PinnedFromLeft,
                 travel = course.traps[i].CurrentTravel, target = course.traps[i].TargetTravel,
                 pending = course.traps[i].PendingRecoverySteps, recovery = course.traps[i].RecoveryVersion,
@@ -337,6 +350,7 @@ namespace LeftRight.Rebuild
             {
                 var value=state.players[i]; var player=course.players[i];var trap=course.traps[i];
                 player.ApplyNetworkMovement(value.x,value.horizontal);
+                player.ApplyNetworkJump(value.jumping,value.jumpPhase);
                 // Set the banks first so pinning uses the same visible geometry as host.
                 trap.ApplyNetworkPose(value.travel,value.target,value.pending,value.recovery);
                 if ((value.pinned || value.eliminated) && !player.IsPinned && !player.IsEliminated)
@@ -397,6 +411,8 @@ namespace LeftRight.Rebuild
                 manager.Shutdown();Destroy(networkRoot);
             }
             manager=null;slots.Clear();inputSeen.Clear();inputSequence.Clear();HumanCount=0;
+            jumpSequence.Clear();outgoingJump=0;
+            TestJumpRequested=false;
             spawner.enabled=true;Status=reason;menu.RestoreLaneOrder();menu.Open();stopping=false;
         }
 
@@ -422,6 +438,8 @@ namespace LeftRight.Rebuild
     [Serializable] public sealed class OnlinePlayerState
     {
         public float x,horizontal,travel,target;
+        public float jumpPhase;
+        public bool jumping;
         public int pending,recovery;
         public bool pinned,eliminated,fromLeft,crushed,returned;
     }

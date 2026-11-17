@@ -13,6 +13,8 @@ namespace LeftRight.Rebuild
     {
         OnlineMatch online;
         string reportPath,inputPath;
+        string jumpPath;
+        int lastJumpRequest;
         float nextReport;
         bool autoStart;
         IEnumerator Start()
@@ -22,6 +24,7 @@ namespace LeftRight.Rebuild
             online=GetComponent<OnlineMatch>();
             string Value(string key,string fallback=""){int i=Array.IndexOf(args,key);return i>=0&&i+1<args.Length?args[i+1]:fallback;}
             reportPath=Value("-lr-report");inputPath=Value("-lr-input-file");autoStart=args.Contains("-lr-autostart");
+            jumpPath=Value("-lr-jump-file");
             if(ushort.TryParse(Value("-lr-port","7777"),out ushort port))online.port=port;
             yield return new WaitForSecondsRealtime(.5f);
             if(args.Contains("-lr-relay-host"))online.HostInternetFromMenu(int.Parse(Value("-lr-relay-host","2")));
@@ -37,6 +40,8 @@ namespace LeftRight.Rebuild
             try
             {
                 if(!string.IsNullOrEmpty(inputPath)&&File.Exists(inputPath)&&float.TryParse(File.ReadAllText(inputPath),NumberStyles.Float,CultureInfo.InvariantCulture,out float input))online.TestInput=Mathf.Clamp(input,-1,1);
+                if(!string.IsNullOrEmpty(jumpPath)&&File.Exists(jumpPath)&&int.TryParse(File.ReadAllText(jumpPath),out int request)&&request>lastJumpRequest)
+                {lastJumpRequest=request;online.TestJumpRequested=true;}
                 if(!string.IsNullOrEmpty(reportPath))
                 {
                     var course=online.menu.course;
@@ -47,6 +52,7 @@ namespace LeftRight.Rebuild
                         x=course.players.Select(p=>p.transform.position.x).ToArray(),z=course.players.Select(p=>p.transform.position.z).ToArray(),
                         travel=course.traps.Select(t=>t.CurrentTravel).ToArray(),pending=course.traps.Select(t=>t.PendingRecoverySteps).ToArray(),
                         recovery=course.traps.Select(t=>t.RecoveryVersion).ToArray(),dead=course.players.Select(p=>p.IsEliminated).ToArray()};
+                    report.jumping=course.players.Select(p=>p.IsJumping).ToArray();
                     File.WriteAllText(reportPath,JsonUtility.ToJson(report));
                 }
             }
@@ -57,6 +63,7 @@ namespace LeftRight.Rebuild
             public bool active,host,over; public int round,slot,humans,snapshots,winner,sequence;
             public double beat,now,startsAt; public string status,joinCode;
             public float[] x,z,travel;public int[] pending,recovery;public bool[] dead;
+            public bool[] jumping;
         }
     }
 }

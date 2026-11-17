@@ -15,6 +15,12 @@ namespace LeftRight.Rebuild
         public RecruitRagdoll ragdoll;
         public float walkSpeed = 1.5f;
         public float collisionRadius = .25f;
+        [Min(.1f)] public float jumpHeight = .85f;
+        [Min(.2f)] public float jumpDuration = .65f;
+        public bool IsJumping { get; private set; }
+        public float JumpPhase { get; private set; }
+        public float LandingAmount => Mathf.Clamp01((float)((landingUntil-Time.realtimeSinceStartupAsDouble)/.14));
+        double jumpStarted, landingUntil;
         public bool IsEliminated { get; private set; }
         public event System.Action<RecruitController> Eliminated;
         public event System.Action<RecruitController> Spiked;
@@ -63,13 +69,16 @@ namespace LeftRight.Rebuild
             double now = Time.realtimeSinceStartupAsDouble;
             float elapsed = (float)(now - movementTime);
             movementTime = now;
-            if (NetworkReplica) return;
+            if (NetworkReplica) { UpdateJump(); return; }
             bool canMove = round.IsCountingDown || (round.HasStarted && round.masterBeat.IsPlaying);
             if (IsEliminated || IsPinned || !canMove || course.IsGameOver)
             {
                 Horizontal = 0;
+                CancelJump();
                 return;
             }
+            if(ReadJumpPressed())TryJump();
+            UpdateJump();
             Horizontal = Mathf.Clamp(InputOverride ?? (computerControlled ? ComputerInput : ReadInput()), -1, 1);
             if (!IsMoving) { Horizontal = 0; return; }
             DirectionRight = Horizontal > 0;
@@ -96,8 +105,45 @@ namespace LeftRight.Rebuild
             return axis;
         }
 
+        public bool ReadJumpPressed() => isLocallyControlled &&
+            ((Keyboard.current!=null&&Keyboard.current.spaceKey.wasPressedThisFrame)||
+             (Gamepad.current!=null&&Gamepad.current.buttonSouth.wasPressedThisFrame));
+
+        public bool TryJump()
+        {
+            // Jumping changes height and pose, while ordinary direction penalties and
+            // spike contacts still apply. Holding Space never creates repeated jumps.
+            if(IsJumping||IsPinned||IsEliminated||course.IsGameOver||
+                !(round.IsCountingDown||(round.HasStarted&&round.masterBeat.IsPlaying)))return false;
+            IsJumping=true;JumpPhase=0;jumpStarted=Time.realtimeSinceStartupAsDouble;landingUntil=0;
+            return true;
+        }
+        void UpdateJump()
+        {
+            if(!IsJumping)return;
+            JumpPhase=Mathf.Clamp01((float)((Time.realtimeSinceStartupAsDouble-jumpStarted)/Mathf.Max(.2f,jumpDuration)));
+            // A parabola gives a brisk takeoff, a slow apex and accelerating descent.
+            var position=transform.localPosition;
+            position.y=startingPosition.y+4*jumpHeight*JumpPhase*(1-JumpPhase);
+            transform.localPosition=position;
+            if(JumpPhase>=1){IsJumping=false;landingUntil=Time.realtimeSinceStartupAsDouble+.14;}
+        }
+        public void ApplyNetworkJump(bool jumping,float phase)
+        {
+            if(IsPinned||IsEliminated)return;
+            if(!jumping){if(IsJumping){CancelJump();landingUntil=Time.realtimeSinceStartupAsDouble+.14;}return;}
+            IsJumping=true;jumpStarted=Time.realtimeSinceStartupAsDouble-Mathf.Clamp01(phase)*jumpDuration;
+            UpdateJump();
+        }
+        void CancelJump()
+        {
+            if(IsJumping){var position=transform.localPosition;position.y=startingPosition.y;transform.localPosition=position;}
+            IsJumping=false;JumpPhase=0;landingUntil=0;
+        }
+
         public void ResetPlayer()
         {
+            CancelJump();
             if (ragdoll != null) ragdoll.ResetRagdoll();
             if (hitAudio != null) hitAudio.ResetAudio();
             IsEliminated = false;
@@ -118,6 +164,7 @@ namespace LeftRight.Rebuild
         public void Eliminate()
         {
             if (IsEliminated) return;
+            CancelJump();
             IsEliminated = true;
             if (IsPinned && hitAudio != null) hitAudio.PlaySqueezed();
             Horizontal = 0;
@@ -135,6 +182,7 @@ namespace LeftRight.Rebuild
         public void PinTo(Transform bank, bool fromLeft, float spikeReach)
         {
             if (IsPinned || IsEliminated) return;
+            CancelJump();
             Horizontal = 0;
             PinnedFromLeft = fromLeft;
             march.ResetMarch();
@@ -188,6 +236,7 @@ namespace LeftRight.Rebuild
 
         public void StopForVictory()
         {
+            CancelJump();
             // A tie supplied by an external death batch can already have marked the
             // selected winner dead. Restore only that recruit, preserving their location.
             if (IsEliminated)
