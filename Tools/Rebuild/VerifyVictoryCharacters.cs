@@ -8,10 +8,12 @@ using UnityEngine;
 using LeftRight.Rebuild;
 var course=UnityEngine.Object.FindAnyObjectByType<SpikeCourse>();var director=course.GetComponent<VictoryDirector>();var round=course.round;
 float lead=round.leadInSeconds,delay=director.victoryDelaySeconds;var checks=new List<string>();
+var savedPool=director.sequences;
 async Task Wait(Func<bool> condition){float until=Time.realtimeSinceStartup+3;while(!condition()&&Time.realtimeSinceStartup<until)await Task.Delay(10);if(!condition())throw new Exception("Timed out");}
 void Check(bool condition,string label){if(!condition)throw new Exception(label);checks.Add(label);}
 try{
  round.leadInSeconds=.05f;director.victoryDelaySeconds=0;
+ director.sequences=new VictorySequence[]{savedPool.OfType<ArmsRaisedVictory>().Single()};
  for(int lane=0;lane<4;lane++){
   round.BeginRound();await Wait(()=>round.HasStarted);
   for(int other=0;other<4;other++)if(other!=lane)course.players[other].Eliminate();
@@ -29,5 +31,5 @@ try{
   try{camera.targetTexture=target;camera.Render();RenderTexture.active=target;texture.ReadPixels(new Rect(0,0,900,700),0,0);texture.Apply();File.WriteAllBytes("Temp/victory-"+winner.march.role+".png",texture.EncodeToPNG());}
   finally{camera.targetTexture=null;RenderTexture.active=previous;UnityEngine.Object.DestroyImmediate(target);UnityEngine.Object.DestroyImmediate(texture);}
  }
-}finally{round.leadInSeconds=lead;director.victoryDelaySeconds=delay;round.BeginRound();}
+}finally{round.leadInSeconds=lead;director.victoryDelaySeconds=delay;director.sequences=savedPool;round.BeginRound();}
 return new{checksPassed=checks.Count,checks};

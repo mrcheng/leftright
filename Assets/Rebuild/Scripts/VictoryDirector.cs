@@ -71,7 +71,7 @@ namespace LeftRight.Rebuild
                 playback = SelectedSequence.CreatePlayback(Winner, gameCamera);
                 startedAt = Time.unscaledTime;
                 if (view != null) view.CinematicActive = true;
-                if (cheerSource != null && cheerClip != null)
+                if (SelectedSequence.PlayOpeningCheer && cheerSource != null && cheerClip != null)
                 {
                     cheerSource.clip = cheerClip;
                     cheerSource.volume = cheerVolume * Mathf.Clamp01(PlayerPrefs.GetFloat("AudioLevel", 1));

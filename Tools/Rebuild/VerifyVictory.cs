@@ -11,11 +11,13 @@ var course=UnityEngine.Object.FindAnyObjectByType<SpikeCourse>();var round=cours
 var director=course.GetComponent<VictoryDirector>();var view=course.GetComponent<GameViewSettings>();
 var checks=new List<string>();void Check(bool condition,string label){if(!condition)throw new Exception(label);checks.Add(label);}
 async Task Wait(Func<bool> condition,float seconds){float end=Time.realtimeSinceStartup+seconds;while(!condition()&&Time.realtimeSinceStartup<end)await Task.Delay(10);if(!condition())throw new Exception("Timed out waiting for victory state");}
-var speeds=course.players.Select(p=>p.walkSpeed).ToArray();var pool=director.sequences;float delay=director.victoryDelaySeconds;
+var speeds=course.players.Select(p=>p.walkSpeed).ToArray();var savedPool=director.sequences;
+var pool=new VictorySequence[]{savedPool.OfType<ArmsRaisedVictory>().Single()};float delay=director.victoryDelaySeconds;
 var extra=ScriptableObject.CreateInstance<ArmsRaisedVictory>();
 try
 {
- Check(director!=null&&pool.Length==1&&pool[0] is ArmsRaisedVictory,"Saved scene installs the first victory asset");
+ Check(director!=null&&savedPool.Length==3&&savedPool.OfType<InstructorShotVictory>().Count()==1,"Saved scene includes three distinct victory assets");
+ director.sequences=pool;
  Check(Mathf.Approximately(delay,1),"Default victory delay is an editable one second");
  foreach(var player in course.players){player.walkSpeed=0;player.InputOverride=0;}
  round.BeginRound();await Wait(()=>round.HasStarted,5);
@@ -56,7 +58,7 @@ try
  extra.available=false;Check(director.AvailableSequences().Length==1,"Unavailable sequences are excluded");
  director.sequences=Array.Empty<VictorySequence>();complete.Invoke(director,new object[]{winner});tick.Invoke(director,null);
  Check(!director.IsPlaying&&!view.CinematicActive,"An empty pool safely skips playback");
- director.sequences=pool;director.victoryDelaySeconds=delay;
+ director.sequences=savedPool;director.victoryDelaySeconds=delay;
  round.BeginRound();await Task.Delay(100);
  Check(!director.IsPlaying&&!director.IsPending&&!view.CinematicActive&&course.Winner==null&&!course.IsGameOver,"Restart clears victory and returns camera control");
  Check(course.players.All(p=>p.march.enabled&&!p.IsEliminated),"Restart restores recruits and their marching rigs");
@@ -71,7 +73,7 @@ try
 }
 finally
 {
- director.sequences=pool;director.victoryDelaySeconds=delay;
+ director.sequences=savedPool;director.victoryDelaySeconds=delay;
  for(int i=0;i<course.players.Length;i++){course.players[i].walkSpeed=speeds[i];course.players[i].InputOverride=null;}
  round.BeginRound();UnityEngine.Object.Destroy(extra);
 }

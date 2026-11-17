@@ -11190,7 +11190,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ddc3b1f1607ce24b815ac52a800d6a4, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.VictoryDirector
   course: {fileID: 990741086452730322}
   view: {fileID: 5762068223470358062}
@@ -11203,6 +11203,8 @@ MonoBehaviour:
   cheerVolume: 0.9
   sequences:
   - {fileID: 11400000, guid: b0bc1ef88ac892c43b749caf5a15c013, type: 2}
+  - {fileID: 11400000, guid: 0dca701f5bbc6134c82513002168012c, type: 2}
+  - {fileID: 11400000, guid: 1ee6d60e4c1dc5a4194087e55e83360c, type: 2}
 --- !u!1 &6664416983528790334
 GameObject:
   m_ObjectHideFlags: 0

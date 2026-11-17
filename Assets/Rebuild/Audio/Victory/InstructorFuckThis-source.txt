@@ -1,0 +1,6 @@
+Dialogue: "Fuck this!"
+Generated locally with Windows System.Speech, Microsoft David Desktop.
+SSML: rate +12%, volume x-loud, strong emphasis.
+Processing: trim start at 0.24s to 1.04s, mono 44.1kHz, high-pass at 90Hz,
+compression, loudness normalization to -14 LUFS / -1.5 dBTP, short end fade.
+This is synthetic prototype dialogue, not a recording of a real actor.

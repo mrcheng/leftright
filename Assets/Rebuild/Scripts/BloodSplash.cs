@@ -39,6 +39,17 @@ namespace LeftRight.Rebuild
             return effect;
         }
 
+        public void AimBurst(Vector3 origin, Vector3 direction)
+        {
+            // The floor pool stays on the lane while the first spray starts at the hit.
+            // Existing spike splashes keep their original emission unless this is called.
+            for (int i = 0; i < drops.Length; i++)
+            {
+                drops[i].position = origin;
+                velocities[i] += direction.normalized * (2 + (float)random.NextDouble());
+            }
+        }
+
         void Build(Material material)
         {
             // A local RNG keeps cosmetic variation from changing instructor cues or pickup placement.

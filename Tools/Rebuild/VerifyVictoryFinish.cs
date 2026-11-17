@@ -10,7 +10,7 @@ var course=UnityEngine.Object.FindAnyObjectByType<SpikeCourse>();var director=co
 var round=course.round;var view=course.GetComponent<GameViewSettings>();
 var checks=new List<string>();void Check(bool condition,string label){if(!condition)throw new Exception(label);checks.Add(label);}
 async Task Wait(Func<bool> condition,float seconds){float end=Time.realtimeSinceStartup+seconds;while(!condition()&&Time.realtimeSinceStartup<end)await Task.Delay(10);if(!condition())throw new Exception("Timed out waiting for victory lifecycle");}
-float lead=round.leadInSeconds,delay=director.victoryDelaySeconds;
+var savedPool=director.sequences; float lead=round.leadInSeconds,delay=director.victoryDelaySeconds;
 try
 {
  Check(director.cheerSource!=null&&director.cheerClip!=null,"Saved victory setup includes the cheer clip and a dedicated source");
@@ -18,7 +18,7 @@ try
  Check(!director.cheerSource.playOnAwake&&!director.cheerSource.loop&&director.cheerSource.spatialBlend==0,"Cheer is a non-looping 2D sound rather than distant world audio");
  var samples=new float[director.cheerClip.samples*director.cheerClip.channels];
  Check(director.cheerClip.GetData(samples,0)&&samples.Max(v=>Mathf.Abs(v))>.2f,"Imported cheer contains audible non-silent samples");
- round.leadInSeconds=.05f;director.victoryDelaySeconds=0;
+ director.sequences=new VictorySequence[]{savedPool.OfType<ArmsRaisedVictory>().Single()}; round.leadInSeconds=.05f;director.victoryDelaySeconds=0;
  round.BeginRound();await Wait(()=>round.HasStarted,2);
  for(int lane=1;lane<4;lane++)course.players[lane].Eliminate();
  await Wait(()=>director.IsPlaying,2);float start=Time.unscaledTime;
@@ -45,5 +45,5 @@ try
  await Wait(()=>director.IsPlaying,2);director.StartAgain();await Task.Delay(80);
  Check(!director.cheerSource.isPlaying&&!director.IsPlaying&&!director.ShowRestartPrompt,"Restart during celebration stops the cheer and cancels the sequence");
 }
-finally{round.leadInSeconds=lead;director.victoryDelaySeconds=delay;round.BeginRound();}
+finally{director.sequences=savedPool;round.leadInSeconds=lead;director.victoryDelaySeconds=delay;round.BeginRound();}
 return new{checksPassed=checks.Count,checks};

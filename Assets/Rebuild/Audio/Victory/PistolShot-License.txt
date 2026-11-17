@@ -1,0 +1,8 @@
+PistolShot.wav: CZ-52 pistol recording by Vincent (Vince) Sevedge, 2009.
+Source: https://opengameart.org/content/gunshot-sounds
+Archive: https://opengameart.org/sites/default/files/sounds.zip (sounds/cz.wav)
+License applied here: Creative Commons Attribution 3.0 Unported
+https://creativecommons.org/licenses/by/3.0/
+The archive's creativecommons.txt supplies this attribution license (the OGA page lists CC0).
+Changes: first shot excerpted (0.19 seconds onward, 1.25-second length), converted to
+mono 44.1 kHz, gain increased 1.4x, final 0.3 seconds faded out.

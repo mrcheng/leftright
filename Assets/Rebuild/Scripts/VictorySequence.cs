@@ -7,6 +7,7 @@ namespace LeftRight.Rebuild
     public abstract class VictorySequence : ScriptableObject
     {
         public bool available = true;
+        public virtual bool PlayOpeningCheer => true;
         public abstract VictoryPlayback CreatePlayback(RecruitController winner, Camera camera);
     }
 
