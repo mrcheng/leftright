@@ -25,19 +25,30 @@ namespace LeftRight.Editor
         public static void AddTo(GameObject environment)
         {
             const string path = "Assets/Rebuild/Prefabs/HealthCrate.prefab";
+            const string burstPath = "Assets/Rebuild/Prefabs/HealthCrateBurst.prefab";
+            var burstRoot = new GameObject("Health crate burst and syringe");
+            try
+            {
+                var burstModel = MakeVisual(burstRoot.transform, true);
+                var parts = burstModel.GetComponentsInChildren<Transform>();
+                var burst = burstRoot.AddComponent<HealthCrateBurst>();
+                burst.lid = parts.Single(t => t.name == "Lid");
+                burst.walls = new[] { "WallFront", "WallBack", "WallLeft", "WallRight" }
+                    .Select(name => parts.Single(t => t.name == name)).ToArray();
+                burst.syringe = parts.Single(t => t.name == "Syringe");
+                PrefabUtility.SaveAsPrefabAsset(burstRoot, burstPath);
+            }
+            finally { UnityEngine.Object.DestroyImmediate(burstRoot); }
             var root = new GameObject("Health crate - retreats spike banks");
             try
             {
                 var visual = new GameObject("Wooden medical crate").transform;
                 visual.SetParent(root.transform, false);
-                var asset = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Rebuild/Art/Outpost/Models/HealthCrate.fbx");
-                if (asset == null) throw new InvalidOperationException("Generate HealthCrate.fbx first.");
-                var model = (GameObject)PrefabUtility.InstantiatePrefab(asset, visual);
-                foreach (var renderer in model.GetComponentsInChildren<Renderer>())
-                    renderer.sharedMaterials = renderer.sharedMaterials.Select(m =>
-                        AssetDatabase.LoadAssetAtPath<Material>("Assets/Rebuild/Art/Outpost/Materials/" + m.name + ".mat")).ToArray();
+                var model = MakeVisual(visual, false);
+                model.GetComponentsInChildren<Transform>().Single(t => t.name == "Syringe").gameObject.SetActive(false);
                 var pickup = root.AddComponent<HealthCratePickup>();
                 pickup.visual = visual;
+                pickup.burstPrefab = AssetDatabase.LoadAssetAtPath<HealthCrateBurst>(burstPath);
                 PrefabUtility.SaveAsPrefabAsset(root, path);
             }
             finally { UnityEngine.Object.DestroyImmediate(root); }
@@ -57,5 +68,40 @@ namespace LeftRight.Editor
             spawner.restoredBeats = 3;
             spawner.minimumLostBeats = 2;
         }
+        static GameObject MakeVisual(Transform parent, bool transparent)
+        {
+            var asset = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Rebuild/Art/Outpost/Models/HealthCrate.fbx");
+            if (asset == null) throw new InvalidOperationException("Generate HealthCrate.fbx first.");
+            var model = (GameObject)PrefabUtility.InstantiatePrefab(asset, parent);
+            foreach (var renderer in model.GetComponentsInChildren<Renderer>())
+            {
+                renderer.sharedMaterials = renderer.sharedMaterials.Select(source =>
+                {
+                    const string art = "Assets/Rebuild/Art/Outpost/Materials/";
+                    var original = AssetDatabase.LoadAssetAtPath<Material>(art + source.name + ".mat");
+                    if (!transparent) return original;
+                    string fadePath = art + "CrateBurst" + source.name + ".mat";
+                    var fade = AssetDatabase.LoadAssetAtPath<Material>(fadePath);
+                    if (fade == null)
+                    {
+                        fade = new Material(original); AssetDatabase.CreateAsset(fade, fadePath);
+                    }
+                    fade.SetFloat("_Surface", 1);
+                    fade.SetFloat("_Blend", 0);
+                    fade.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    fade.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    fade.SetFloat("_ZWrite", 0);
+                    fade.SetOverrideTag("RenderType", "Transparent");
+                    fade.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+                    fade.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                    fade.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+                    EditorUtility.SetDirty(fade);
+                    return fade;
+                }).ToArray();
+                if (transparent) renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            }
+            return model;
+        }
+
     }
 }

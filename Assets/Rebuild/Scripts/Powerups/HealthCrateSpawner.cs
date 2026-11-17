@@ -44,6 +44,7 @@ namespace LeftRight.Rebuild
         void Clear()
         {
             foreach (var crate in active) if (crate != null) Destroy(crate.gameObject);
+            foreach (var burst in GetComponentsInChildren<HealthCrateBurst>()) Destroy(burst.gameObject);
             active.Clear(); ResetSchedule();
         }
 

@@ -6,6 +6,7 @@ namespace LeftRight.Rebuild
     public sealed class HealthCratePickup : MonoBehaviour
     {
         public Transform visual;
+        public HealthCrateBurst burstPrefab;
         public int restoredBeats = 3;
         public float collectionRadius = .55f;
         public bool IsCollected { get; private set; }
@@ -31,6 +32,9 @@ namespace LeftRight.Rebuild
             IsCollected = true;
             course.traps[LaneIndex].RecoverBeats(restoredBeats);
             course.round.audioOutput.PlayHealthPickup();
+            // Detached presentation can finish after the collectible is removed, without
+            // keeping its trigger alive or allowing another heal during the burst.
+            if (burstPrefab != null) Instantiate(burstPrefab, visual.position, transform.rotation, transform.parent);
             visual.gameObject.SetActive(false);
             Collected?.Invoke();
             Destroy(gameObject);
