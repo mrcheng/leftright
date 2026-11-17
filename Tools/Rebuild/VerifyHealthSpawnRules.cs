@@ -40,8 +40,8 @@ try
  var crate=Crates().Single(c=>c.LaneIndex==0);
  var player=course.players[0];var pos=player.transform.position;pos.x=crate.transform.position.x;player.transform.position=pos;
  float before=course.traps[0].TargetTravel;
- Check(crate.TryCollect(player)&&Mathf.Abs(course.traps[0].TargetTravel-(before-3*course.traps[0].inwardPerMiss))<.001f,
-    "A crate retreats both sets by three missed beats");
+ Check(crate.TryCollect(player)&&course.traps[0].PendingRecoverySteps==3&&Mathf.Abs(course.traps[0].TravelAfterRecovery-(before-3*course.traps[0].inwardPerMiss))<.001f,
+    "A crate reserves three outward steps on upcoming beats");
  for(int i=0;i<2;i++)course.traps[0].MissBeat();
  await Seek(12);
  Check(Crates().All(c=>c.LaneIndex!=0),"Collecting does not reset the lane timer or trigger immediate replacement");

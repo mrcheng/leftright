@@ -20,8 +20,8 @@ try
     "Syringe stays hidden inside the closed crate");
  var position=player.transform.position;position.x=1.5f;player.transform.position=position;
  float before=trap.TargetTravel;
- Check(crate.TryCollect(player)&&Mathf.Abs(trap.TargetTravel-Mathf.Max(0,before-3*trap.inwardPerMiss))<.001f,
-    "Three-beat health recovery applies immediately on collection");
+ Check(crate.TryCollect(player)&&trap.PendingRecoverySteps==3&&Mathf.Abs(trap.TargetTravel-before)<.001f,
+    "Collection immediately queues three outward beats without gliding back");
  Check(!crate.TryCollect(player),"Burst animation cannot apply health twice");
  var burst=spawner.GetComponentInChildren<HealthCrateBurst>();
  Check(burst!=null&&burst.walls.Length==4&&burst.syringe.gameObject.activeSelf,"Pickup starts one burst with four walls and a visible syringe");

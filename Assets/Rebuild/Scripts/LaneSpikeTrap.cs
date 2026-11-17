@@ -19,6 +19,11 @@ namespace LeftRight.Rebuild
         public float MaximumTravel => Mathf.Max(0, (rightOpen.x - leftOpen.x - pillarThickness - finalGap) * .5f);
         public int MissedBeats { get; private set; }
         public float TargetTravel { get; private set; }
+        public int PendingRecoverySteps { get; private set; }
+        public float TravelAfterRecovery => Mathf.Max(0, TargetTravel - PendingRecoverySteps * inwardPerMiss);
+        long recoveryStartsAtBeat;
+        long lastRecoveryBeat = long.MinValue;
+        MasterBeat masterBeat;
         public float LeftTip => leftBank.position.x + spikeReach;
         public float RightTip => rightBank.position.x - spikeReach;
         Vector3 leftOpen, rightOpen;
@@ -32,6 +37,7 @@ namespace LeftRight.Rebuild
         {
             leftOpen = leftBank.localPosition;
             rightOpen = rightBank.localPosition;
+            masterBeat = GetComponentInParent<MasterBeat>();
             ResetTrap();
         }
 
@@ -39,6 +45,8 @@ namespace LeftRight.Rebuild
         {
             travel = TargetTravel = 0;
             MissedBeats = 0;
+            PendingRecoverySteps = 0;
+            lastRecoveryBeat = long.MinValue;
             victim = null; HasFinishedSqueeze = HasReturned = false; holdTime = 0;
             if (blood != null) { blood.gameObject.SetActive(false); Destroy(blood.gameObject); blood = null; }
             if (firstHitBlood != null) { firstHitBlood.gameObject.SetActive(false); Destroy(firstHitBlood.gameObject); firstHitBlood = null; }
@@ -56,11 +64,28 @@ namespace LeftRight.Rebuild
 
         public float RecoverBeats(int beats)
         {
-            // Retreat the movement target; Animate handles the visible slide. Clamp at the
-            // original width so repeated health pickups cannot push a bank beyond its lane.
-            float previous = TargetTravel;
-            TargetTravel = Mathf.Max(0, TargetTravel - Mathf.Max(0, beats) * inwardPerMiss);
-            return previous - TargetTravel;
+            if (victim != null) return 0;
+            // Reserve recovery immediately but move only on subsequent musical beats.
+            // Reserving prevents stacked health from recovering beyond the original width.
+            float available = TravelAfterRecovery;
+            int steps = Mathf.Min(Mathf.Max(0, beats), Mathf.CeilToInt(available / Mathf.Max(.001f, inwardPerMiss)));
+            if (PendingRecoverySteps == 0)
+                recoveryStartsAtBeat = masterBeat != null ? masterBeat.BeatIndex + 1 : 0;
+            PendingRecoverySteps += steps;
+            return Mathf.Min(available, steps * inwardPerMiss);
+        }
+
+        public bool ProcessRecoveryBeat(long beat)
+        {
+            if (PendingRecoverySteps == 0 || beat < recoveryStartsAtBeat || beat == lastRecoveryBeat || victim != null) return false;
+            lastRecoveryBeat = beat;
+            PendingRecoverySteps--;
+            TargetTravel = Mathf.Max(0, TargetTravel - inwardPerMiss);
+            // A crisp mechanical step on the beat, followed by a hold. Health does not
+            // lerp across the entire reward or get cancelled by a simultaneous penalty.
+            travel = TargetTravel;
+            ApplyPose();
+            return true;
         }
 
         public void Animate(float deltaTime)

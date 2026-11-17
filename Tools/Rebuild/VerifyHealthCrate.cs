@@ -33,13 +33,14 @@ try
  Check(!pickup.TryCollect(player),"Crate requires the recruit to reach it");
  var pos=player.transform.position;pos.x=2;player.transform.position=pos;
  Check(pickup.TryCollect(player),"Touching the crate collects it");
- Check(Math.Abs(trap.TargetTravel-(before-3*trap.inwardPerMiss))<.001,"Health restores exactly three missed beats of space");
+ Check(trap.PendingRecoverySteps==3&&Math.Abs(trap.TravelAfterRecovery-(before-3*trap.inwardPerMiss))<.001,"Health queues exactly three missed beats of recovery");
  Check(!pickup.TryCollect(player),"A crate can heal only once");
  Check(round.audioOutput.effects.isPlaying,"Collecting uses the prototype health pickup sound");
- trap.Animate(1);
+ long recoveryBeat=round.masterBeat.BeatIndex+1;
+ for(int step=0;step<3;step++)trap.ProcessRecoveryBeat(recoveryBeat+step);
  Check(trap.leftBank.position.x<leftBefore && trap.rightBank.position.x>rightBefore,"Both spike sets retreat visibly after collection");
  trap.RecoverBeats(100);
- Check(trap.TargetTravel==0,"Healing clamps at the original lane width");
+ Check(trap.TravelAfterRecovery==0,"Healing clamps at the original lane width");
  player.ResetPlayer();
  spawner.lifetimeBeats=1;
  var expiring=spawner.SpawnCrate(0,3);

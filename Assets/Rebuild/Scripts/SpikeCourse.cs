@@ -75,10 +75,15 @@ namespace LeftRight.Rebuild
             if (pendingBeat >= 0)
             {
                 // Evaluate after this frame's input and officer cue, giving a new cue half a beat to react.
-                if (pendingBeat > 0 && round.masterBeat.BeatPosition - cueBeat >= reactionBeats)
-                    for (int i = 0; i < players.Length; i++)
-                        if (!players[i].IsEliminated && (!players[i].IsMoving || players[i].DirectionRight != round.officer.DirectionRight))
+                for (int i = 0; i < players.Length; i++)
+                {
+                    if (players[i].IsEliminated) continue;
+                    // Recovery gets its own outward beat instead of fighting an inward penalty.
+                    if (traps[i].ProcessRecoveryBeat(pendingBeat)) continue;
+                    if (pendingBeat > 0 && round.masterBeat.BeatPosition - cueBeat >= reactionBeats &&
+                        (!players[i].IsMoving || players[i].DirectionRight != round.officer.DirectionRight))
                             traps[i].MissBeat();
+                }
                 pendingBeat = -1;
             }
             for (int i = 0; i < players.Length; i++)

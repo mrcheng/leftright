@@ -70,7 +70,7 @@ namespace LeftRight.Rebuild
                 var player = course.players[lane]; var trap = course.traps[lane];
                 if (player.IsPinned || player.IsEliminated || HasCrate(lane)) continue;
                 // Use remaining lost space, not historical MissedBeats: healing may have restored it already.
-                if (trap.TargetTravel + .0001f < Mathf.Max(0, minimumLostBeats) * trap.inwardPerMiss) continue;
+                if (trap.TravelAfterRecovery + .0001f < Mathf.Max(0, minimumLostBeats) * trap.inwardPerMiss) continue;
                 if (TryChoosePosition(lane, out float x)) SpawnCrate(lane, x);
             }
         }

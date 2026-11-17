@@ -26,7 +26,7 @@ namespace LeftRight.Rebuild
             widePosition = gameCamera.transform.position;
             wideRotation = gameCamera.transform.rotation;
             wideFieldOfView = gameCamera.fieldOfView;
-            Mode = PlayerPrefs.GetInt(Preference, 0) == 1 ? GameViewMode.Online : GameViewMode.Local;
+            Mode = PlayerPrefs.GetInt(Preference, 1) == 1 ? GameViewMode.Online : GameViewMode.Local;
             gear = MakeGear();
         }
 
