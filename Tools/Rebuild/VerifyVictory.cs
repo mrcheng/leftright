@@ -63,7 +63,7 @@ try
  await Wait(()=>round.HasStarted,5);
  foreach(var player in course.players)player.Eliminate();
  await Wait(()=>course.IsGameOver,2);
- Check(course.Winner==null&&!director.IsPending&&!director.IsPlaying,"Simultaneous all-dead finish has no victory sequence");
+ Check(course.Winner!=null&&!course.Winner.IsEliminated&&director.IsPending&&director.SelectedSequence!=null,"Simultaneous final deaths choose a living winner and a victory sequence immediately");
  round.BeginRound();await Wait(()=>round.HasStarted,5);
  for(int lane=1;lane<4;lane++)course.players[lane].Eliminate();
  await Wait(()=>director.IsPending,2);round.BeginRound();await Task.Delay(1200);

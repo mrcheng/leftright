@@ -177,6 +177,13 @@ namespace LeftRight.Rebuild
 
         public void StopForVictory()
         {
+            // A tie supplied by an external death batch can already have marked the
+            // selected winner dead. Restore only that recruit, preserving their location.
+            if (IsEliminated)
+            {
+                Vector3 position = transform.position; Quaternion rotation = transform.rotation;
+                ResetPlayer(); transform.SetPositionAndRotation(position, rotation);
+            }
             Horizontal = 0;
             pinnedBank = null; squeezeLeft = squeezeRight = null;
             Quaternion facing = transform.rotation;

@@ -40,9 +40,13 @@ namespace LeftRight.Rebuild
         void OnCompleted(RecruitController winner)
         {
             ResetVictory();
-            // A draw/all-dead round has no winner and must never play a celebration.
+            // Single-player losses have no winner; multiplayer ties are resolved by the course.
             if (winner == null) return;
             Winner = winner;
+            // Choose immediately when the result is decided; only playback waits for
+            // the configured delay. No delayed selection can race with another death.
+            var pool = AvailableSequences();
+            if (pool.Length > 0) SelectedSequence = pool[random.Next(pool.Length)];
             beginsAt = Time.unscaledTime + Mathf.Max(0, victoryDelaySeconds);
             IsPending = true;
         }
@@ -61,11 +65,9 @@ namespace LeftRight.Rebuild
             if (IsPending && Time.unscaledTime >= beginsAt)
             {
                 IsPending = false;
-                var pool = AvailableSequences();
                 // Uniform draw with replacement: repeats are allowed and every entry
                 // stays at 1/N probability, independent of gameplay/officer randomness.
-                if (pool.Length == 0) { ShowRestartPrompt = true; return; }
-                SelectedSequence = pool[random.Next(pool.Length)];
+                if (SelectedSequence == null) { ShowRestartPrompt = true; return; }
                 playback = SelectedSequence.CreatePlayback(Winner, gameCamera);
                 startedAt = Time.unscaledTime;
                 if (view != null) view.CinematicActive = true;

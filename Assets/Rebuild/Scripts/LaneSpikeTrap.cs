@@ -64,7 +64,9 @@ namespace LeftRight.Rebuild
 
         public void RetractForVictory()
         {
-            // Only the survivor's lane uses this; dead lanes finish their normal crush.
+            // Cancel any pending crush on the chosen winner before opening the banks.
+            // Dead opponents continue their own normal crush/return sequence.
+            victim = null; HasFinishedSqueeze = false; HasReturned = false;
             victoryReturn = true; TargetTravel = 0; PendingRecoverySteps = 0;
         }
 
@@ -134,6 +136,14 @@ namespace LeftRight.Rebuild
             (player.transform.position.x - player.collisionRadius <= LeftTip ||
              player.transform.position.x + player.collisionRadius >= RightTip);
 
+        public bool WouldEliminate(RecruitController player)
+        {
+            if (player.IsEliminated || !player.IsPinned) return false;
+            return player.PinnedFromLeft
+                ? player.transform.position.x + player.collisionRadius >= RightTip
+                : player.transform.position.x - player.collisionRadius <= LeftTip;
+        }
+
         public void ResolveContact(RecruitController player)
         {
             if (player.IsEliminated) return;
@@ -151,10 +161,7 @@ namespace LeftRight.Rebuild
                 return;
             }
             player.FollowPinnedBank();
-            bool oppositeHit = player.PinnedFromLeft
-                ? player.transform.position.x + player.collisionRadius >= RightTip
-                : player.transform.position.x - player.collisionRadius <= LeftTip;
-            if (oppositeHit)
+            if (WouldEliminate(player))
             {
                 player.Eliminate();
                 player.SqueezeBetween(leftBank, rightBank, pillarThickness);

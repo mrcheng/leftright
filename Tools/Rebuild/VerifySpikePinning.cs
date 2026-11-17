@@ -64,14 +64,14 @@ try
     foreach(var trap in course.traps.Skip(2)) for(int i=0;i<30;i++) trap.MissBeat();
     until=Time.realtimeSinceStartup+6;
     while(!course.IsGameOver && Time.realtimeSinceStartup<until) await Task.Delay(20);
-    Check(course.IsGameOver && course.AliveCount==0,"Game over waits for the final opposite-set contact");
+    Check(course.IsGameOver && course.AliveCount==1 && course.Winner!=null,"Final opposite-set contacts leave a protected winner");
     until=Time.realtimeSinceStartup+3;
-    while(!course.traps.All(t=>t.HasFinishedSqueeze)&&Time.realtimeSinceStartup<until)await Task.Delay(10);
-    Check(course.traps.All(t=>t.HasFinishedSqueeze),
-        "All sets complete their one-plank crush before returning");
-    Check(course.players.Select((p,i)=>p.transform.Find("Model orientation").localScale.z<visualScales[i].z*.7f).All(v=>v),
-        "Recruit meshes visibly compress along the closing direction");
-    Check(course.players.Select((p,i)=>Mathf.Abs(p.transform.position.x-(course.traps[i].leftBank.position.x+course.traps[i].rightBank.position.x)*.5f)<.001f).All(v=>v),
+    while(!course.traps.Select((t,i)=>!course.players[i].IsEliminated||t.HasFinishedSqueeze).All(v=>v)&&Time.realtimeSinceStartup<until)await Task.Delay(10);
+    Check(course.traps.Select((t,i)=>!course.players[i].IsEliminated||t.HasFinishedSqueeze).All(v=>v),
+        "Losing sets complete their one-plank crush before returning");
+    Check(course.players.Select((p,i)=>!p.IsEliminated||p.transform.Find("Model orientation").localScale.z<visualScales[i].z*.7f).All(v=>v),
+        "Losing recruit meshes visibly compress along the closing direction");
+    Check(course.players.Select((p,i)=>!p.IsEliminated||Mathf.Abs(p.transform.position.x-(course.traps[i].leftBank.position.x+course.traps[i].rightBank.position.x)*.5f)<.001f).All(v=>v),
         "Compressed recruits remain between the pillar faces");
     round.BeginRound();
     Check(course.players.All(p=>!p.IsPinned && !p.IsEliminated && p.march.enabled && Mathf.Abs(p.transform.localPosition.x)<.001f),"Restart releases every attachment and restores recruits to center");

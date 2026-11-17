@@ -87,8 +87,8 @@ try
     for(int lane=1;lane<4;lane++) for(int i=0;i<30;i++) traps[lane].MissBeat();
     until = Time.realtimeSinceStartup + 6;
     while (!course.IsGameOver && Time.realtimeSinceStartup < until) await Task.Delay(20);
-    Check(course.IsGameOver && course.AliveCount == 0 && !clock.IsPlaying && !round.officer.IsRunning,
-        "Last recruit eliminated produces game over and stops music and cues");
+    Check(course.IsGameOver && course.AliveCount == 1 && course.Winner != null && !clock.IsPlaying && !round.officer.IsRunning,
+        "Final contacts select a protected winner and stop music and cues");
     var currentScales = GameObject.Find("Player lanes - gameplay anchors").transform.Cast<Transform>()
         .Where(t=>t.name.StartsWith("Player lane ")).Select(t=>t.localScale).ToArray();
     Check(scales.SequenceEqual(currentScales), "Platforms retain their full size while the spikes close in");
