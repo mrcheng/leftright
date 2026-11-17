@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEditor;
@@ -40,9 +41,17 @@ try
  File.WriteAllText(input,"0");
  File.WriteAllText(jump,"1");await Wait(()=>course.players[1].IsJumping,3);
  await Wait(()=>Read()!=null&&(bool)((JArray)Read()["jumping"])[1],3);
+ await Wait(()=>!course.players[1].IsJumping,3);
+ var mine=online.menu.Obstacles.SpawnMine(1,course.players[1].transform.position.x+1.6f);
+ Check(mine!=null,"Host could not spawn test mine");
+ await Wait(()=>Read()!=null&&((JArray)Read()["mineIds"]).Any(id=>(int)id==mine.Id),5);
+ typeof(LaneMine).GetProperty("ArmsAtBeat").SetValue(mine,-1.0);
+ course.players[1].ApplyNetworkMovement(mine.transform.position.x,0);mine.CheckContact(course.players[1]);
+ Check(course.players[1].WasBlasted,"Host mine did not eliminate remote recruit");
+ await Wait(()=>Read()!=null&&(bool)((JArray)Read()["blasted"])[1]&&(int)((JArray)Read()["fragments"])[1]>5,5);
  peer.Kill();peer.WaitForExit(3000);await Wait(()=>!online.Active,12);
  Check(online.menu.IsOpen,"Disconnect did not restore menu");
- return checks+" live Relay checks passed: allocation/code, two processes, lobby, shared start, beat, ownership, front lane, AI, input, disconnect";
+ return checks+" live Relay checks passed: allocation/code, two processes, lobby, shared start, beat, ownership, front lane, AI, input, jump, mine replication/explosion, disconnect";
 }
 finally
 {

@@ -163,7 +163,7 @@ namespace LeftRight.Rebuild
             transport.DisconnectTimeoutMS = 5000;
             manager = networkRoot.AddComponent<NetworkManager>();
             manager.NetworkConfig = new NetworkConfig { NetworkTransport = transport, EnableSceneManagement = false,
-                ConnectionApproval = true, TickRate = 30, ProtocolVersion = 2 };
+                ConnectionApproval = true, TickRate = 30, ProtocolVersion = 3 };
             transport.SetConnectionData("127.0.0.1", port, "0.0.0.0");
             manager.OnClientConnectedCallback += Connected;
             manager.OnClientDisconnectCallback += Disconnected;
@@ -311,6 +311,7 @@ namespace LeftRight.Rebuild
             state.survivalSeconds=menu.Scores.ElapsedSeconds;state.survivalTimes=menu.Scores.Times;
             state.players = course.players.Select((p,i) => new OnlinePlayerState { x = p.transform.position.x, horizontal = p.Horizontal,
                 jumping=p.IsJumping,jumpPhase=p.JumpPhase,
+                blasted=p.WasBlasted,
                 pinned = p.IsPinned, eliminated = p.IsEliminated, fromLeft = p.PinnedFromLeft,
                 travel = course.traps[i].CurrentTravel, target = course.traps[i].TargetTravel,
                 pending = course.traps[i].PendingRecoverySteps, recovery = course.traps[i].RecoveryVersion,
@@ -319,6 +320,8 @@ namespace LeftRight.Rebuild
             foreach(var crate in activeCrates)if(!hostCrateIds.ContainsKey(crate))hostCrateIds[crate]=++nextCrateId;
             foreach(var old in hostCrateIds.Keys.Where(c=>c==null||!activeCrates.Contains(c)).ToArray())hostCrateIds.Remove(old);
             state.crates = activeCrates.Select(c=>new OnlineCrateState { id=hostCrateIds[c],lane=c.LaneIndex,x=c.transform.position.x }).ToArray();
+            state.mines=menu.Obstacles.ActiveMines.Where(m=>m!=null&&!m.Detonated).Select(m=>new OnlineMineState
+                {id=m.Id,lane=m.LaneIndex,x=m.transform.position.x,arms=m.ArmsAtBeat,expires=m.ExpiresAtBeat}).ToArray();
             return state;
         }
 
@@ -353,7 +356,8 @@ namespace LeftRight.Rebuild
                 player.ApplyNetworkJump(value.jumping,value.jumpPhase);
                 // Set the banks first so pinning uses the same visible geometry as host.
                 trap.ApplyNetworkPose(value.travel,value.target,value.pending,value.recovery);
-                if ((value.pinned || value.eliminated) && !player.IsPinned && !player.IsEliminated)
+                if(value.blasted&&!player.WasBlasted)player.Explode(menu.Obstacles.BloodMaterial,menu.Obstacles.ExplosionClip);
+                if (!value.blasted&&(value.pinned || value.eliminated) && !player.IsPinned && !player.IsEliminated)
                     player.PinTo(value.fromLeft?trap.leftBank:trap.rightBank,value.fromLeft,trap.spikeReach);
                 if(value.eliminated && !player.IsEliminated)
                 { player.Eliminate();player.SqueezeBetween(trap.leftBank,trap.rightBank,trap.pillarThickness); }
@@ -367,6 +371,7 @@ namespace LeftRight.Rebuild
                 recoveryVersions[i]=value.recovery;
             }
             ApplyCrates(state.crates);
+            menu.Obstacles.ApplyNetwork(state.mines);
             menu.Scores.ApplyNetwork(state.survivalSeconds,state.survivalTimes,state.over);
             if(state.over && !resultReceived)
             {
@@ -434,14 +439,17 @@ namespace LeftRight.Rebuild
         public bool right,over;
         public OnlinePlayerState[] players;
         public OnlineCrateState[] crates;
+        public OnlineMineState[] mines;
     }
     [Serializable] public sealed class OnlinePlayerState
     {
         public float x,horizontal,travel,target;
         public float jumpPhase;
         public bool jumping;
+        public bool blasted;
         public int pending,recovery;
         public bool pinned,eliminated,fromLeft,crushed,returned;
     }
     [Serializable] public sealed class OnlineCrateState { public int id,lane; public float x; }
+    [Serializable] public sealed class OnlineMineState { public int id,lane;public float x;public double arms,expires; }
 }

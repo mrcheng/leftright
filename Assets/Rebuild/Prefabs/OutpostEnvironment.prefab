@@ -3489,7 +3489,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a156ce27f12e0104083cb886a06257a8, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitMarch
   role: 1
   female: 0
@@ -3519,7 +3519,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8647b7caa13c36e419e6108cf30f243f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitController
   playerIndex: 1
   isLocallyControlled: 0
@@ -3530,6 +3530,8 @@ MonoBehaviour:
   ragdoll: {fileID: 8707450313448154583}
   walkSpeed: 1.5
   collisionRadius: 0.25
+  jumpHeight: 0.85
+  jumpDuration: 0.65
   penetrationDepth: 0.2
   computerControlled: 0
 --- !u!114 &3161106312658057680
@@ -3542,7 +3544,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04c712c2a7058ed44867304df6aef682, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitAudio
   output: {fileID: 111396223202087572}
   scream: {fileID: 8300000, guid: bef875246b54d0049aa36517798a0470, type: 3}
@@ -3655,7 +3657,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e000fca888b0fe945a2593a82d0a540f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
   settledThickness: 0.06
   fallSpeed: 1
@@ -5460,7 +5462,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4eae060daf62c1f4e9ff20c1485f0890, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.HealthCrateSpawner
   course: {fileID: 990741086452730322}
   cratePrefab: {fileID: 8223188995427548273, guid: fe607ee812fa4b245a0b2eef7672639e, type: 3}
@@ -6019,7 +6021,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4b4b87edca7af644960b45f02268c44, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.WindFlag
   width: 1.05
   height: 1.52
@@ -6613,7 +6615,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 41e7d62f05b2be04fb7c6181ac9ae3e7, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.OfficerDirections
   leftShoulder: {fileID: 7317839663393461864}
   rightShoulder: {fileID: 7152530096086290097}
@@ -6632,7 +6634,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f61afab47b81fdd469f9cb58a0e27665, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.OfficerMarch
   directions: {fileID: 4540796415984041676}
   audioOutput: {fileID: 5423584556174031193}
@@ -6693,7 +6695,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06c44017df6b41b44abc1545f51cdd4b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.LaneSpikeTrap
   leftBank: {fileID: 549270012949603378}
   rightBank: {fileID: 8769922616541513066}
@@ -8472,7 +8474,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 82d73be0c85845742b43497935d5188a, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.OutpostAudio
   palette: {fileID: 11400000, guid: e76b824919e6c674f9fa3fdc1a500a3d, type: 2}
   music: {fileID: 3195986975775023428}
@@ -8926,7 +8928,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06c44017df6b41b44abc1545f51cdd4b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.LaneSpikeTrap
   leftBank: {fileID: 8733537383278182189}
   rightBank: {fileID: 2406680924083662082}
@@ -10036,7 +10038,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06c44017df6b41b44abc1545f51cdd4b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.LaneSpikeTrap
   leftBank: {fileID: 8775500598365061593}
   rightBank: {fileID: 4636932031686470014}
@@ -10523,7 +10525,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a156ce27f12e0104083cb886a06257a8, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitMarch
   role: 3
   female: 1
@@ -10553,7 +10555,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8647b7caa13c36e419e6108cf30f243f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitController
   playerIndex: 3
   isLocallyControlled: 0
@@ -10564,6 +10566,8 @@ MonoBehaviour:
   ragdoll: {fileID: 1736973414303000727}
   walkSpeed: 1.5
   collisionRadius: 0.25
+  jumpHeight: 0.85
+  jumpDuration: 0.65
   penetrationDepth: 0.2
   computerControlled: 0
 --- !u!114 &7306324594253873810
@@ -10576,7 +10580,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04c712c2a7058ed44867304df6aef682, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitAudio
   output: {fileID: 4656028038377655767}
   scream: {fileID: 8300000, guid: 764609f08cffa014386b7e7d828eceff, type: 3}
@@ -10689,7 +10693,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e000fca888b0fe945a2593a82d0a540f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
   settledThickness: 0.06
   fallSpeed: 1
@@ -11075,6 +11079,7 @@ GameObject:
   - component: {fileID: 4911637595807299655}
   - component: {fileID: 8156725526682356770}
   - component: {fileID: 7408402796270050849}
+  - component: {fileID: 987338904262047222}
   m_Layer: 0
   m_Name: OutpostEnvironment
   m_TagString: Untagged
@@ -11118,7 +11123,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 50ddbd8dc3c962a439ff537a4eaa504e, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.DirectionFloodlights
   officer: {fileID: 4540796415984041676}
   leftLight: {fileID: 953148574998328862}
@@ -11137,7 +11142,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: acf2a7209534fb043be842b65c07f005, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RebuildRoundStart
   audioOutput: {fileID: 5423584556174031193}
   officer: {fileID: 4540796415984041676}
@@ -11155,7 +11160,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4753447bad1e85843a540f18e736db71, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.MasterBeat
   audioOutput: {fileID: 5423584556174031193}
   onBeat:
@@ -11171,7 +11176,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b065acfe628b8de4791aa115ed1b632f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.SpikeCourse
   round: {fileID: 3614770725202961182}
   players:
@@ -11195,7 +11200,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ec14b582c069c4b428591f902e630195, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.LensSplatter
   course: {fileID: 990741086452730322}
   gameCamera: {fileID: 2350197880109829823}
@@ -11212,7 +11217,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99b4422849492a84888ddf656a167ce1, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.GameViewSettings
   course: {fileID: 990741086452730322}
   gameCamera: {fileID: 2350197880109829823}
@@ -11229,7 +11234,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ddc3b1f1607ce24b815ac52a800d6a4, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.VictoryDirector
   course: {fileID: 990741086452730322}
   view: {fileID: 5762068223470358062}
@@ -11289,6 +11294,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4868d90d3fd7d74d86a5354d421690d, type: 3}
   m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.OnlineTestDriver
+--- !u!114 &987338904262047222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6663512733640326206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6afa64f95e826534c93a7c36b18a43c5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.ObstacleSpawner
+  course: {fileID: 990741086452730322}
+  firstSpawnBeat: 12
+  intervalBeats: 16
+  lifetimeBeats: 12
+  armingBeats: 2
+  minimumSpawnDistance: 1.5
+  maximumSpawnDistance: 2
+  spikeMargin: 0.8
+  automaticSpawning: 1
 --- !u!1 &6664416983528790334
 GameObject:
   m_ObjectHideFlags: 0
@@ -13311,7 +13337,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4b4b87edca7af644960b45f02268c44, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.WindFlag
   width: 1.05
   height: 1.52
@@ -13366,7 +13392,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a156ce27f12e0104083cb886a06257a8, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitMarch
   role: 2
   female: 0
@@ -13396,7 +13422,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8647b7caa13c36e419e6108cf30f243f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitController
   playerIndex: 2
   isLocallyControlled: 0
@@ -13407,6 +13433,8 @@ MonoBehaviour:
   ragdoll: {fileID: 7275702797370310810}
   walkSpeed: 1.5
   collisionRadius: 0.25
+  jumpHeight: 0.85
+  jumpDuration: 0.65
   penetrationDepth: 0.2
   computerControlled: 0
 --- !u!114 &4792743479264114476
@@ -13419,7 +13447,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04c712c2a7058ed44867304df6aef682, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitAudio
   output: {fileID: 807273407125156256}
   scream: {fileID: 8300000, guid: f925415073bb8744e965ece512c1cd2f, type: 3}
@@ -13532,7 +13560,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e000fca888b0fe945a2593a82d0a540f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
   settledThickness: 0.06
   fallSpeed: 1
@@ -14449,7 +14477,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a156ce27f12e0104083cb886a06257a8, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitMarch
   role: 0
   female: 1
@@ -14479,7 +14507,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8647b7caa13c36e419e6108cf30f243f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitController
   playerIndex: 0
   isLocallyControlled: 1
@@ -14490,6 +14518,8 @@ MonoBehaviour:
   ragdoll: {fileID: 1570689859011268439}
   walkSpeed: 1.5
   collisionRadius: 0.25
+  jumpHeight: 0.85
+  jumpDuration: 0.65
   penetrationDepth: 0.2
   computerControlled: 0
 --- !u!114 &8735724236596725201
@@ -14502,7 +14532,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04c712c2a7058ed44867304df6aef682, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitAudio
   output: {fileID: 6954568635180123045}
   scream: {fileID: 8300000, guid: 0de0f2316666148439f3af6e24645493, type: 3}
@@ -14615,7 +14645,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e000fca888b0fe945a2593a82d0a540f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
   settledThickness: 0.06
   fallSpeed: 1
@@ -15188,7 +15218,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 06c44017df6b41b44abc1545f51cdd4b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.LaneSpikeTrap
   leftBank: {fileID: 3804225549817231628}
   rightBank: {fileID: 5769435153859966247}

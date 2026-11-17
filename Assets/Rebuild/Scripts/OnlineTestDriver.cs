@@ -53,6 +53,10 @@ namespace LeftRight.Rebuild
                         travel=course.traps.Select(t=>t.CurrentTravel).ToArray(),pending=course.traps.Select(t=>t.PendingRecoverySteps).ToArray(),
                         recovery=course.traps.Select(t=>t.RecoveryVersion).ToArray(),dead=course.players.Select(p=>p.IsEliminated).ToArray()};
                     report.jumping=course.players.Select(p=>p.IsJumping).ToArray();
+                    report.blasted=course.players.Select(p=>p.WasBlasted).ToArray();
+                    report.fragments=course.players.Select(p=>p.GetComponent<RecruitExplosion>()?.FragmentCount??0).ToArray();
+                    var mines=online.menu.Obstacles.ActiveMines.Where(m=>m!=null&&!m.Detonated).ToArray();
+                    report.mineIds=mines.Select(m=>m.Id).ToArray();report.mineLanes=mines.Select(m=>m.LaneIndex).ToArray();
                     File.WriteAllText(reportPath,JsonUtility.ToJson(report));
                 }
             }
@@ -64,6 +68,7 @@ namespace LeftRight.Rebuild
             public double beat,now,startsAt; public string status,joinCode;
             public float[] x,z,travel;public int[] pending,recovery;public bool[] dead;
             public bool[] jumping;
+            public bool[] blasted;public int[] fragments,mineIds,mineLanes;
         }
     }
 }

@@ -19,6 +19,8 @@ namespace LeftRight.Rebuild
         [Min(.2f)] public float jumpDuration = .65f;
         public bool IsJumping { get; private set; }
         public float JumpPhase { get; private set; }
+        public float JumpOffset => Mathf.Max(0,transform.localPosition.y-startingPosition.y);
+        public bool WasBlasted { get; private set; }
         public float LandingAmount => Mathf.Clamp01((float)((landingUntil-Time.realtimeSinceStartupAsDouble)/.14));
         double jumpStarted, landingUntil;
         public bool IsEliminated { get; private set; }
@@ -143,6 +145,8 @@ namespace LeftRight.Rebuild
 
         public void ResetPlayer()
         {
+            var explosion=GetComponent<RecruitExplosion>();if(explosion!=null)explosion.ResetExplosion();
+            WasBlasted=false;
             CancelJump();
             if (ragdoll != null) ragdoll.ResetRagdoll();
             if (hitAudio != null) hitAudio.ResetAudio();
@@ -177,6 +181,15 @@ namespace LeftRight.Rebuild
             deathPosition = transform.localPosition;
             deathRotation = transform.localRotation;
             Eliminated?.Invoke(this);
+        }
+
+        public void Explode(Material blood,AudioClip sound)
+        {
+            if(IsEliminated||IsPinned)return;
+            WasBlasted=true;Eliminate();
+            var explosion=GetComponent<RecruitExplosion>();
+            if(explosion==null)explosion=gameObject.AddComponent<RecruitExplosion>();
+            explosion.Burst(this,blood,sound);
         }
 
         public void PinTo(Transform bank, bool fromLeft, float spikeReach)

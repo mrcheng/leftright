@@ -1,0 +1,1 @@
+Original procedurally synthesized mine blast for LeftRight. Generated from seeded noise, a descending bass impulse, and decaying debris noise. No third-party samples.

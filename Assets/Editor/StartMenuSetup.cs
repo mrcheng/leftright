@@ -37,6 +37,8 @@ namespace LeftRight.Editor
             menu.course.round.playOnStart=false;
             var online=root.GetComponent<OnlineMatch>();if(online==null)online=root.AddComponent<OnlineMatch>();
             online.menu=menu;menu.online=online;
+            var obstacles=root.GetComponent<ObstacleSpawner>();if(obstacles==null)obstacles=root.AddComponent<ObstacleSpawner>();
+            obstacles.course=menu.course;
             if(root.GetComponent<OnlineTestDriver>()==null)root.AddComponent<OnlineTestDriver>();
             foreach(var player in menu.course.players)
             {

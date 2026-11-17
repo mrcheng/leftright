@@ -28,12 +28,16 @@ namespace LeftRight.Rebuild
         GUIStyle title, label, small, button, centered;
         VictoryDirector victory;
         public SurvivalScore Scores { get; private set; }
+        public ObstacleSpawner Obstacles { get; private set; }
 
         void Awake()
         {
             victory = GetComponent<VictoryDirector>();
             Scores = gameObject.AddComponent<SurvivalScore>();
             Scores.Initialize(course,this);
+            Obstacles=course.GetComponent<ObstacleSpawner>();
+            if(Obstacles==null)Obstacles=course.gameObject.AddComponent<ObstacleSpawner>();
+            Obstacles.Initialize(course);
             // The menu must win startup ordering over the round's automatic Start.
             course.round.playOnStart = false;
             masterVolume = PlayerPrefs.GetFloat("Rebuild.MasterVolume", 1);

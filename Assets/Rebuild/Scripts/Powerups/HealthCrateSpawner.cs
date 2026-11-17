@@ -78,19 +78,11 @@ namespace LeftRight.Rebuild
         bool TryChoosePosition(int lane, out float x)
         {
             var player = course.players[lane]; var trap = course.traps[lane];
-            float center = player.transform.position.x;
-            float safeLeft = trap.LeftTip + spikeMargin, safeRight = trap.RightTip - spikeMargin;
             float near = Mathf.Max(cratePrefab.collectionRadius + .1f, minimumSpawnDistance);
             float far = Mathf.Max(near, maximumSpawnDistance);
-            // Intersect each side's 1.5–2m range with the safe lane. Clamping a random point
-            // could put the crate under the player or against a spike; a missing range means skip it.
-            float leftMin = Mathf.Max(safeLeft, center - far), leftMax = Mathf.Min(safeRight, center - near);
-            float rightMin = Mathf.Max(safeLeft, center + near), rightMax = Mathf.Min(safeRight, center + far);
-            bool leftValid = leftMin <= leftMax, rightValid = rightMin <= rightMax;
-            if (!leftValid && !rightValid) { x = 0; return false; }
-            bool left = leftValid && (!rightValid || random.Next(2) == 0);
-            x = Mathf.Lerp(left ? leftMin : rightMin, left ? leftMax : rightMax, (float)random.NextDouble());
-            return true;
+            var obstacles=course.GetComponent<ObstacleSpawner>();
+            return LaneSpawnPlacement.TryChoose(player,trap,near,far,spikeMargin,random,
+                candidate=>obstacles==null||!obstacles.BlocksHealth(lane,candidate),out x);
         }
 
         bool HasCrate(int lane)
@@ -103,6 +95,8 @@ namespace LeftRight.Rebuild
         {
             if (lane < 0 || lane >= course.players.Length || HasCrate(lane)) return null;
             var player = course.players[lane]; var trap = course.traps[lane];
+            var obstacles=course.GetComponent<ObstacleSpawner>();
+            if(obstacles!=null&&obstacles.BlocksHealth(lane,x))return null;
             if (!course.round.HasStarted || course.IsGameOver || player.IsPinned || player.IsEliminated ||
                 x <= trap.LeftTip + .45f || x >= trap.RightTip - .45f) return null;
             var crate = Instantiate(cratePrefab, new Vector3(x, .65f, player.transform.position.z), Quaternion.identity, transform);
