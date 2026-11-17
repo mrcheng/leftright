@@ -17,6 +17,10 @@ namespace LeftRight.Rebuild
         public GameViewMode Mode { get; private set; }
         public bool SettingsOpen { get; private set; }
         public bool CinematicActive { get; set; }
+        public bool RoundSummaryActive { get; set; }
+        public Vector3 CoursePosition => widePosition;
+        public Quaternion CourseRotation => wideRotation;
+        public float CourseFieldOfView => wideFieldOfView;
         Vector3 widePosition, velocity;
         Quaternion wideRotation;
         float wideFieldOfView, fieldVelocity;
@@ -53,7 +57,7 @@ namespace LeftRight.Rebuild
         {
             if (CinematicActive) return;
             var player = LocalPlayer;
-            bool close = Mode == GameViewMode.Online && player != null &&
+            bool close = !RoundSummaryActive && Mode == GameViewMode.Online && player != null &&
                 (course.round.IsCountingDown || course.round.HasStarted);
             Vector3 desired = widePosition;
             float fov = close ? onlineFieldOfView : wideFieldOfView;
