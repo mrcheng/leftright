@@ -22,8 +22,18 @@ namespace LeftRight.Editor
         {
             var menu=root.GetComponent<StartMenu>();if(menu==null)menu=root.AddComponent<StartMenu>();
             menu.course=root.GetComponent<SpikeCourse>();menu.view=root.GetComponent<GameViewSettings>();
-            menu.menuFont=AssetDatabase.LoadAssetAtPath<Font>("Assets/Rebuild/UI/Kenney/Kenney Future.ttf");
-            menu.buttonTexture=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Rebuild/UI/Kenney/button_rectangle_depth_flat.png");
+            const string pixel="Assets/Rebuild/UI/Pixel/";
+            foreach(string name in new[]{"button.png","button_pressed.png"})
+            {
+                var importer=(TextureImporter)AssetImporter.GetAtPath(pixel+name);
+                importer.filterMode=FilterMode.Point;importer.mipmapEnabled=false;
+                importer.textureCompression=TextureImporterCompression.Uncompressed;importer.SaveAndReimport();
+            }
+            var fontImporter=(TrueTypeFontImporter)AssetImporter.GetAtPath(pixel+"PressStart2P.ttf");
+            fontImporter.fontRenderingMode=FontRenderingMode.HintedRaster; fontImporter.SaveAndReimport();
+            menu.menuFont=AssetDatabase.LoadAssetAtPath<Font>(pixel+"PressStart2P.ttf");
+            menu.buttonTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(pixel+"button.png");
+            menu.pressedButtonTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(pixel+"button_pressed.png");
             menu.course.round.playOnStart=false;
             foreach(var player in menu.course.players)
             {

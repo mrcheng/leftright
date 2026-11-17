@@ -4,20 +4,19 @@ namespace LeftRight.Rebuild
 {
     public enum GameViewMode { Local, Online }
 
-    /// <summary>Client presentation preference, independent of network/player identity.
-    /// Selecting Online changes framing only; a future session service owns matchmaking.</summary>
+    /// <summary>Camera behavior follows session type: local gets the full course;
+    /// a future online session enables following its locally owned recruit.</summary>
     public sealed class GameViewSettings : MonoBehaviour
     {
-        const string Preference = "Rebuild.ViewMode";
         public SpikeCourse course;
         public Camera gameCamera;
         public float followSmoothSeconds = .85f;
         public float onlineDistance = 10f;
         public float onlineFieldOfView = 52f;
         public GameViewMode Mode { get; private set; }
-        public bool SettingsOpen { get; private set; }
         public bool CinematicActive { get; set; }
         public bool RoundSummaryActive { get; set; }
+        public bool MenuActive { get; set; }
         public Vector3 CoursePosition => widePosition;
         public Quaternion CourseRotation => wideRotation;
         public float CourseFieldOfView => wideFieldOfView;
@@ -31,15 +30,13 @@ namespace LeftRight.Rebuild
             widePosition = gameCamera.transform.position;
             wideRotation = gameCamera.transform.rotation;
             wideFieldOfView = gameCamera.fieldOfView;
-            Mode = PlayerPrefs.GetInt(Preference, 1) == 1 ? GameViewMode.Online : GameViewMode.Local;
+            Mode = GameViewMode.Local;
             gear = MakeGear();
         }
 
         public void SetMode(GameViewMode mode)
         {
             Mode = mode;
-            PlayerPrefs.SetInt(Preference, (int)mode);
-            PlayerPrefs.Save();
         }
 
         public RecruitController LocalPlayer
@@ -109,19 +106,13 @@ namespace LeftRight.Rebuild
 
         void OnGUI()
         {
+            if (MenuActive) return;
             const float margin = 14, button = 38;
             if (GUI.Button(new Rect(Screen.width - margin - button, margin, button, button), gear))
-                SettingsOpen = !SettingsOpen;
-            if (!SettingsOpen) return;
-            var panel = new Rect(Screen.width - 264, 60, 250, 174);
-            GUI.Box(panel, "Settings");
-            GUI.Label(new Rect(panel.x + 14, panel.y + 28, 220, 24), "Game mode");
-            if (GUI.Toggle(new Rect(panel.x + 14, panel.y + 56, 220, 28), Mode == GameViewMode.Local, "Local - full course", "Button"))
-                if (Mode != GameViewMode.Local) SetMode(GameViewMode.Local);
-            if (GUI.Toggle(new Rect(panel.x + 14, panel.y + 90, 220, 28), Mode == GameViewMode.Online, "Online - follow your recruit", "Button"))
-                if (Mode != GameViewMode.Online) SetMode(GameViewMode.Online);
-            var note = new GUIStyle(GUI.skin.label) { wordWrap = true, fontSize = 11 };
-            GUI.Label(new Rect(panel.x + 14, panel.y + 124, 222, 44), "Camera preview. Online multiplayer is coming later.", note);
+            {
+                var menu = GetComponent<StartMenu>();
+                if (menu != null) { menu.Open(); menu.ShowSettings(); }
+            }
         }
 
         static Texture2D MakeGear()

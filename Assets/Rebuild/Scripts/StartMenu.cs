@@ -10,18 +10,25 @@ namespace LeftRight.Rebuild
         public SpikeCourse course;
         public GameViewSettings view;
         public Texture2D buttonTexture;
+        public Texture2D pressedButtonTexture;
         public Font menuFont;
         public int PlayerCount { get; private set; } = 4;
         public bool IsOpen { get; private set; }
+        public enum MenuPage { Main, LocalGame, Settings }
+        public MenuPage Page { get; private set; }
+        public bool OnlineAvailable => false;
+        float masterVolume;
         RecruitController[] allPlayers;
         LaneSpikeTrap[] allTraps;
         Transform[] lanePlatforms;
-        GUIStyle title, label, small, button;
+        GUIStyle title, label, small, button, centered;
 
         void Awake()
         {
             // The menu must win startup ordering over the round's automatic Start.
             course.round.playOnStart = false;
+            masterVolume = PlayerPrefs.GetFloat("Rebuild.MasterVolume", 1);
+            AudioListener.volume = masterVolume;
             allPlayers = course.players.ToArray(); allTraps = course.traps.ToArray();
             var group = transform.Find("Player lanes - gameplay anchors");
             lanePlatforms = Enumerable.Range(1, allPlayers.Length).Select(i => group.Find("Player lane " + i)).ToArray();
@@ -31,6 +38,7 @@ namespace LeftRight.Rebuild
         public void Open()
         {
             course.round.CancelStart(); IsOpen = true;
+            Page = MenuPage.Main; view.MenuActive = true;
             view.RoundSummaryActive = true;
             SetPlayerCount(PlayerCount);
         }
@@ -66,7 +74,11 @@ namespace LeftRight.Rebuild
         public void Play()
         {
             if (!IsOpen) return;
+            // This entry point starts a local match. Follow-camera belongs exclusively
+            // to a future online session, never to a user camera preference.
+            view.SetMode(GameViewMode.Local);
             IsOpen = false; view.RoundSummaryActive = false;
+            view.MenuActive = false;
             course.round.BeginRound();
         }
 
@@ -74,20 +86,58 @@ namespace LeftRight.Rebuild
         {
             var keys = Keyboard.current;
             if (keys == null) return;
-            if (keys.escapeKey.wasPressedThisFrame) { if (IsOpen) Play(); else Open(); }
-            else if (IsOpen && keys.enterKey.wasPressedThisFrame) Play();
+            if (keys.escapeKey.wasPressedThisFrame) { if (IsOpen) Back(); else Open(); }
+            else if (IsOpen && keys.enterKey.wasPressedThisFrame)
+            { if (Page == MenuPage.LocalGame) Play(); else if (Page == MenuPage.Main) ShowLocalGame(); }
+        }
+
+        public void ShowLocalGame() { if (IsOpen) Page = MenuPage.LocalGame; }
+        public void ShowSettings() { if (IsOpen) Page = MenuPage.Settings; }
+        public void Back() { if (IsOpen) Page = MenuPage.Main; }
+        public void SetMasterVolume(float value)
+        {
+            masterVolume = Mathf.Clamp01(value); AudioListener.volume = masterVolume;
+            PlayerPrefs.SetFloat("Rebuild.MasterVolume", masterVolume);
         }
 
         void Styles()
         {
             if (title != null) return;
-            title = new GUIStyle(GUI.skin.label) { font = menuFont, fontSize = 38, fontStyle = FontStyle.Bold, normal = { textColor = new Color(.96f,.91f,.73f) } };
-            label = new GUIStyle(GUI.skin.label) { font = menuFont, fontSize = 20, normal = { textColor = new Color(.94f,.91f,.8f) } };
-            small = new GUIStyle(label) { fontSize = 14, wordWrap = true, normal = { textColor = new Color(.71f,.75f,.64f) } };
-            button = new GUIStyle(GUI.skin.button) { font = menuFont, fontSize = 22, border = new RectOffset(10,10,10,12),
+            title = new GUIStyle(GUI.skin.label) { font = menuFont, fontSize = 64, alignment = TextAnchor.MiddleCenter, normal = { textColor = new Color(.96f,.91f,.73f) } };
+            label = new GUIStyle(GUI.skin.label) { font = menuFont, fontSize = 16, normal = { textColor = new Color(.94f,.91f,.8f) } };
+            small = new GUIStyle(label) { fontSize = 12, wordWrap = true, normal = { textColor = new Color(.71f,.75f,.64f) } };
+            button = new GUIStyle(GUI.skin.button) { font = menuFont, fontSize = 16, border = new RectOffset(12,12,12,12),
                 normal = { background = buttonTexture, textColor = new Color(.12f,.15f,.1f) },
                 hover = { background = buttonTexture, textColor = Color.black },
-                active = { background = buttonTexture, textColor = Color.black } };
+                active = { background = pressedButtonTexture, textColor = Color.black } };
+            centered = new GUIStyle(label) { alignment = TextAnchor.MiddleCenter };
+        }
+
+        bool MenuButton(Rect rect, string text, bool primary = false)
+        {
+            GUI.backgroundColor = primary ? new Color(.79f,.82f,.47f) : new Color(.58f,.63f,.49f);
+            bool clicked = GUI.Button(rect, text, button);
+            GUI.backgroundColor = Color.white; return clicked;
+        }
+
+        static void Bar(Rect rect, Color color)
+        {
+            var before = GUI.color; GUI.color = color;
+            GUI.DrawTexture(rect, Texture2D.whiteTexture); GUI.color = before;
+        }
+
+        static void Arrow(Vector2 center, bool right)
+        {
+            var color = new Color(.72f,.75f,.44f);
+            Bar(new Rect(center.x-32,center.y-4,64,8),color);
+            // Stair-step pixels instead of rotated rectangles: all logo edges stay hard
+            // and the arrowheads remain attached at every screen scale.
+            for(int step=0;step<4;step++)
+            {
+                float x = center.x + (right ? 24-step*8 : -32+step*8);
+                Bar(new Rect(x,center.y-4-step*8,8,8),color);
+                Bar(new Rect(x,center.y-4+step*8,8,8),color);
+            }
         }
 
         void OnGUI()
@@ -99,31 +149,49 @@ namespace LeftRight.Rebuild
             }
             Styles();
             float scale = Mathf.Min(Screen.width / 1280f, Screen.height / 720f);
-            var oldMatrix = GUI.matrix; var oldColor = GUI.color;
+            var oldMatrix = GUI.matrix; var oldColor = GUI.color; var oldBackground = GUI.backgroundColor;
             GUI.matrix = Matrix4x4.TRS(new Vector3((Screen.width-1280*scale)*.5f,(Screen.height-720*scale)*.5f,0),Quaternion.identity,Vector3.one*scale);
-            GUI.color = new Color(.025f,.04f,.025f,.58f); GUI.DrawTexture(new Rect(-1000,-1000,4000,3000),Texture2D.whiteTexture);
-            GUI.color = new Color(.09f,.12f,.085f,.97f); GUI.DrawTexture(new Rect(80,55,520,610),Texture2D.whiteTexture);
-            GUI.color = new Color(.63f,.66f,.4f); GUI.DrawTexture(new Rect(80,55,7,610),Texture2D.whiteTexture);
-            GUI.color = Color.white;
-            GUI.Label(new Rect(118,89,450,32),"OUTPOST DRILL",small);
-            GUI.Label(new Rect(113,122,460,88),"LEFT / RIGHT",title);
-            GUI.Label(new Rect(118,218,425,55),"Follow the orders.\nBe the last recruit standing.",label);
-            GUI.Label(new Rect(118,301,420,32),"RECRUITS",small);
-            for(int count=2;count<=4;count++)
+            // A full-screen title treatment, with one centered menu hierarchy. It scales
+            // uniformly and extends the background beyond the reference aspect ratio.
+            Bar(new Rect(-2000,-2000,6000,6000),new Color(.035f,.055f,.04f,.95f));
+            Bar(new Rect(-2000,0,6000,9),new Color(.5f,.54f,.32f));
+            Bar(new Rect(-2000,711,6000,9),new Color(.5f,.54f,.32f));
+            GUI.Label(new Rect(230,81,390,103),"LEFT",title);
+            GUI.Label(new Rect(660,81,390,103),"RIGHT",title);
+            Arrow(new Vector2(195,137),false);Arrow(new Vector2(1085,137),true);
+            Bar(new Rect(638,105,4,68),new Color(.44f,.49f,.3f));
+            GUI.Label(new Rect(190,198,900,42),"FOLLOW THE ORDERS. BE THE LAST ONE STANDING.",centered);
+            Bar(new Rect(490,260,300,2),new Color(.32f,.38f,.25f));
+            if (Page == MenuPage.Main)
             {
-                GUI.backgroundColor = count==PlayerCount ? new Color(.76f,.8f,.42f) : new Color(.44f,.5f,.37f);
-                if(GUI.Button(new Rect(118+(count-2)*140,341,126,58),count.ToString(),button))SetPlayerCount(count);
+                if(MenuButton(new Rect(410,310,460,66),"START LOCAL GAME",true))ShowLocalGame();
+                bool enabled=GUI.enabled;GUI.enabled=false;
+                GUI.color=new Color(.6f,.62f,.59f);
+                MenuButton(new Rect(410,398,460,66),"ONLINE MATCH");GUI.enabled=enabled;GUI.color=Color.white;
+                GUI.Label(new Rect(410,466,460,28),"COMING SOON",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                if(MenuButton(new Rect(410,517,460,62),"SETTINGS"))ShowSettings();
             }
-            GUI.backgroundColor = Color.white;
-            GUI.Label(new Rect(118,418,430,32),"YOU + " + (PlayerCount-1) + (PlayerCount==2?" COMPUTER":" COMPUTERS"),label);
-            GUI.Label(new Rect(118,455,420,48),"Your green recruit leads the line.\nA / D to march. Escape opens this menu.",small);
-            GUI.backgroundColor = new Color(.79f,.82f,.47f);
-            if(GUI.Button(new Rect(118,536,420,66),"START DRILL",button))Play();
-            GUI.backgroundColor = Color.white;
-            GUI.Label(new Rect(118,618,420,30),"2-4 recruits  /  solo vs computers",small);
-            GUI.Label(new Rect(690,300,490,50),PlayerCount+" RECRUITS. ONE SURVIVOR.",label);
-            GUI.Label(new Rect(690,350,440,92),"Watch the instructor. Match the beat.\nWrong steps bring the spikes closer.\nGrab a medic crate to win back space.",small);
-            GUI.color=oldColor;GUI.matrix=oldMatrix;
+            else if(Page==MenuPage.LocalGame)
+            {
+                GUI.Label(new Rect(380,283,520,45),"LOCAL GAME",centered);
+                GUI.Label(new Rect(380,333,520,32),"NUMBER OF RECRUITS",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                for(int count=2;count<=4;count++)
+                    if(MenuButton(new Rect(410+(count-2)*160,380,140,58),count.ToString(),count==PlayerCount))SetPlayerCount(count);
+                GUI.Label(new Rect(260,451,760,40),"YOU + "+(PlayerCount-1)+(PlayerCount==2?" COMPUTER OPPONENT":" COMPUTER OPPONENTS"),centered);
+                if(MenuButton(new Rect(410,514,460,64),"START GAME",true))Play();
+                if(MenuButton(new Rect(510,597,260,48),"BACK"))Back();
+            }
+            else
+            {
+                GUI.Label(new Rect(380,283,520,45),"SETTINGS",centered);
+                GUI.Label(new Rect(410,350,460,38),"VOLUME  "+Mathf.RoundToInt(masterVolume*100)+"%",centered);
+                if(MenuButton(new Rect(350,395,62,46),"-"))SetMasterVolume(masterVolume-.1f);
+                for(int step=0;step<10;step++)Bar(new Rect(438+step*38,403,28,28),step<Mathf.RoundToInt(masterVolume*10)?new Color(.72f,.75f,.44f):new Color(.18f,.24f,.17f));
+                if(MenuButton(new Rect(860,395,62,46),"+"))SetMasterVolume(masterVolume+.1f);
+                if(MenuButton(new Rect(510,597,260,48),"BACK"))Back();
+            }
+            GUI.Label(new Rect(240,663,800,32),"OUTPOST DRILL  /  PROTOTYPE",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+            GUI.color=oldColor;GUI.backgroundColor=oldBackground;GUI.matrix=oldMatrix;
         }
     }
 }

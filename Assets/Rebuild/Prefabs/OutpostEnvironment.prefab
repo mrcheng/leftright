@@ -11256,8 +11256,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.StartMenu
   course: {fileID: 990741086452730322}
   view: {fileID: 5762068223470358062}
-  buttonTexture: {fileID: 2800000, guid: 099fbf273503a414d85bb091043596cb, type: 3}
-  menuFont: {fileID: 12800000, guid: fa9b3936ffcd0cc40b90aa34f35ddc12, type: 3}
+  buttonTexture: {fileID: 2800000, guid: e49c455c2f87c9141a05ffd2ca6626b3, type: 3}
+  pressedButtonTexture: {fileID: 2800000, guid: 32af818442b68d445944b6d89f557126, type: 3}
+  menuFont: {fileID: 12800000, guid: 20e89f59d6cc92242b3ea19d36fbdbb0, type: 3}
 --- !u!1 &6664416983528790334
 GameObject:
   m_ObjectHideFlags: 0

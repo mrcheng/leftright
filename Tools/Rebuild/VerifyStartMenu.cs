@@ -27,10 +27,13 @@ try
   Check(Enumerable.Range(1,4).Count(i=>laneGroup.Find("Player lane "+i).gameObject.activeSelf)==count,count+" walkways are visible");
   Check(course.GetComponentsInChildren<LaneSpikeTrap>().Length==count,count+" spike lanes are active");
   Check(course.players[0].isLocallyControlled&&!course.players[0].computerControlled&&course.players.Skip(1).All(p=>p.computerControlled&&!p.isLocallyControlled),"One human and "+(count-1)+" computer opponents own separate inputs");
+  menu.view.SetMode(GameViewMode.Online); // Stale/previous session must never change local framing.
   menu.Play();
+  Check(menu.view.Mode==GameViewMode.Local,"Start Local Game always selects full-course camera behavior");
   Check(!menu.IsOpen&&round.IsCountingDown,"Start drill enters the normal music countdown");
   await Wait(()=>round.HasStarted);
   await Task.Delay(900);
+  Check(Vector3.Distance(menu.view.gameCamera.transform.position,menu.view.CoursePosition)<.01f&&Mathf.Abs(menu.view.gameCamera.fieldOfView-menu.view.CourseFieldOfView)<.01f,"Local gameplay stays in the full-course view");
   Check(course.players.Skip(1).All(p=>Mathf.Abs(p.Horizontal)>.2f),"Computers march without keyboard input");
   menu.Open();
   Check(menu.IsOpen&&!round.HasStarted&&!course.IsGameOver&&players.Where(p=>p.gameObject.activeSelf).All(p=>!p.IsEliminated),"Opening menu cancels and resets the running match");

@@ -45,7 +45,7 @@ try
  Check(Vector3.Distance(camera.transform.position,wide)<.03f&&Mathf.Abs(camera.fieldOfView-wideFov)<.03f,
     "Switching back to Local restores the wide view");
  settings.SetMode(GameViewMode.Online);
- Check(PlayerPrefs.GetInt("Rebuild.ViewMode")==1,"Mode preference persists between sessions");
+ Check(settings.Mode==GameViewMode.Online,"Future online sessions can select follow framing programmatically");
  round.BeginRound();await Task.Delay(1600);
  Check(camera.transform.position.z>wide.z+.5f,"Restart re-enters the selected Online framing");
 }
