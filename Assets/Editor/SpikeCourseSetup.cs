@@ -109,6 +109,7 @@ namespace LeftRight.Editor
             }
             OutpostSceneBuilder.RefreshOutpostMaterialBindings(environment);
             HealthPowerupSetup.AddTo(environment);
+            LensSplatterSetup.AddTo(environment);
         }
     }
 }

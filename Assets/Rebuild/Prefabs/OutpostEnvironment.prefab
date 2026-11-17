@@ -10903,6 +10903,7 @@ GameObject:
   - component: {fileID: 3614770725202961182}
   - component: {fileID: 226349629807214999}
   - component: {fileID: 990741086452730322}
+  - component: {fileID: 5352378083007867055}
   m_Layer: 0
   m_Name: OutpostEnvironment
   m_TagString: Untagged
@@ -11012,6 +11013,23 @@ MonoBehaviour:
   - {fileID: 6216473230361367099}
   - {fileID: 112632347282640480}
   reactionBeats: 0.5
+--- !u!114 &5352378083007867055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6663512733640326206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec14b582c069c4b428591f902e630195, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.LensSplatter
+  course: {fileID: 990741086452730322}
+  gameCamera: {fileID: 2350197880109829823}
+  splatterMaterial: {fileID: 2100000, guid: 14284a2eb5c6e9d44ad11c3da8854e71, type: 2}
+  lifetimeSeconds: 11
+  splatSize: 0.1
 --- !u!1 &6664416983528790334
 GameObject:
   m_ObjectHideFlags: 0

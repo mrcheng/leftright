@@ -16,6 +16,8 @@ namespace LeftRight.Rebuild
         public float walkSpeed = 1.5f;
         public float collisionRadius = .25f;
         public bool IsEliminated { get; private set; }
+        public event System.Action<RecruitController> Eliminated;
+        public event System.Action<RecruitController> Spiked;
         public bool IsPinned => pinnedBank != null;
         public bool PinnedFromLeft { get; private set; }
         public float penetrationDepth = .20f;
@@ -116,6 +118,7 @@ namespace LeftRight.Rebuild
             else transform.localRotation = pinnedFacing;
             deathPosition = transform.localPosition;
             deathRotation = transform.localRotation;
+            Eliminated?.Invoke(this);
         }
 
         public void PinTo(Transform bank, bool fromLeft, float spikeReach)
@@ -135,6 +138,7 @@ namespace LeftRight.Rebuild
             transform.position = position;
             pinnedOffset = bank.InverseTransformPoint(position);
             visualWidth = GetComponentInChildren<SkinnedMeshRenderer>().bounds.size.x;
+            Spiked?.Invoke(this);
         }
 
         public void SqueezeBetween(Transform left, Transform right, float thickness)
