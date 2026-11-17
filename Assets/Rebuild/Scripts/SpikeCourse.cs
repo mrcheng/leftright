@@ -35,7 +35,6 @@ namespace LeftRight.Rebuild
         void Prepare()
         {
             animationTime = Time.realtimeSinceStartupAsDouble;
-            foreach (var trap in traps) trap.Raise();
         }
 
         void ResetCourse()

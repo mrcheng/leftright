@@ -9,7 +9,7 @@ namespace LeftRight.Editor
 {
     public static class SpikeCourseSetup
     {
-        [MenuItem("LeftRight/Rebuild/Update rising spike pillars")]
+        [MenuItem("LeftRight/Rebuild/Update spike pillars")]
         public static void Install()
         {
             var scene = EditorSceneManager.GetActiveScene();

@@ -3349,9 +3349,6 @@ MonoBehaviour:
   - {fileID: 6014883684761689417}
   - {fileID: 952667049263947865}
   - {fileID: 5615823558656053769}
-  riseSeconds: 1.8
-  riseStagger: 0.1
-  hiddenDepth: 2.1
   inwardPerMiss: 0.45
   slideSeconds: 0.2
   spikeReach: 0.65
@@ -5758,9 +5755,6 @@ MonoBehaviour:
   - {fileID: 7368787591275998937}
   - {fileID: 7732979299996933414}
   - {fileID: 7938262326784836169}
-  riseSeconds: 1.8
-  riseStagger: 0.1
-  hiddenDepth: 2.1
   inwardPerMiss: 0.45
   slideSeconds: 0.2
   spikeReach: 0.65
@@ -8906,9 +8900,6 @@ MonoBehaviour:
   - {fileID: 4326382379503914275}
   - {fileID: 4990322953827353559}
   - {fileID: 2658772983587123585}
-  riseSeconds: 1.8
-  riseStagger: 0.1
-  hiddenDepth: 2.1
   inwardPerMiss: 0.45
   slideSeconds: 0.2
   spikeReach: 0.65
@@ -12229,9 +12220,6 @@ MonoBehaviour:
   - {fileID: 7525987109837941511}
   - {fileID: 2868438117605109160}
   - {fileID: 5933461525994087325}
-  riseSeconds: 1.8
-  riseStagger: 0.1
-  hiddenDepth: 2.1
   inwardPerMiss: 0.45
   slideSeconds: 0.2
   spikeReach: 0.65

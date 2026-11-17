@@ -6,9 +6,6 @@ namespace LeftRight.Rebuild
     {
         public Transform leftBank, rightBank;
         public Transform[] leftPillars, rightPillars;
-        public float riseSeconds = 1.8f;
-        public float riseStagger = .10f;
-        public float hiddenDepth = 2.1f;
         public float inwardPerMiss = .45f;
         public float slideSeconds = .20f;
         public float spikeReach = .65f;
@@ -17,12 +14,10 @@ namespace LeftRight.Rebuild
         public float MaximumTravel => Mathf.Max(0, (rightOpen.x - leftOpen.x - pillarThickness - finalGap) * .5f);
         public int MissedBeats { get; private set; }
         public float TargetTravel { get; private set; }
-        public bool IsRaised => raising && riseTime >= riseSeconds + riseStagger * 4;
         public float LeftTip => leftBank.position.x + spikeReach;
         public float RightTip => rightBank.position.x - spikeReach;
         Vector3 leftOpen, rightOpen;
-        float riseTime, travel;
-        bool raising;
+        float travel;
 
         void Awake()
         {
@@ -33,13 +28,10 @@ namespace LeftRight.Rebuild
 
         public void ResetTrap()
         {
-            raising = false;
-            riseTime = travel = TargetTravel = 0;
+            travel = TargetTravel = 0;
             MissedBeats = 0;
             ApplyPose();
         }
-
-        public void Raise() { raising = true; }
 
         public void MissBeat()
         {
@@ -60,7 +52,6 @@ namespace LeftRight.Rebuild
 
         public void Animate(float deltaTime)
         {
-            if (raising) riseTime += deltaTime;
             travel = Mathf.MoveTowards(travel, TargetTravel, inwardPerMiss / Mathf.Max(.01f, slideSeconds) * deltaTime);
             ApplyPose();
         }
@@ -71,20 +62,19 @@ namespace LeftRight.Rebuild
             rightBank.localPosition = rightOpen + Vector3.left * travel;
             for (int i = 0; i < leftPillars.Length; i++)
             {
-                float t = raising ? Mathf.Clamp01((riseTime - i * riseStagger) / Mathf.Max(.01f, riseSeconds)) : 0;
-                float y = -hiddenDepth * (1 - Mathf.SmoothStep(0, 1, t));
-                var left = leftPillars[i].localPosition; left.y = y; leftPillars[i].localPosition = left;
-                var right = rightPillars[i].localPosition; right.y = y; rightPillars[i].localPosition = right;
+                // Pillars are already at full height when the scene opens and after every reset.
+                var left = leftPillars[i].localPosition; left.y = 0; leftPillars[i].localPosition = left;
+                var right = rightPillars[i].localPosition; right.y = 0; rightPillars[i].localPosition = right;
             }
         }
 
-        public bool Touches(RecruitController player) => IsRaised &&
+        public bool Touches(RecruitController player) =>
             (player.transform.position.x - player.collisionRadius <= LeftTip ||
              player.transform.position.x + player.collisionRadius >= RightTip);
 
         public void ResolveContact(RecruitController player)
         {
-            if (!IsRaised || player.IsEliminated) return;
+            if (player.IsEliminated) return;
             if (!player.IsPinned)
             {
                 bool left = player.transform.position.x - player.collisionRadius <= LeftTip;

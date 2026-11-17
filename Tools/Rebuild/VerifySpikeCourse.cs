@@ -42,13 +42,13 @@ try
         "Both spike faces aim inward across each lane");
     round.BeginRound();
     Check(course.AliveCount == 4 && !course.IsGameOver && players.All(p => !p.IsEliminated), "Starting restores all four recruits");
-    Check(traps.All(t => t.leftPillars.All(p => p.localPosition.y < -2.0f)), "Pillars start concealed below the platforms");
+    Check(traps.All(t => t.leftPillars.Concat(t.rightPillars).All(p => Mathf.Abs(p.localPosition.y)<.001f)), "All forty pillars start fully raised");
     await Task.Delay(700);
-    Check(traps.All(t => t.leftPillars[0].localPosition.y > -2.1f && t.leftPillars[0].localPosition.y < 0 && t.leftPillars[0].localPosition.y > t.leftPillars[4].localPosition.y),
-        "Five posts rise in a staggered animation during the silent lead-in");
-    Check(traps.All(t => t.MissedBeats == 0) && !clock.IsPlaying, "No penalties or music occur during the rise");
+    Check(traps.All(t => t.leftPillars.Concat(t.rightPillars).All(p=>Mathf.Abs(p.localPosition.y)<.001f)),
+        "Pillars stay fully raised throughout the silent lead-in");
+    Check(traps.All(t => t.MissedBeats == 0) && !clock.IsPlaying, "No penalties or music occur during the lead-in");
     while (!round.HasStarted) await Task.Delay(10);
-    Check(traps.All(t => t.IsRaised && t.leftPillars.All(p => Mathf.Abs(p.localPosition.y) < .001f)), "All pillars reach recruit height before the opening beat");
+    Check(traps.All(t => t.leftPillars.Concat(t.rightPillars).All(p => Mathf.Abs(p.localPosition.y) < .001f)), "Pillars remain at full height on the opening beat");
     await Task.Delay(100);
     Check(traps.All(t => t.MissedBeats == 0), "The opening cue gives players time to respond");
     await Task.Delay(1400);
