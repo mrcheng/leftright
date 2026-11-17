@@ -26,9 +26,14 @@ namespace LeftRight.Rebuild
         LaneSpikeTrap[] allTraps;
         Transform[] lanePlatforms;
         GUIStyle title, label, small, button, centered;
+        VictoryDirector victory;
+        public SurvivalScore Scores { get; private set; }
 
         void Awake()
         {
+            victory = GetComponent<VictoryDirector>();
+            Scores = gameObject.AddComponent<SurvivalScore>();
+            Scores.Initialize(course,this);
             // The menu must win startup ordering over the round's automatic Start.
             course.round.playOnStart = false;
             masterVolume = PlayerPrefs.GetFloat("Rebuild.MasterVolume", 1);
@@ -201,7 +206,8 @@ namespace LeftRight.Rebuild
         {
             if (!IsOpen)
             {
-                if (course.IsGameOver && GUI.Button(new Rect(14, Screen.height - 52, 140, 38), "Main menu")) Open();
+                if (victory != null && victory.ShowRestartPrompt) DrawRoundResult();
+                else if(Scores.HasRound)DrawSurvivalTimer();
                 return;
             }
             Styles();
@@ -280,6 +286,53 @@ namespace LeftRight.Rebuild
             }
             GUI.Label(new Rect(240,663,800,32),"OUTPOST DRILL  /  PROTOTYPE",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
             GUI.color=oldColor;GUI.backgroundColor=oldBackground;GUI.matrix=oldMatrix;
+        }
+
+        void DrawRoundResult()
+        {
+            // Reuse the title menu's pixel font, nine-slice buttons and reference
+            // resolution. Keep the actions below the winner instead of dimming the scene.
+            Styles();
+            float scale = Mathf.Min(Screen.width / 1280f, Screen.height / 720f);
+            var oldMatrix = GUI.matrix; var oldColor = GUI.color; var oldBackground = GUI.backgroundColor;
+            bool oldEnabled = GUI.enabled;
+            GUI.matrix = Matrix4x4.TRS(new Vector3((Screen.width-1280*scale)*.5f,(Screen.height-720*scale)*.5f,0),Quaternion.identity,Vector3.one*scale);
+            GUI.color = Color.white;
+            Bar(new Rect(256,356,768,340),new Color(.035f,.055f,.04f,.96f));
+            Bar(new Rect(256,356,768,4),new Color(.5f,.54f,.32f));
+            Bar(new Rect(256,692,768,4),new Color(.5f,.54f,.32f));
+            GUI.Label(new Rect(280,374,720,28),"SURVIVAL RESULTS",centered);
+            GUI.Label(new Rect(280,409,720,24),(Scores.NewBest?"NEW PERSONAL BEST  ":"PERSONAL BEST  ")+SurvivalScore.Format(Scores.BestSeconds),new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+            var ranking=Enumerable.Range(0,Scores.Times.Length)
+                .OrderByDescending(i=>course.players[i]==course.Winner).ThenByDescending(i=>Scores.Times[i]).ToArray();
+            string[] names={"GREEN","BLUE","YELLOW","RED"};
+            for(int rank=0;rank<ranking.Length;rank++)
+            {
+                int i=ranking[rank];float y=449+rank*34;
+                if(course.players[i]==course.Winner)Bar(new Rect(286,y-2,708,30),new Color(.25f,.3f,.17f));
+                GUI.Label(new Rect(304,y,400,28),(rank+1)+". "+names[i]+(course.players[i]==course.Winner?"  WINNER":""),label);
+                GUI.Label(new Rect(774,y,202,28),SurvivalScore.Format(Scores.Times[i]),new GUIStyle(label){alignment=TextAnchor.MiddleRight});
+            }
+            bool waiting = online != null && online.Active && !online.IsHost;
+            GUI.enabled = oldEnabled && !waiting;
+            if(MenuButton(new Rect(286,610,344,58),waiting?"WAITING FOR HOST":"PLAY AGAIN",true))victory.StartAgain();
+            GUI.enabled = oldEnabled;
+            if(MenuButton(new Rect(650,610,344,58),"MAIN MENU"))Open();
+            GUI.matrix=oldMatrix;GUI.color=oldColor;GUI.backgroundColor=oldBackground;GUI.enabled=oldEnabled;
+        }
+
+        void DrawSurvivalTimer()
+        {
+            Styles();
+            float scale=Mathf.Min(Screen.width/1280f,Screen.height/720f);
+            var oldMatrix=GUI.matrix;var oldColor=GUI.color;
+            GUI.matrix=Matrix4x4.TRS(new Vector3((Screen.width-1280*scale)*.5f,(Screen.height-720*scale)*.5f,0),Quaternion.identity,Vector3.one*scale);
+            GUI.color=Color.white;
+            Bar(new Rect(16,16,238,78),new Color(.035f,.055f,.04f,.9f));
+            Bar(new Rect(16,16,4,78),new Color(.72f,.75f,.44f));
+            GUI.Label(new Rect(32,25,208,22),"SURVIVAL",small);
+            GUI.Label(new Rect(32,52,208,30),SurvivalScore.Format(Scores.PersonalSeconds),new GUIStyle(label){fontSize=22});
+            GUI.matrix=oldMatrix;GUI.color=oldColor;
         }
     }
 }

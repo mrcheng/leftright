@@ -127,18 +127,6 @@ namespace LeftRight.Rebuild
 
         public void StartAgain() => course.round.BeginRound();
 
-        void OnGUI()
-        {
-            if (!ShowRestartPrompt) return;
-            var panel = new Rect((Screen.width - 250) * .5f, Screen.height - 135, 250, 105);
-            GUI.Box(panel, "Play again?");
-            var online = GetComponent<OnlineMatch>();
-            bool waiting = online != null && online.Active && !online.IsHost;
-            bool enabled = GUI.enabled; GUI.enabled = !waiting;
-            if (GUI.Button(new Rect(panel.x + 20, panel.y + 38, 210, 46), waiting ? "Waiting for host" : "Start again")) StartAgain();
-            GUI.enabled = enabled;
-        }
-
         public void ResetVictory()
         {
             playback?.Stop(); playback = null;

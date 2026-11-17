@@ -296,6 +296,7 @@ namespace LeftRight.Rebuild
                 capacity = Capacity, humans = HumanCount, startsAt = StartTime, cue = cueVersion,
                 right = course.round.officer.DirectionRight, over = course.IsGameOver, victoryAt = victoryAt,
                 winner = Array.IndexOf(course.players,course.Winner), sequence = Array.IndexOf(victory.sequences,victory.SelectedSequence) };
+            state.survivalSeconds=menu.Scores.ElapsedSeconds;state.survivalTimes=menu.Scores.Times;
             state.players = course.players.Select((p,i) => new OnlinePlayerState { x = p.transform.position.x, horizontal = p.Horizontal,
                 pinned = p.IsPinned, eliminated = p.IsEliminated, fromLeft = p.PinnedFromLeft,
                 travel = course.traps[i].CurrentTravel, target = course.traps[i].TargetTravel,
@@ -352,6 +353,7 @@ namespace LeftRight.Rebuild
                 recoveryVersions[i]=value.recovery;
             }
             ApplyCrates(state.crates);
+            menu.Scores.ApplyNetwork(state.survivalSeconds,state.survivalTimes,state.over);
             if(state.over && !resultReceived)
             {
                 resultReceived=true; course.ApplyNetworkResult(state.winner);
@@ -411,6 +413,8 @@ namespace LeftRight.Rebuild
     {
         public int serial,round,capacity,humans,yourSlot,cue,winner,sequence;
         public double startsAt,victoryAt;
+        public float survivalSeconds;
+        public float[] survivalTimes;
         public bool right,over;
         public OnlinePlayerState[] players;
         public OnlineCrateState[] crates;
