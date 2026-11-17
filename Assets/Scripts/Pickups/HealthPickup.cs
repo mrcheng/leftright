@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class HealthPickup : MonoBehaviour
@@ -20,7 +20,8 @@ public class HealthPickup : MonoBehaviour
 
     void OnTriggerEnter(Collider playerCollider)
     {
-        healthParticles.enableEmission = true;
+        var emission = healthParticles.emission;
+        emission.enabled = true;
         snd_pickupHealth.Play();
         var player = playerCollider.GetComponent<PlayerManager>();
         if (player == null)

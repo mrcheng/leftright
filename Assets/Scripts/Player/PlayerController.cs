@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(PlayerPhysics))]
 public class PlayerController : MonoBehaviour
 {
-    public Rewired.Player _player;
+    [Range(0, 3)] public int PlayerIndex;
 
     // Player Handling
     public float gravity = 20;
@@ -61,7 +61,7 @@ public class PlayerController : MonoBehaviour
             }
 
             // jump input
-            if (_player.GetButtonDown("Jump"))
+            if (LocalPlayerInput.JumpPressed(PlayerIndex))
             {
                 amountToMove.y = jumpHeight;
                 jumping = true;
@@ -75,13 +75,13 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("Speed", animationSpeed);
 
         // Input
-        float speed = (_player.GetButton("Run")) ? runSpeed : walkSpeed;
-        targetSpeed = _player.GetAxisRaw("Horizontal") * speed;
+        float speed = (LocalPlayerInput.RunHeld(PlayerIndex)) ? runSpeed : walkSpeed;
+        targetSpeed = LocalPlayerInput.Horizontal(PlayerIndex) * speed;
         currentSpeed = IncrementTowards(currentSpeed, targetSpeed, acceleration);
         playerStandingStill = targetSpeed == 0f;
 
         // face direction
-        float moveDir = _player.GetAxisRaw("Horizontal");
+        float moveDir = LocalPlayerInput.Horizontal(PlayerIndex);
         if (moveDir != 0)
         {
             transform.eulerAngles = (moveDir > 0) ? Vector3.up * 180 : Vector3.zero;

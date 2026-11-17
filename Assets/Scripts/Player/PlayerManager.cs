@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -18,6 +18,7 @@ public class PlayerManager : MonoBehaviour
     // Sets the player color for game over text
     public Color PlayerColor;
     public GameObject meshRenderer; // To be able to get the color from mesh to do crazy color effects ;)
+    public Material BodyMaterial;
 
     public float HealthInSeconds = 10f;
 
@@ -44,6 +45,8 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         _healthBarOriginalScale = HealthBar.localScale;
+        if (BodyMaterial != null) meshRenderer.GetComponent<Renderer>().sharedMaterial = BodyMaterial;
+        UpdateHealth();
     }
 
     void Update()

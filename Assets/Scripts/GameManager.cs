@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -147,6 +147,7 @@ public class GameManager : MonoBehaviour {
     // This function is called from StartGameButton
     public void StartGame()
     {
+        if (_activePlayers != null) return;
         _gameIsRunning = true;
 
         txt_commentator.text = "Be prepared, I'm choosing direction!";
@@ -184,16 +185,16 @@ public class GameManager : MonoBehaviour {
     void SpawnPlayers()
     {
         var lucyInstance = (GameObject)Instantiate(lucy, Lanes[0].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
-        lucyInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(0);
+        lucyInstance.GetComponent<PlayerController>().PlayerIndex = 0;
 
         var maryInstance = (GameObject)Instantiate(mary, Lanes[1].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
-        maryInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(1);
+        maryInstance.GetComponent<PlayerController>().PlayerIndex = 1;
 
         var oxyInstance = (GameObject)Instantiate(oxy, Lanes[2].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
-        oxyInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(2);
+        oxyInstance.GetComponent<PlayerController>().PlayerIndex = 2;
 
         var tjackInstance = (GameObject)Instantiate(tjack, Lanes[3].transform.position + new Vector3(0, 5, 0), Quaternion.identity);
-        tjackInstance.GetComponent<PlayerController>()._player = Rewired.ReInput.players.GetPlayer(3);
+        tjackInstance.GetComponent<PlayerController>().PlayerIndex = 3;
         
         _activePlayers = new List<PlayerManager>
         {
@@ -286,7 +287,7 @@ public class GameManager : MonoBehaviour {
 
     public void Reset()
     {
-        Application.LoadLevel(Application.loadedLevel);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
     }
 
     public PlayerManager GetPlayerInLead()

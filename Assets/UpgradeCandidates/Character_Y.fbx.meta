@@ -1,0 +1,700 @@
+fileFormatVersion: 2
+guid: 17a2b1d5ee154114b7d5024c8c3d29ff
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Arm_Lower_L
+  - first:
+      1: 100002
+    second: Arm_Lower_R
+  - first:
+      1: 100004
+    second: Arm_Upper_L
+  - first:
+      1: 100006
+    second: Arm_Upper_R
+  - first:
+      1: 100008
+    second: Chest
+  - first:
+      1: 100010
+    second: Cloth_01_L
+  - first:
+      1: 100012
+    second: Cloth_01_R
+  - first:
+      1: 100014
+    second: Cloth_02_L
+  - first:
+      1: 100016
+    second: Cloth_02_R
+  - first:
+      1: 100018
+    second: Cloth_03_L
+  - first:
+      1: 100020
+    second: Cloth_03_R
+  - first:
+      1: 100022
+    second: Cloth_04_L
+  - first:
+      1: 100024
+    second: Cloth_04_R
+  - first:
+      1: 100026
+    second: Foot_L
+  - first:
+      1: 100028
+    second: Foot_R
+  - first:
+      1: 100030
+    second: Hand_L
+  - first:
+      1: 100032
+    second: Hand_R
+  - first:
+      1: 100034
+    second: Head
+  - first:
+      1: 100036
+    second: Hips
+  - first:
+      1: 100038
+    second: Leg_IK_L
+  - first:
+      1: 100040
+    second: Leg_IK_R
+  - first:
+      1: 100042
+    second: Leg_Lower_L
+  - first:
+      1: 100044
+    second: Leg_Lower_R
+  - first:
+      1: 100046
+    second: Leg_Upper_L
+  - first:
+      1: 100048
+    second: Leg_Upper_R
+  - first:
+      1: 100050
+    second: Neck
+  - first:
+      1: 100052
+    second: Ninja
+  - first:
+      1: 100054
+    second: Ninja_Mesh
+  - first:
+      1: 100056
+    second: //RootNode
+  - first:
+      4: 400000
+    second: Arm_Lower_L
+  - first:
+      4: 400002
+    second: Arm_Lower_R
+  - first:
+      4: 400004
+    second: Arm_Upper_L
+  - first:
+      4: 400006
+    second: Arm_Upper_R
+  - first:
+      4: 400008
+    second: Chest
+  - first:
+      4: 400010
+    second: Cloth_01_L
+  - first:
+      4: 400012
+    second: Cloth_01_R
+  - first:
+      4: 400014
+    second: Cloth_02_L
+  - first:
+      4: 400016
+    second: Cloth_02_R
+  - first:
+      4: 400018
+    second: Cloth_03_L
+  - first:
+      4: 400020
+    second: Cloth_03_R
+  - first:
+      4: 400022
+    second: Cloth_04_L
+  - first:
+      4: 400024
+    second: Cloth_04_R
+  - first:
+      4: 400026
+    second: Foot_L
+  - first:
+      4: 400028
+    second: Foot_R
+  - first:
+      4: 400030
+    second: Hand_L
+  - first:
+      4: 400032
+    second: Hand_R
+  - first:
+      4: 400034
+    second: Head
+  - first:
+      4: 400036
+    second: Hips
+  - first:
+      4: 400038
+    second: Leg_IK_L
+  - first:
+      4: 400040
+    second: Leg_IK_R
+  - first:
+      4: 400042
+    second: Leg_Lower_L
+  - first:
+      4: 400044
+    second: Leg_Lower_R
+  - first:
+      4: 400046
+    second: Leg_Upper_L
+  - first:
+      4: 400048
+    second: Leg_Upper_R
+  - first:
+      4: 400050
+    second: Neck
+  - first:
+      4: 400052
+    second: Ninja
+  - first:
+      4: 400054
+    second: Ninja_Mesh
+  - first:
+      4: 400056
+    second: //RootNode
+  - first:
+      43: 4300000
+    second: Ninja_Mesh
+  - first:
+      74: 7400000
+    second: Default Take
+  - first:
+      74: 7400002
+    second: Headband_Wave
+  - first:
+      74: 7400004
+    second: Idle
+  - first:
+      74: 7400006
+    second: Run
+  - first:
+      74: 7400008
+    second: Walk
+  - first:
+      74: 7400010
+    second: Jump_idle
+  - first:
+      74: 7400012
+    second: Land_idle
+  - first:
+      74: 7400014
+    second: Jump_run
+  - first:
+      74: 7400016
+    second: Land_run
+  - first:
+      74: 7400018
+    second: Slide
+  - first:
+      74: 7400020
+    second: Get_Up
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: Ninja_Mesh
+  externalObjects: {}
+  materials:
+    materialImportMode: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Default Take
+      takeName: Default Take
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 81
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Headband_Wave
+      takeName: Headband_Wave
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 10
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Ninja
+        weight: 0
+      - path: Ninja/Hips
+        weight: 0
+      - path: Ninja/Hips/Chest
+        weight: 0
+      - path: Ninja/Hips/Chest/Arm_Upper_L
+        weight: 0
+      - path: Ninja/Hips/Chest/Arm_Upper_L/Arm_Lower_L
+        weight: 0
+      - path: Ninja/Hips/Chest/Arm_Upper_L/Arm_Lower_L/Hand_L
+        weight: 0
+      - path: Ninja/Hips/Chest/Arm_Upper_R
+        weight: 0
+      - path: Ninja/Hips/Chest/Arm_Upper_R/Arm_Lower_R
+        weight: 0
+      - path: Ninja/Hips/Chest/Arm_Upper_R/Arm_Lower_R/Hand_R
+        weight: 0
+      - path: Ninja/Hips/Chest/Neck
+        weight: 0
+      - path: Ninja/Hips/Chest/Neck/Head
+        weight: 0
+      - path: Ninja/Hips/Chest/Neck/Head/Cloth_01_L
+        weight: 1
+      - path: Ninja/Hips/Chest/Neck/Head/Cloth_01_L/Cloth_02_L
+        weight: 1
+      - path: Ninja/Hips/Chest/Neck/Head/Cloth_01_L/Cloth_02_L/Cloth_03_L
+        weight: 1
+      - path: Ninja/Hips/Chest/Neck/Head/Cloth_01_L/Cloth_02_L/Cloth_03_L/Cloth_04_L
+        weight: 1
+      - path: Ninja/Hips/Chest/Neck/Head/Cloth_01_R
+        weight: 1
+      - path: Ninja/Hips/Chest/Neck/Head/Cloth_01_R/Cloth_02_R
+        weight: 1
+      - path: Ninja/Hips/Chest/Neck/Head/Cloth_01_R/Cloth_02_R/Cloth_03_R
+        weight: 1
+      - path: Ninja/Hips/Chest/Neck/Head/Cloth_01_R/Cloth_02_R/Cloth_03_R/Cloth_04_R
+        weight: 1
+      - path: Ninja/Hips/Leg_Upper_L
+        weight: 0
+      - path: Ninja/Hips/Leg_Upper_L/Leg_Lower_L
+        weight: 0
+      - path: Ninja/Hips/Leg_Upper_R
+        weight: 0
+      - path: Ninja/Hips/Leg_Upper_R/Leg_Lower_R
+        weight: 0
+      - path: Ninja/Leg_IK_L
+        weight: 0
+      - path: Ninja/Leg_IK_L/Foot_L
+        weight: 0
+      - path: Ninja/Leg_IK_R
+        weight: 0
+      - path: Ninja/Leg_IK_R/Foot_R
+        weight: 0
+      - path: Ninja_Mesh
+        weight: 1
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Idle
+      takeName: Idle
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Run
+      takeName: Run
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 15
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Walk
+      takeName: Walk
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 18
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Jump_idle
+      takeName: Jump_idle
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 68
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Land_idle
+      takeName: Land_idle
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 8
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Jump_run
+      takeName: Jump_run
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 36
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Land_run
+      takeName: Land_run
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 7
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Slide
+      takeName: Slide
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 7
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Get_Up
+      takeName: Get_Up
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 13
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 0
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 0
+    importVisibility: 0
+    importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
+    nodeNameCollisionStrategy: 0
+    fileIdsGeneration: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 0
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 0
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 4
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
+  additionalBone: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
