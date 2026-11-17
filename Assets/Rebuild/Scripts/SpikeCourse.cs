@@ -23,6 +23,15 @@ namespace LeftRight.Rebuild
         readonly List<RecruitController> living = new List<RecruitController>();
         readonly List<RecruitController> safe = new List<RecruitController>();
         int lastDeathFrame = -1;
+        public bool NetworkReplica { get; set; }
+        public void ApplyNetworkResult(int winnerIndex)
+        {
+            if (IsGameOver) return;
+            IsGameOver = true; Winner = winnerIndex >= 0 ? players[winnerIndex] : null;
+            AliveCount = Winner != null ? 1 : 0;
+            round.officer.StopDirections(); round.audioOutput.StopPlayback();
+            if (Winner != null) Winner.StopForVictory();
+        }
 
         void OnEnable()
         {
@@ -85,6 +94,7 @@ namespace LeftRight.Rebuild
 
         void LateUpdate()
         {
+            if (NetworkReplica) return; // Remote snapshots, never a second match simulation.
             double now = Time.realtimeSinceStartupAsDouble;
             float elapsed = (float)(now - animationTime);
             animationTime = now;

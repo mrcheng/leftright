@@ -1,6 +1,6 @@
 {
   "name": "LeftRight.Rebuild",
   "rootNamespace": "LeftRight.Rebuild",
-  "references": ["Unity.InputSystem", "Unity.ugui"],
+  "references": ["Unity.InputSystem", "Unity.ugui", "Unity.Netcode.Runtime", "Unity.Networking.Transport", "Unity.Collections", "Unity.Services.Core", "Unity.Services.Authentication", "Unity.Services.Multiplayer"],
   "autoReferenced": true
 }

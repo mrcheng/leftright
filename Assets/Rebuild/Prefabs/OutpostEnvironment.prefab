@@ -11073,6 +11073,8 @@ GameObject:
   - component: {fileID: 5762068223470358062}
   - component: {fileID: 9172920809540155542}
   - component: {fileID: 4911637595807299655}
+  - component: {fileID: 8156725526682356770}
+  - component: {fileID: 7408402796270050849}
   m_Layer: 0
   m_Name: OutpostEnvironment
   m_TagString: Untagged
@@ -11259,6 +11261,34 @@ MonoBehaviour:
   buttonTexture: {fileID: 2800000, guid: e49c455c2f87c9141a05ffd2ca6626b3, type: 3}
   pressedButtonTexture: {fileID: 2800000, guid: 32af818442b68d445944b6d89f557126, type: 3}
   menuFont: {fileID: 12800000, guid: 20e89f59d6cc92242b3ea19d36fbdbb0, type: 3}
+  online: {fileID: 8156725526682356770}
+--- !u!114 &8156725526682356770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6663512733640326206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 267a4efb31c03ae4cbd29b768fd2b955, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.OnlineMatch
+  menu: {fileID: 4911637595807299655}
+  port: 7777
+  snapshotInterval: 0.05
+--- !u!114 &7408402796270050849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6663512733640326206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4868d90d3fd7d74d86a5354d421690d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.OnlineTestDriver
 --- !u!1 &6664416983528790334
 GameObject:
   m_ObjectHideFlags: 0

@@ -30,6 +30,16 @@ namespace LeftRight.Rebuild
         float returnStartedAt, returnFov, returnTargetFov;
         Vector3 returnPosition, returnTargetPosition;
         Quaternion returnRotation, returnTargetRotation;
+        float playbackOffset;
+
+        public void BeginNetworkVictory(RecruitController winner, int sequenceIndex, float remainingDelay)
+        {
+            ResetVictory(); Winner = winner;
+            if (sequenceIndex < 0 || sequenceIndex >= sequences.Length || winner == null) return;
+            SelectedSequence = sequences[sequenceIndex];
+            beginsAt = Time.unscaledTime + Mathf.Max(0, remainingDelay);
+            playbackOffset = Mathf.Max(0, -remainingDelay); IsPending = true;
+        }
 
         void OnEnable()
         {
@@ -69,7 +79,7 @@ namespace LeftRight.Rebuild
                 // stays at 1/N probability, independent of gameplay/officer randomness.
                 if (SelectedSequence == null) { ShowRestartPrompt = true; return; }
                 playback = SelectedSequence.CreatePlayback(Winner, gameCamera);
-                startedAt = Time.unscaledTime;
+                startedAt = Time.unscaledTime - playbackOffset;
                 if (view != null) view.CinematicActive = true;
                 if (SelectedSequence.PlayOpeningCheer && cheerSource != null && cheerClip != null)
                 {
@@ -122,7 +132,11 @@ namespace LeftRight.Rebuild
             if (!ShowRestartPrompt) return;
             var panel = new Rect((Screen.width - 250) * .5f, Screen.height - 135, 250, 105);
             GUI.Box(panel, "Play again?");
-            if (GUI.Button(new Rect(panel.x + 20, panel.y + 38, 210, 46), "Start again")) StartAgain();
+            var online = GetComponent<OnlineMatch>();
+            bool waiting = online != null && online.Active && !online.IsHost;
+            bool enabled = GUI.enabled; GUI.enabled = !waiting;
+            if (GUI.Button(new Rect(panel.x + 20, panel.y + 38, 210, 46), waiting ? "Waiting for host" : "Start again")) StartAgain();
+            GUI.enabled = enabled;
         }
 
         public void ResetVictory()
@@ -132,6 +146,7 @@ namespace LeftRight.Rebuild
             IsReturning = false; ShowRestartPrompt = false;
             if (view != null) { view.CinematicActive = false; view.RoundSummaryActive = false; }
             Winner = null; SelectedSequence = null; IsPending = false;
+            playbackOffset = 0;
         }
 
         void OnDisable()

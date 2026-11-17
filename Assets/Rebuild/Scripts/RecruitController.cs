@@ -27,6 +27,14 @@ namespace LeftRight.Rebuild
         public float? InputOverride { get; set; }
         public bool computerControlled;
         public float ComputerInput { get; set; }
+        public bool NetworkReplica { get; set; }
+        public float ReadNetworkInput() => ReadInput();
+        public void ApplyNetworkMovement(float x, float horizontal)
+        {
+            if (!IsEliminated && !IsPinned)
+            { var position = transform.position; position.x = x; transform.position = position; }
+            Horizontal = horizontal; if (Mathf.Abs(horizontal) > .2f) DirectionRight = horizontal > 0;
+        }
         Vector3 startingPosition;
         Quaternion startingRotation;
         float fallProgress;
@@ -55,6 +63,7 @@ namespace LeftRight.Rebuild
             double now = Time.realtimeSinceStartupAsDouble;
             float elapsed = (float)(now - movementTime);
             movementTime = now;
+            if (NetworkReplica) return;
             bool canMove = round.IsCountingDown || (round.HasStarted && round.masterBeat.IsPlaying);
             if (IsEliminated || IsPinned || !canMove || course.IsGameOver)
             {

@@ -16,6 +16,8 @@ namespace LeftRight.Rebuild
         public double ScheduledStartDspTime { get; private set; }
         public event Action Preparing;
         public event Action Cancelled;
+        public Func<bool> NetworkStartRequest;
+        bool remoteOfficer;
 
         void Start()
         {
@@ -24,8 +26,15 @@ namespace LeftRight.Rebuild
 
         public void BeginRound()
         {
+            if (NetworkStartRequest != null && NetworkStartRequest()) return;
+            BeginScheduled(AudioSettings.dspTime + Mathf.Max(0, leadInSeconds), false);
+        }
+
+        public void BeginScheduled(double dspTime, bool remote)
+        {
             CancelStart();
-            ScheduledStartDspTime = AudioSettings.dspTime + Mathf.Max(0, leadInSeconds);
+            remoteOfficer = remote;
+            ScheduledStartDspTime = dspTime;
             audioOutput.ScheduleTitleOnFirstBeat(ScheduledStartDspTime);
             IsCountingDown = true;
             Preparing?.Invoke();
@@ -47,7 +56,7 @@ namespace LeftRight.Rebuild
             if (!IsCountingDown || AudioSettings.dspTime < ScheduledStartDspTime) return;
             IsCountingDown = false;
             HasStarted = true;
-            officer.ActivateDirections(firstCueImmediately: true);
+            if (!remoteOfficer) officer.ActivateDirections(firstCueImmediately: true);
         }
 
         void OnDisable()

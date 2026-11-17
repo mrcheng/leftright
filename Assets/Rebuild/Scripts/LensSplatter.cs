@@ -89,7 +89,7 @@ namespace LeftRight.Rebuild
 
         void Upload()
         {
-            if(RuntimeMaterial==null)return;
+            if(RuntimeMaterial==null||Overlay==null)return;
             Overlay.enabled=ActiveSplatCount>0;
             RuntimeMaterial.SetInt("_SplatCount",ActiveSplatCount);
             RuntimeMaterial.SetVectorArray("_Splats",splats);RuntimeMaterial.SetVectorArray("_Seeds",seeds);

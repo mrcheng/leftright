@@ -98,5 +98,14 @@ namespace LeftRight.Rebuild
             audioOutput.PlayDirection(DirectionRight);
             DirectionChanged?.Invoke(DirectionRight);
         }
+
+        public void ApplyNetworkCue(bool right)
+        {
+            running = false; DirectionRight = right; IsIdling = false;
+            leftStart = leftShoulder.localRotation; rightStart = rightShoulder.localRotation;
+            leftTarget = right ? Quaternion.identity : Quaternion.Euler(0, 0, -90);
+            rightTarget = right ? Quaternion.Euler(0, 0, 90) : Quaternion.identity;
+            swingTimer = 0; audioOutput.PlayDirection(right); DirectionChanged?.Invoke(right);
+        }
     }
 }

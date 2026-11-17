@@ -37,6 +37,14 @@ namespace LeftRight.Rebuild
         public void SetMode(GameViewMode mode)
         {
             Mode = mode;
+            if(mode==GameViewMode.Local)
+            {
+                // Returning from an online session must start local play at the actual
+                // full-course framing, not carry over a few seconds of follow inertia.
+                velocity=Vector3.zero;fieldVelocity=0;
+                gameCamera.transform.SetPositionAndRotation(widePosition,wideRotation);
+                gameCamera.fieldOfView=wideFieldOfView;
+            }
         }
 
         public RecruitController LocalPlayer
@@ -111,7 +119,7 @@ namespace LeftRight.Rebuild
             if (GUI.Button(new Rect(Screen.width - margin - button, margin, button, button), gear))
             {
                 var menu = GetComponent<StartMenu>();
-                if (menu != null) { menu.Open(); menu.ShowSettings(); }
+                if (menu != null) menu.OpenMatchSettings();
             }
         }
 

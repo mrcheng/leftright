@@ -19,6 +19,8 @@ namespace LeftRight.Rebuild
         public int MissedBeats { get; private set; }
         public float TargetTravel { get; private set; }
         public int PendingRecoverySteps { get; private set; }
+        public int RecoveryVersion { get; private set; }
+        public float CurrentTravel => travel;
         public float TravelAfterRecovery => Mathf.Max(0, TargetTravel - PendingRecoverySteps * inwardPerMiss);
         long recoveryStartsAtBeat;
         long lastRecoveryBeat = long.MinValue;
@@ -45,6 +47,7 @@ namespace LeftRight.Rebuild
             travel = TargetTravel = 0;
             MissedBeats = 0;
             PendingRecoverySteps = 0;
+            RecoveryVersion = 0;
             lastRecoveryBeat = long.MinValue;
             victim = null; HasFinishedSqueeze = HasReturned = false;
             victoryReturn = false;
@@ -80,6 +83,7 @@ namespace LeftRight.Rebuild
             if (PendingRecoverySteps == 0)
                 recoveryStartsAtBeat = masterBeat != null ? masterBeat.BeatIndex + 1 : 0;
             PendingRecoverySteps += steps;
+            if (steps > 0) RecoveryVersion++;
             return Mathf.Min(available, steps * inwardPerMiss);
         }
 
@@ -130,6 +134,23 @@ namespace LeftRight.Rebuild
                 var left = leftPillars[i].localPosition; left.y = 0; leftPillars[i].localPosition = left;
                 var right = rightPillars[i].localPosition; right.y = 0; rightPillars[i].localPosition = right;
             }
+        }
+
+        public void ApplyNetworkState(float current, float target, int pending, int recovery, bool crushed, bool returned, RecruitController player)
+        {
+            ApplyNetworkPose(current,target,pending,recovery);
+            if (player.IsPinned && player.IsEliminated) player.FollowPinnedBank();
+            if (crushed && !HasFinishedSqueeze)
+            {
+                if (bloodMaterial != null) blood = BloodSplash.Spawn(new Vector3(player.transform.position.x, transform.position.y + .012f, player.transform.position.z), bloodMaterial, transform);
+                player.ReleaseAfterSqueeze(transform.position.y);
+            }
+            HasFinishedSqueeze = crushed; HasReturned = returned;
+        }
+
+        public void ApplyNetworkPose(float current, float target, int pending, int recovery)
+        {
+            travel=current;TargetTravel=target;PendingRecoverySteps=pending;RecoveryVersion=recovery;ApplyPose();
         }
 
         public bool Touches(RecruitController player) =>

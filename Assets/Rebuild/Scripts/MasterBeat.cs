@@ -27,6 +27,9 @@ namespace LeftRight.Rebuild
         /// <summary>One notification for the current beat; seeks/loops never replay missed beats.
         /// Delivered on the first rendered frame observing the beat, not on the audio thread.</summary>
         public event Action<long> Beat;
+        // Network sessions supply elapsed authoritative time; offline play keeps using
+        // audio samples. Cosmetic animation and penalties consequently share one clock.
+        public Func<double> NetworkElapsedSeconds;
 
         AudioClip previousClip;
         int playbackVersion = -1;
@@ -51,7 +54,7 @@ namespace LeftRight.Rebuild
             if (!IsPlaying) return; // Scheduled lead-in and paused audio cannot advance the clock.
             double firstBeat = round ? timing.roundFirstBeatSeconds : timing.titleFirstBeatSeconds;
             double seconds = (double)music.timeSamples / music.clip.frequency;
-            BeatPosition = (seconds - firstBeat) * BeatsPerMinute / 60.0;
+            BeatPosition = (NetworkElapsedSeconds != null ? NetworkElapsedSeconds() : seconds - firstBeat) * BeatsPerMinute / 60.0;
             long current = BeatIndex;
             if (current == lastBeat) return;
             lastBeat = current;

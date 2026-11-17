@@ -35,6 +35,9 @@ namespace LeftRight.Editor
             menu.buttonTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(pixel+"button.png");
             menu.pressedButtonTexture=AssetDatabase.LoadAssetAtPath<Texture2D>(pixel+"button_pressed.png");
             menu.course.round.playOnStart=false;
+            var online=root.GetComponent<OnlineMatch>();if(online==null)online=root.AddComponent<OnlineMatch>();
+            online.menu=menu;menu.online=online;
+            if(root.GetComponent<OnlineTestDriver>()==null)root.AddComponent<OnlineTestDriver>();
             foreach(var player in menu.course.players)
             {
                 var bot=player.GetComponent<RecruitComputer>();if(bot==null)bot=player.gameObject.AddComponent<RecruitComputer>();
