@@ -12,7 +12,6 @@ namespace LeftRight.Rebuild
         public float finalGap = .25f;
         public float pillarThickness = .30f;
         public Material bloodMaterial;
-        public float squeezeHoldSeconds = .35f;
         public float returnSeconds = 1.2f;
         public bool HasFinishedSqueeze { get; private set; }
         public bool HasReturned { get; private set; }
@@ -28,7 +27,6 @@ namespace LeftRight.Rebuild
         public float RightTip => rightBank.position.x - spikeReach;
         Vector3 leftOpen, rightOpen;
         float travel;
-        float holdTime;
         RecruitController victim;
         BloodSplash blood;
         BloodSplash firstHitBlood;
@@ -47,7 +45,7 @@ namespace LeftRight.Rebuild
             MissedBeats = 0;
             PendingRecoverySteps = 0;
             lastRecoveryBeat = long.MinValue;
-            victim = null; HasFinishedSqueeze = HasReturned = false; holdTime = 0;
+            victim = null; HasFinishedSqueeze = HasReturned = false;
             if (blood != null) { blood.gameObject.SetActive(false); Destroy(blood.gameObject); blood = null; }
             if (firstHitBlood != null) { firstHitBlood.gameObject.SetActive(false); Destroy(firstHitBlood.gameObject); firstHitBlood = null; }
             ApplyPose();
@@ -90,27 +88,26 @@ namespace LeftRight.Rebuild
 
         public void Animate(float deltaTime)
         {
-            if (HasFinishedSqueeze && !HasReturned)
-            {
-                holdTime += deltaTime;
-                if (holdTime >= squeezeHoldSeconds) TargetTravel = 0;
-            }
             float speed = HasFinishedSqueeze && TargetTravel == 0
                 ? MaximumTravel / Mathf.Max(.01f, returnSeconds) : inwardPerMiss / Mathf.Max(.01f, slideSeconds);
             travel = Mathf.MoveTowards(travel, TargetTravel, speed * deltaTime);
             ApplyPose();
             if (victim != null && !HasFinishedSqueeze && Mathf.Abs(travel - MaximumTravel) < .001f)
             {
-                // Finish the visible crush before releasing the body. This still runs after
-                // game over so the final recruit gets the same splash and return animation.
+                // Finish the visible crush, then retract and slowly tip the body together.
+                // This continues after game over so the final recruit gets the same sequence.
                 victim.FollowPinnedBank();
                 HasFinishedSqueeze = true;
                 var position = new Vector3((leftBank.position.x + rightBank.position.x) * .5f,
                     transform.position.y + .012f, victim.transform.position.z);
                 if (bloodMaterial != null) blood = BloodSplash.Spawn(position, bloodMaterial, transform);
-                victim.ReleaseAfterSqueeze();
+                TargetTravel = 0;
+                victim.ReleaseAfterSqueeze(transform.position.y);
             }
-            if (HasFinishedSqueeze && TargetTravel == 0 && travel == 0) HasReturned = true;
+            if (HasFinishedSqueeze && !HasReturned && TargetTravel == 0 && travel == 0)
+            {
+                HasReturned = true;
+            }
         }
 
         void ApplyPose()

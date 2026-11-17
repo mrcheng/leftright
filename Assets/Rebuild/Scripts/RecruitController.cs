@@ -166,23 +166,26 @@ namespace LeftRight.Rebuild
             }
         }
 
-        public void ReleaseAfterSqueeze()
+        public void HoldAfterSqueeze()
         {
             if (!IsEliminated) return;
-            // Keep the compressed proportions, detach from the banks, then let jointed
-            // physics drive the skeleton independently of player movement and marching.
+            // Preserve the completed crush independently of bank movement, so their
+            // increasing gap cannot expand or drag the corpse during its slow fall.
             pinnedBank = null; squeezeLeft = squeezeRight = null;
             releasedAfterSqueeze = true;
-            deathPosition = transform.localPosition;
-            deathRotation = transform.localRotation;
-            fallProgress = 0;
-            if (ragdoll != null) ragdoll.Activate(PinnedFromLeft);
+        }
+
+        public void ReleaseAfterSqueeze(float laneSurfaceY)
+        {
+            if (!IsEliminated) return;
+            HoldAfterSqueeze();
+            if (ragdoll != null) ragdoll.Activate(laneSurfaceY);
         }
 
         void LateUpdate()
         {
             if (IsPinned) { FollowPinnedBank(); return; }
-            if (releasedAfterSqueeze) return; // RecruitRagdoll now owns the visible bone poses.
+            if (releasedAfterSqueeze) return; // The flexible snapshot now owns the visible fall.
             if (!IsEliminated) return;
             fallProgress = Mathf.Min(1, fallProgress + Time.unscaledDeltaTime / .4f);
             float t = Mathf.SmoothStep(0, 1, fallProgress);

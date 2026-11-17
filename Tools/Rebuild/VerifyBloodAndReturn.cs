@@ -22,8 +22,8 @@ try
  while(!trap.HasFinishedSqueeze&&Time.realtimeSinceStartup<until)await Task.Delay(10);
  Check(trap.HasFinishedSqueeze&&player.IsEliminated,"Liquid burst waits until the recruit is fully squeezed");
  Check(Mathf.Abs(trap.rightBank.position.x-trap.leftBank.position.x-trap.pillarThickness-.25f)<.002f,"Crush reaches one-plank width before retreating");
- Check(!player.IsPinned&&!player.IsMoving&&!player.march.enabled,"Fully crushed body is released and cannot move");
- Check(Mathf.Abs(player.transform.forward.x)>.99f,"Released body keeps its left/right facing");
+ Check(!player.IsPinned&&!player.IsMoving&&!player.march.enabled,"Fully crushed body is detached from bank motion and cannot move");
+ Check(Mathf.Abs(player.transform.forward.x)>.99f,"Crushed body keeps its left/right facing");
     var effect=trap.GetComponentsInChildren<BloodSplash>().Last();
  Check(effect!=null&&effect.GetComponentsInChildren<MeshRenderer>().Length>=29,"Crush creates low-poly droplets and an irregular puddle");
  var firstDrop=effect.transform.Find("Liquid droplet");var before=firstDrop.position;
