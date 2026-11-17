@@ -112,6 +112,7 @@ namespace LeftRight.Editor
             LensSplatterSetup.AddTo(environment);
             GameViewSetup.AddTo(environment);
             VictorySetup.AddTo(environment);
+            StartMenuSetup.AddTo(environment);
         }
     }
 }

@@ -3455,6 +3455,7 @@ GameObject:
   - component: {fileID: 3161106312658057680}
   - component: {fileID: 111396223202087572}
   - component: {fileID: 8707450313448154583}
+  - component: {fileID: 5923523350424502555}
   m_Layer: 0
   m_Name: Sniper - male
   m_TagString: Untagged
@@ -3530,6 +3531,7 @@ MonoBehaviour:
   walkSpeed: 1.5
   collisionRadius: 0.25
   penetrationDepth: 0.2
+  computerControlled: 0
 --- !u!114 &3161106312658057680
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3657,6 +3659,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
   settledThickness: 0.06
   fallSpeed: 1
+--- !u!114 &5923523350424502555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2531620605193844720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32fea427a76062949a732d303d7f57be, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitComputer
+  player: {fileID: 8580247449047903479}
+  reactionMinSeconds: 0.18
+  reactionMaxSeconds: 0.65
+  mistakeChance: 0.22
 --- !u!1 &2538402470439436682
 GameObject:
   m_ObjectHideFlags: 0
@@ -10471,6 +10489,7 @@ GameObject:
   - component: {fileID: 7306324594253873810}
   - component: {fileID: 4656028038377655767}
   - component: {fileID: 1736973414303000727}
+  - component: {fileID: 5360311397752596126}
   m_Layer: 0
   m_Name: Medic - female
   m_TagString: Untagged
@@ -10546,6 +10565,7 @@ MonoBehaviour:
   walkSpeed: 1.5
   collisionRadius: 0.25
   penetrationDepth: 0.2
+  computerControlled: 0
 --- !u!114 &7306324594253873810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10673,6 +10693,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
   settledThickness: 0.06
   fallSpeed: 1
+--- !u!114 &5360311397752596126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6363203508509949256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32fea427a76062949a732d303d7f57be, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitComputer
+  player: {fileID: 3439970163206555992}
+  reactionMinSeconds: 0.18
+  reactionMaxSeconds: 0.65
+  mistakeChance: 0.22
 --- !u!1 &6369674090699812831
 GameObject:
   m_ObjectHideFlags: 0
@@ -11036,6 +11072,7 @@ GameObject:
   - component: {fileID: 5352378083007867055}
   - component: {fileID: 5762068223470358062}
   - component: {fileID: 9172920809540155542}
+  - component: {fileID: 4911637595807299655}
   m_Layer: 0
   m_Name: OutpostEnvironment
   m_TagString: Untagged
@@ -11105,7 +11142,7 @@ MonoBehaviour:
   march: {fileID: 614539142607269636}
   masterBeat: {fileID: 226349629807214999}
   leadInSeconds: 3
-  playOnStart: 1
+  playOnStart: 0
 --- !u!114 &226349629807214999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11205,6 +11242,22 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b0bc1ef88ac892c43b749caf5a15c013, type: 2}
   - {fileID: 11400000, guid: 0dca701f5bbc6134c82513002168012c, type: 2}
   - {fileID: 11400000, guid: 1ee6d60e4c1dc5a4194087e55e83360c, type: 2}
+--- !u!114 &4911637595807299655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6663512733640326206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9926e1e4b3992b647a6baa6de155cab0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.StartMenu
+  course: {fileID: 990741086452730322}
+  view: {fileID: 5762068223470358062}
+  buttonTexture: {fileID: 2800000, guid: 099fbf273503a414d85bb091043596cb, type: 3}
+  menuFont: {fileID: 12800000, guid: fa9b3936ffcd0cc40b90aa34f35ddc12, type: 3}
 --- !u!1 &6664416983528790334
 GameObject:
   m_ObjectHideFlags: 0
@@ -13248,6 +13301,7 @@ GameObject:
   - component: {fileID: 4792743479264114476}
   - component: {fileID: 807273407125156256}
   - component: {fileID: 7275702797370310810}
+  - component: {fileID: 5861907854214653982}
   m_Layer: 0
   m_Name: Mortar - male
   m_TagString: Untagged
@@ -13323,6 +13377,7 @@ MonoBehaviour:
   walkSpeed: 1.5
   collisionRadius: 0.25
   penetrationDepth: 0.2
+  computerControlled: 0
 --- !u!114 &4792743479264114476
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13450,6 +13505,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
   settledThickness: 0.06
   fallSpeed: 1
+--- !u!114 &5861907854214653982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7816735069462884018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32fea427a76062949a732d303d7f57be, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitComputer
+  player: {fileID: 2504450118550145477}
+  reactionMinSeconds: 0.18
+  reactionMaxSeconds: 0.65
+  mistakeChance: 0.22
 --- !u!1 &7834705374476359181
 GameObject:
   m_ObjectHideFlags: 0
@@ -14313,6 +14384,7 @@ GameObject:
   - component: {fileID: 8735724236596725201}
   - component: {fileID: 6954568635180123045}
   - component: {fileID: 1570689859011268439}
+  - component: {fileID: 7780913265650356598}
   m_Layer: 0
   m_Name: Rifle - female
   m_TagString: Untagged
@@ -14388,6 +14460,7 @@ MonoBehaviour:
   walkSpeed: 1.5
   collisionRadius: 0.25
   penetrationDepth: 0.2
+  computerControlled: 0
 --- !u!114 &8735724236596725201
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14515,6 +14588,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitRagdoll
   settledThickness: 0.06
   fallSpeed: 1
+--- !u!114 &7780913265650356598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8361449048643209739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32fea427a76062949a732d303d7f57be, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.RecruitComputer
+  player: {fileID: 4472800921193315928}
+  reactionMinSeconds: 0.18
+  reactionMaxSeconds: 0.65
+  mistakeChance: 0.22
 --- !u!1 &8379380904712704064
 GameObject:
   m_ObjectHideFlags: 0

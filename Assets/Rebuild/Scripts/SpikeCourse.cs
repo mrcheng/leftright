@@ -59,6 +59,15 @@ namespace LeftRight.Rebuild
         }
 
         void OnBeat(long beat) { pendingBeat = beat; }
+        public void SetRoster(RecruitController[] recruits, LaneSpikeTrap[] lanes)
+        {
+            // Change the actual simulation roster, not merely renderer visibility.
+            // Cancel/reset must happen first so old lane pickups and death effects clear.
+            foreach (var player in players) player.Eliminated -= OnEliminated;
+            players = recruits; traps = lanes;
+            foreach (var player in players) player.Eliminated += OnEliminated;
+            AliveCount = players.Length;
+        }
         void OnDirection(bool right) { cueBeat = round.masterBeat.BeatPosition; }
 
         void OnEliminated(RecruitController player)

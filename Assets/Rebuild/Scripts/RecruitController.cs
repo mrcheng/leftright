@@ -25,6 +25,8 @@ namespace LeftRight.Rebuild
         public bool IsMoving => Mathf.Abs(Horizontal) > .2f && !IsEliminated && !IsPinned;
         public bool DirectionRight { get; private set; }
         public float? InputOverride { get; set; }
+        public bool computerControlled;
+        public float ComputerInput { get; set; }
         Vector3 startingPosition;
         Quaternion startingRotation;
         float fallProgress;
@@ -59,7 +61,7 @@ namespace LeftRight.Rebuild
                 Horizontal = 0;
                 return;
             }
-            Horizontal = Mathf.Clamp(InputOverride ?? ReadInput(), -1, 1);
+            Horizontal = Mathf.Clamp(InputOverride ?? (computerControlled ? ComputerInput : ReadInput()), -1, 1);
             if (!IsMoving) { Horizontal = 0; return; }
             DirectionRight = Horizontal > 0;
             transform.localPosition += Vector3.right * Horizontal * walkSpeed * elapsed;

@@ -56,6 +56,15 @@ namespace LeftRight.Rebuild
         void LateUpdate()
         {
             if (CinematicActive) return;
+            if (RoundSummaryActive)
+            {
+                // Pullback already reached this pose. Discard old follow momentum so
+                // it cannot nudge the wide camera after the replay prompt appears.
+                velocity = Vector3.zero; fieldVelocity = 0;
+                gameCamera.transform.SetPositionAndRotation(widePosition, wideRotation);
+                gameCamera.fieldOfView = wideFieldOfView;
+                return;
+            }
             var player = LocalPlayer;
             bool close = !RoundSummaryActive && Mode == GameViewMode.Online && player != null &&
                 (course.round.IsCountingDown || course.round.HasStarted);

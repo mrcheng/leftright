@@ -11,6 +11,7 @@ var course=UnityEngine.Object.FindAnyObjectByType<SpikeCourse>();var director=co
 var savedPool=director.sequences;var self=savedPool.OfType<InstructorSelfShotVictory>().Single();
 var checks=new List<string>();void Check(bool condition,string label){if(!condition)throw new Exception(label);checks.Add(label);}
 async Task Wait(Func<bool> condition,float seconds=3){float until=Time.realtimeSinceStartup+seconds;while(!condition()&&Time.realtimeSinceStartup<until)await Task.Delay(5);if(!condition())throw new Exception("Timed out waiting for instructor self-shot");}
+round.CancelStart();
 var actor=round.officer.transform;var actorStart=actor.position;var actorRotation=actor.rotation;
 float lead=round.leadInSeconds,delay=director.victoryDelaySeconds;
 var started=typeof(VictoryDirector).GetField("startedAt",BindingFlags.Instance|BindingFlags.NonPublic);
@@ -48,6 +49,7 @@ try
  Check(Quaternion.Angle(actor.rotation,actorRotation)>80,"Instructor collapses onto his side");
  var mesh=new Mesh();float bottom=float.PositiveInfinity;
  foreach(var skin in actor.GetComponentsInChildren<SkinnedMeshRenderer>()){skin.BakeMesh(mesh,true);foreach(var vertex in mesh.vertices)bottom=Mathf.Min(bottom,(skin.transform.position+skin.transform.rotation*vertex).y);}
+ foreach(var renderer in actor.GetComponentsInChildren<Renderer>())if(!(renderer is SkinnedMeshRenderer))bottom=Mathf.Min(bottom,renderer.bounds.min.y);
  UnityEngine.Object.Destroy(mesh);
  Check(bottom>=actorStart.y-.005f&&bottom<actorStart.y+.05f,"Visible corpse rests on the platform surface");
  await Wait(()=>Time.unscaledTime-birth>=4.6f);

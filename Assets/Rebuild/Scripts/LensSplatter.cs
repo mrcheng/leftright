@@ -19,6 +19,7 @@ namespace LeftRight.Rebuild
         readonly Vector4[] seeds = new Vector4[8];
         readonly System.Random random = new System.Random();
         GameObject canvasRoot;
+        RecruitController[] observedPlayers;
 
         void Awake()
         {
@@ -38,14 +39,15 @@ namespace LeftRight.Rebuild
         void OnEnable()
         {
             course.round.Cancelled+=Clear;
-            foreach(var player in course.players) { player.Eliminated+=OnDeath; player.Spiked+=OnSpikeHit; }
+            observedPlayers = course.GetComponentsInChildren<RecruitController>(true);
+            foreach(var player in observedPlayers) { player.Eliminated+=OnDeath; player.Spiked+=OnSpikeHit; }
             if(canvasRoot!=null)canvasRoot.SetActive(true);
         }
 
         void OnDisable()
         {
             course.round.Cancelled-=Clear;
-            foreach(var player in course.players)if(player!=null) { player.Eliminated-=OnDeath; player.Spiked-=OnSpikeHit; }
+            foreach(var player in observedPlayers)if(player!=null) { player.Eliminated-=OnDeath; player.Spiked-=OnSpikeHit; }
             Clear(); if(canvasRoot!=null)canvasRoot.SetActive(false);
         }
 
