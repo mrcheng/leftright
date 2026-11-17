@@ -40,6 +40,17 @@ namespace LeftRight.Editor
             course.players = new RecruitController[recruits.Length];
             course.traps = new LaneSpikeTrap[recruits.Length];
             var model = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Rebuild/Art/Outpost/Models/SpikePillar.fbx");
+            const string bloodPath = "Assets/Rebuild/Art/Outpost/Materials/Blood.mat";
+            var blood = AssetDatabase.LoadAssetAtPath<Material>(bloodPath);
+            if (blood == null)
+            {
+                blood = new Material(Shader.Find("Universal Render Pipeline/Lit"));
+                AssetDatabase.CreateAsset(blood, bloodPath);
+            }
+            blood.SetColor("_BaseColor", new Color(.30f, .008f, .012f));
+            blood.SetFloat("_Smoothness", .65f);
+            blood.SetFloat("_Cull", 0);
+            EditorUtility.SetDirty(blood);
             if (model == null) throw new InvalidOperationException("Generate SpikePillar.fbx with build_spike_pillar.py first.");
             for (int i = 0; i < recruits.Length; i++)
             {
@@ -52,6 +63,7 @@ namespace LeftRight.Editor
                 player.march = march;
                 player.round = course.round;
                 player.course = course;
+                player.ragdoll = march.GetComponent<RecruitRagdoll>() ?? march.gameObject.AddComponent<RecruitRagdoll>();
                 var hitAudio = march.GetComponent<RecruitAudio>() ?? march.gameObject.AddComponent<RecruitAudio>();
                 var source = march.GetComponent<AudioSource>();
                 if (source == null) source = march.gameObject.AddComponent<AudioSource>();
@@ -74,6 +86,7 @@ namespace LeftRight.Editor
                 lane.SetParent(group, false);
                 lane.localPosition = new Vector3(0, .65f, march.transform.localPosition.z);
                 var trap = lane.gameObject.AddComponent<LaneSpikeTrap>();
+                trap.bloodMaterial = blood;
                 course.traps[i] = trap;
                 for (int side = 0; side < 2; side++)
                 {

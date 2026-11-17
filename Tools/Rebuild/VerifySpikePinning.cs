@@ -65,9 +65,10 @@ try
     until=Time.realtimeSinceStartup+6;
     while(!course.IsGameOver && Time.realtimeSinceStartup<until) await Task.Delay(20);
     Check(course.IsGameOver && course.AliveCount==0,"Game over waits for the final opposite-set contact");
-    await Task.Delay(1000);
-    Check(course.traps.All(t=>Mathf.Abs(t.rightBank.position.x-t.leftBank.position.x-t.pillarThickness-.25f)<.002f),
-        "All sets finish closing to one walkway plank width even after game over");
+    until=Time.realtimeSinceStartup+3;
+    while(!course.traps.All(t=>t.HasFinishedSqueeze)&&Time.realtimeSinceStartup<until)await Task.Delay(10);
+    Check(course.traps.All(t=>t.HasFinishedSqueeze),
+        "All sets complete their one-plank crush before returning");
     Check(course.players.Select((p,i)=>p.transform.Find("Model orientation").localScale.z<visualScales[i].z*.7f).All(v=>v),
         "Recruit meshes visibly compress along the closing direction");
     Check(course.players.Select((p,i)=>Mathf.Abs(p.transform.position.x-(course.traps[i].leftBank.position.x+course.traps[i].rightBank.position.x)*.5f)<.001f).All(v=>v),

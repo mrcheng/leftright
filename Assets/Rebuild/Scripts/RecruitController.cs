@@ -12,6 +12,7 @@ namespace LeftRight.Rebuild
         public RebuildRoundStart round;
         public SpikeCourse course;
         public RecruitAudio hitAudio;
+        public RecruitRagdoll ragdoll;
         public float walkSpeed = 1.5f;
         public float collisionRadius = .25f;
         public bool IsEliminated { get; private set; }
@@ -34,6 +35,7 @@ namespace LeftRight.Rebuild
         Transform visualRoot, squeezeLeft, squeezeRight;
         Vector3 visualRestScale;
         float visualWidth, squeezeThickness;
+        bool releasedAfterSqueeze;
 
         void Awake()
         {
@@ -83,8 +85,10 @@ namespace LeftRight.Rebuild
 
         public void ResetPlayer()
         {
+            if (ragdoll != null) ragdoll.ResetRagdoll();
             if (hitAudio != null) hitAudio.ResetAudio();
             IsEliminated = false;
+            releasedAfterSqueeze = false;
             pinnedBank = null;
             squeezeLeft = squeezeRight = null;
             visualRoot.localScale = visualRestScale;
@@ -158,13 +162,27 @@ namespace LeftRight.Rebuild
             }
         }
 
+        public void ReleaseAfterSqueeze()
+        {
+            if (!IsEliminated) return;
+            // Keep the compressed proportions, detach from the banks, then let jointed
+            // physics drive the skeleton independently of player movement and marching.
+            pinnedBank = null; squeezeLeft = squeezeRight = null;
+            releasedAfterSqueeze = true;
+            deathPosition = transform.localPosition;
+            deathRotation = transform.localRotation;
+            fallProgress = 0;
+            if (ragdoll != null) ragdoll.Activate(PinnedFromLeft);
+        }
+
         void LateUpdate()
         {
             if (IsPinned) { FollowPinnedBank(); return; }
+            if (releasedAfterSqueeze) return; // RecruitRagdoll now owns the visible bone poses.
             if (!IsEliminated) return;
             fallProgress = Mathf.Min(1, fallProgress + Time.unscaledDeltaTime / .4f);
             float t = Mathf.SmoothStep(0, 1, fallProgress);
-            transform.localRotation = deathRotation * Quaternion.Euler(0, 0, -85 * t);
+            transform.localRotation = Quaternion.AngleAxis(-85 * t, Vector3.forward) * deathRotation;
             transform.localPosition = deathPosition + Vector3.up * (.2f * t);
         }
     }

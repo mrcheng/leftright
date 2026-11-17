@@ -11,6 +11,11 @@ namespace LeftRight.Rebuild
         public float spikeReach = .65f;
         public float finalGap = .25f;
         public float pillarThickness = .30f;
+        public Material bloodMaterial;
+        public float squeezeHoldSeconds = .35f;
+        public float returnSeconds = 1.2f;
+        public bool HasFinishedSqueeze { get; private set; }
+        public bool HasReturned { get; private set; }
         public float MaximumTravel => Mathf.Max(0, (rightOpen.x - leftOpen.x - pillarThickness - finalGap) * .5f);
         public int MissedBeats { get; private set; }
         public float TargetTravel { get; private set; }
@@ -18,6 +23,10 @@ namespace LeftRight.Rebuild
         public float RightTip => rightBank.position.x - spikeReach;
         Vector3 leftOpen, rightOpen;
         float travel;
+        float holdTime;
+        RecruitController victim;
+        BloodSplash blood;
+        BloodSplash firstHitBlood;
 
         void Awake()
         {
@@ -30,11 +39,15 @@ namespace LeftRight.Rebuild
         {
             travel = TargetTravel = 0;
             MissedBeats = 0;
+            victim = null; HasFinishedSqueeze = HasReturned = false; holdTime = 0;
+            if (blood != null) { blood.gameObject.SetActive(false); Destroy(blood.gameObject); blood = null; }
+            if (firstHitBlood != null) { firstHitBlood.gameObject.SetActive(false); Destroy(firstHitBlood.gameObject); firstHitBlood = null; }
             ApplyPose();
         }
 
         public void MissBeat()
         {
+            if (victim != null) return;
             MissedBeats++;
             TargetTravel = Mathf.Min(MaximumTravel, TargetTravel + inwardPerMiss);
         }
@@ -52,8 +65,27 @@ namespace LeftRight.Rebuild
 
         public void Animate(float deltaTime)
         {
-            travel = Mathf.MoveTowards(travel, TargetTravel, inwardPerMiss / Mathf.Max(.01f, slideSeconds) * deltaTime);
+            if (HasFinishedSqueeze && !HasReturned)
+            {
+                holdTime += deltaTime;
+                if (holdTime >= squeezeHoldSeconds) TargetTravel = 0;
+            }
+            float speed = HasFinishedSqueeze && TargetTravel == 0
+                ? MaximumTravel / Mathf.Max(.01f, returnSeconds) : inwardPerMiss / Mathf.Max(.01f, slideSeconds);
+            travel = Mathf.MoveTowards(travel, TargetTravel, speed * deltaTime);
             ApplyPose();
+            if (victim != null && !HasFinishedSqueeze && Mathf.Abs(travel - MaximumTravel) < .001f)
+            {
+                // Finish the visible crush before releasing the body. This still runs after
+                // game over so the final recruit gets the same splash and return animation.
+                victim.FollowPinnedBank();
+                HasFinishedSqueeze = true;
+                var position = new Vector3((leftBank.position.x + rightBank.position.x) * .5f,
+                    transform.position.y + .012f, victim.transform.position.z);
+                if (bloodMaterial != null) blood = BloodSplash.Spawn(position, bloodMaterial, transform);
+                victim.ReleaseAfterSqueeze();
+            }
+            if (HasFinishedSqueeze && TargetTravel == 0 && travel == 0) HasReturned = true;
         }
 
         void ApplyPose()
@@ -83,6 +115,9 @@ namespace LeftRight.Rebuild
                 // Choose the nearest bank if both happen to arrive in the same frame.
                 bool fromLeft = left && (!right || Mathf.Abs(player.transform.position.x - LeftTip) <= Mathf.Abs(player.transform.position.x - RightTip));
                 player.PinTo(fromLeft ? leftBank : rightBank, fromLeft, spikeReach);
+                if (bloodMaterial != null)
+                    firstHitBlood = BloodSplash.Spawn(new Vector3(player.transform.position.x,
+                        transform.position.y + .012f, player.transform.position.z), bloodMaterial, transform, .45f);
                 return;
             }
             player.FollowPinnedBank();
@@ -93,6 +128,7 @@ namespace LeftRight.Rebuild
             {
                 player.Eliminate();
                 player.SqueezeBetween(leftBank, rightBank, pillarThickness);
+                victim = player;
                 FinishSqueeze();
             }
         }
