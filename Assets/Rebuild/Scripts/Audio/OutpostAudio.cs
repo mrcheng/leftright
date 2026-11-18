@@ -8,7 +8,8 @@ namespace LeftRight.Rebuild
         public AudioSource music;
         public AudioSource voice;
         public AudioSource effects;
-        [Range(0,1)] public float windVolume=.15f;
+        // 20 dB below the original 0.15 mix: amplitude is reduced tenfold.
+        [Range(0,1)] public float windVolume=.015f;
         public AudioSource Wind { get; private set; }
         public double MusicStartDspTime { get; private set; }
         public int PlaybackVersion { get; private set; }
