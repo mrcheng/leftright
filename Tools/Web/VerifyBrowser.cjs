@@ -31,7 +31,7 @@ async function click(page,x,y){const r=await page.locator('#game').boundingBox()
   const code=await host.evaluate(()=>window.leftRightLobby.code);
   console.log('Browser created Relay room');await host.screenshot({path:path.join(out,'host-room.png')});
   const peer=await open('peer');
-  if(portraitPeer){await peer.waitForSelector('#rotate-phone:visible');await peer.setViewportSize({width:844,height:390});await peer.waitForSelector('#rotate-phone:hidden')}
+  if(portraitPeer){await peer.waitForSelector('#rotate-phone:visible');await peer.setViewportSize({width:844,height:390});await peer.waitForSelector('#rotate-phone',{state:'hidden'})}
   await click(peer,640,430);
   if(mobilePeer){await peer.locator('#join-code').fill(code);await peer.locator('#join-form button').tap()}
   else {await click(peer,550,522);await peer.keyboard.type(code,{delay:120});await click(peer,790,522)}
