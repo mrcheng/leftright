@@ -8,10 +8,13 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23b5be73'/%3E%3Ctext x='7' y='44' font-family='monospace' font-size='38' font-weight='bold' fill='%2310160e'%3ELR%3C/text%3E%3C/svg%3E">
 <meta name="description" content="Follow the orders. Survive the longest. Play Left Right online with friends, right in your browser.">
 <title>Left Right</title>
+<link rel="stylesheet" href="style/06ca7a1b0c8c267c.css">
 <style>
 @font-face{font-family:Drill;src:url(style/PressStart2P.ttf) format('truetype');font-display:swap}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#10160e;color:#f4e9ba;font-family:Drill,monospace}
 #stage{position:fixed;inset:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#10160e}
+#rotate-phone{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:#10160e;padding:32px;text-align:center;outline:0}
+#rotate-phone[hidden]{display:none}#rotate-phone svg{width:112px;height:112px;color:#b5be73}#rotate-phone h2{font-size:18px;line-height:1.8;margin:0}#rotate-phone p{font-size:11px;line-height:2;max-width:320px;margin:0;color:#c4cba7}
 canvas{width:100%;height:100%;display:block;outline:0;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 button,input{font:inherit}button{color:#11190e;background:#b5be73;border:2px solid #747f48;cursor:pointer}button:hover{background:#d0d78f}button:focus-visible,input:focus-visible{outline:2px solid #f4e9ba;outline-offset:2px}
 button,button *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -31,7 +34,7 @@ button,button *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:
 #copy-room{position:absolute;left:58.59375%;top:50%;width:10.15625%;height:5.5556%;z-index:3;font-size:clamp(8px,1vw,14px)}#join-form[hidden],#copy-room[hidden]{display:none}
 @media(max-aspect-ratio:1/1){
  #gui-overlay{width:min(100vw,55.813953dvh);height:min(100dvh,179.166667vw)}
- #join-form{left:5%;top:48.837209%;width:90%;height:6.511628%;gap:3.703704%}#join-code{width:62.5%}
+ #join-form{left:5%;top:50.697674%;width:90%;height:6.511628%;gap:3.703704%}#join-code{width:62.5%}
  #copy-room{left:65.833333%;top:38.372093%;width:29.166667%;height:5.581395%;font-size:12px}
 }
 </style>
@@ -46,7 +49,32 @@ button,button *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:
 </div>
 <div id="gui-overlay"><form id="join-form" hidden><input id="join-code" aria-label="Friend's room code" placeholder="ROOM CODE" maxlength="12" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false"><button>JOIN</button></form>
 <button id="copy-room" hidden>COPY</button></div>
+<section id="round-results" role="dialog" aria-modal="true" aria-labelledby="results-title" hidden>
+ <div class="results-card">
+  <div class="results-scroll">
+   <h2 id="results-title" tabindex="-1">SURVIVAL RESULTS</h2>
+   <p class="results-kicker">YOUR TIME</p><p id="result-personal" class="results-time"></p>
+   <p id="result-best" class="results-best"></p>
+   <div id="result-round" aria-label="Round results"></div>
+   <section id="honor-board" aria-labelledby="honor-title" hidden>
+    <h3 id="honor-title">HONOR TO OUR GLORIOUS RECRUITS THAT SURVIVED FOR THIS LONG</h3>
+    <p class="results-kicker">GLOBAL SURVIVAL · TOP 10</p>
+    <form id="score-form" hidden>
+     <label for="score-name">TOP 10! ENTER YOUR NAME</label>
+     <div class="score-entry"><input id="score-name" maxlength="14" placeholder="YOUR NAME" autocomplete="nickname" autocorrect="off" spellcheck="false" required><button id="score-save" type="submit">SAVE</button></div>
+    </form>
+    <p id="score-status" role="status" aria-live="polite"></p><button id="score-retry" type="button" hidden>TRY AGAIN</button>
+    <table class="score-table"><thead><tr><th scope="col">#</th><th scope="col">RECRUIT</th><th scope="col">TIME</th></tr></thead><tbody id="score-rows"></tbody></table>
+   </section>
+  </div>
+  <div class="results-actions"><button id="result-again" type="button">PLAY AGAIN</button><button id="result-menu" type="button">MAIN MENU</button></div>
+ </div>
+</section>
 <div id="loading"><p id="status">Loading…</p><progress id="progress" max="1" value="0"></progress><p id="error" role="alert" hidden></p><button id="play" hidden>RELOAD</button></div>
+<section id="rotate-phone" role="dialog" aria-modal="true" aria-labelledby="rotate-title" tabindex="-1" hidden>
+ <svg viewBox="0 0 112 112" fill="none" stroke="currentColor" stroke-width="5" aria-hidden="true"><rect x="20" y="34" width="72" height="44" rx="5"/><path d="M80 48v16M26 20a42 42 0 0 1 65 4M91 10v15H76M86 92a42 42 0 0 1-65-4M21 102V87h15"/></svg>
+ <h2 id="rotate-title">TURN YOUR PHONE</h2><p>Play Left Right in landscape.<br>Rotate your phone to continue.</p>
+</section>
 </div>
 <script>
 const canvas=document.getElementById('game'),loading=document.getElementById('loading'),status=document.getElementById('status'),progress=document.getElementById('progress');
@@ -55,7 +83,19 @@ const fullscreen=document.getElementById('fullscreen'),joinCode=document.getElem
 let instance;
 window.leftRightInput={axis:0,jump:false};
 const touches=new Map();
-function canMove(){const s=window.leftRightLobby;return s&&s.playing&&!s.menu&&!s.over}
+const rotatePhone=document.getElementById('rotate-phone'),portraitScreen=matchMedia('(orientation:portrait)');
+function updateOrientation(){
+ // A browser cannot reliably force device rotation (especially Safari). Gate
+ // portrait touch screens instead; desktop windows retain their normal layout.
+ const blocked=touchDevice&&portraitScreen.matches;
+ const changed=rotatePhone.hidden===blocked;rotatePhone.hidden=!blocked;
+ for(const child of document.getElementById('stage').children)if(child!==rotatePhone)child.inert=blocked;
+ if(blocked){resetInput();if(changed)rotatePhone.focus()}
+ else if(changed)canvas.focus();
+}
+portraitScreen.addEventListener('change',updateOrientation);
+updateOrientation();
+function canMove(){const s=window.leftRightLobby;return rotatePhone.hidden&&s&&s.playing&&!s.menu&&!s.over}
 function resetInput(){touches.clear();window.leftRightInput.axis=0;window.leftRightInput.jump=false;document.querySelectorAll('.touch-button.held').forEach(button=>button.classList.remove('held'))}
 function updateAxis(){// Opposite fingers cancel; releasing one keeps the other held.
  window.leftRightInput.axis=Math.sign([...touches.values()].reduce((sum,axis)=>sum+axis,0));
@@ -98,12 +138,13 @@ document.getElementById('copy-room').onclick=async()=>{
  try{await navigator.clipboard.writeText(window.leftRightLobby.code);button.textContent='COPIED';setTimeout(()=>button.textContent='COPY',1500)}catch{button.textContent=window.leftRightLobby.code}
 };
 function fail(message){loading.style.display='flex';status.textContent='Could not start the game.';const error=document.getElementById('error');error.hidden=false;error.textContent=String(message);const reload=document.getElementById('play');reload.hidden=false;reload.onclick=()=>location.reload()}
-const script=document.createElement('script');script.src='Build/15961497451c8c9f.loader.js';script.onerror=()=>fail('Download failed. Check your connection and reload.');
+const script=document.createElement('script');script.src='Build/5bd045ff5fce0b72.loader.js';script.onerror=()=>fail('Download failed. Check your connection and reload.');
 script.onload=()=>createUnityInstance(canvas,{
- dataUrl:'Build/63aab3828afe1018.data.unityweb',frameworkUrl:'Build/55ba7456141026c2.framework.js.unityweb',codeUrl:'Build/a78c4e5f3698ceec.wasm.unityweb',streamingAssetsUrl:'StreamingAssets',
+ dataUrl:'Build/5a2f87845f0a9917.data.unityweb',frameworkUrl:'Build/56abb094e2a9c31d.framework.js.unityweb',codeUrl:'Build/e3d9694ed2cae5c0.wasm.unityweb',streamingAssetsUrl:'StreamingAssets',
  companyName:'MrCheng',productName:'Left Right',productVersion:'prototype',
  showBanner:(message,type)=>{if(type==='error')fail(message)}
 },value=>{progress.value=value;status.textContent='Loading… '+Math.round(value*100)+'%'}).then(game=>{instance=game;loading.style.display='none';canvas.focus()}).catch(fail);
 document.body.appendChild(script);
 </script>
+<script src="style/b25babb393a575a7.js"></script>
 </body></html>
