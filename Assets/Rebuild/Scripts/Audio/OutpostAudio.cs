@@ -8,9 +8,6 @@ namespace LeftRight.Rebuild
         public AudioSource music;
         public AudioSource voice;
         public AudioSource effects;
-        // 20 dB below the original 0.15 mix: amplitude is reduced tenfold.
-        [Range(0,1)] public float windVolume=.015f;
-        public AudioSource Wind { get; private set; }
         public double MusicStartDspTime { get; private set; }
         public int PlaybackVersion { get; private set; }
         public bool MusicHasStarted => music.isPlaying && AudioSettings.dspTime >= MusicStartDspTime;
@@ -21,17 +18,7 @@ namespace LeftRight.Rebuild
             music.volume *= volume;
             voice.volume *= volume;
             effects.volume *= volume;
-            // Atmosphere is independent of round music: countdowns, menu changes
-            // and victory playback must not restart the loop or interrupt its seam.
-            Wind=gameObject.AddComponent<AudioSource>();
-            Wind.clip=Resources.Load<AudioClip>("EveningWind");
-            Wind.loop=true;Wind.playOnAwake=false;Wind.spatialBlend=0;
-            Wind.volume=windVolume*volume;
-            if(Wind.clip!=null)Wind.Play();
         }
-
-        void OnEnable(){if(Wind!=null&&Wind.clip!=null)Wind.Play();}
-        void OnDisable(){if(Wind!=null)Wind.Stop();}
 
         public void PlayTitleMusic() => PlayMusic(palette.titleMusic);
         public void PlayRoundMusic() => PlayMusic(palette.roundMusic);

@@ -8480,7 +8480,6 @@ MonoBehaviour:
   music: {fileID: 3195986975775023428}
   voice: {fileID: 5402061994450594596}
   effects: {fileID: 5235924503258560948}
-  windVolume: 0.015
 --- !u!1 &5640374473547374670
 GameObject:
   m_ObjectHideFlags: 0
