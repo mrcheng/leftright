@@ -1,4 +1,10 @@
 mergeInto(LibraryManager.library, {
+  LeftRight_UpdateResults: function (json) {
+    window.dispatchEvent(new CustomEvent('leftright-results', { detail: JSON.parse(UTF8ToString(json)) }));
+  },
+  LeftRight_UpdateDrills: function (json) {
+    window.leftRightDrills = JSON.parse(UTF8ToString(json));
+  },
   LeftRight_MoveInput: function () {
     return window.leftRightInput ? window.leftRightInput.axis : 0;
   },

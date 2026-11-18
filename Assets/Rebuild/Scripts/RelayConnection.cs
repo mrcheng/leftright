@@ -29,7 +29,9 @@ namespace LeftRight.Rebuild
 
     public sealed class UnityRelayConnection : IRelayConnection
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL
+        // The SDK/transport also restrict the Editor to WebSockets when WebGL is
+        // the active target. Native standalone builds continue to use DTLS.
         const string ConnectionType="wss";
 #else
         const string ConnectionType="dtls";
@@ -49,7 +51,7 @@ namespace LeftRight.Rebuild
             if(!AuthenticationService.Instance.IsSignedIn)
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
         }
-        static async Task Ready()
+        public static async Task Ready()
         {
             if(initialize==null||initialize.IsFaulted||initialize.IsCanceled)initialize=Initialize();
             await initialize;

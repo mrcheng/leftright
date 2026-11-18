@@ -13,16 +13,30 @@ namespace LeftRight.Rebuild
         public Texture2D pressedButtonTexture;
         public Font menuFont;
         public int PlayerCount { get; private set; } = 4;
+        public bool IsSurvival { get; private set; }
+        int localPlayerCount = 4;
         public bool IsOpen { get; private set; }
         public enum MenuPage { Main, LocalGame, Settings, Online }
         public MenuPage Page { get; private set; }
         public OnlineMatch online;
         public bool OnlineAvailable => online != null;
+        public PublicDrillLobby PublicDrills { get; private set; }
+        int drillPage;
+        [System.Serializable] sealed class BrowserDrills
+        {
+            public bool isPublic, listed, refreshing, joining;
+            public string status;
+            public PublicDrillRoom[] rooms;
+        }
 #if UNITY_WEBGL && !UNITY_EDITOR
         float nextWebStatus;
         [System.Runtime.InteropServices.DllImport("__Internal")]
         static extern void LeftRight_UpdateLobby(string code,string status,int humans,int host,int playing,float x,int jumping,
             int menu,int over,float beat,float travel,string receiver);
+        [System.Runtime.InteropServices.DllImport("__Internal")]
+        static extern void LeftRight_UpdateDrills(string json);
+        [System.Runtime.InteropServices.DllImport("__Internal")]
+        static extern void LeftRight_UpdateResults(string json);
         void LateUpdate()
         {
             if(online==null||Time.unscaledTime<nextWebStatus)return;
@@ -36,6 +50,10 @@ namespace LeftRight.Rebuild
                 local!=null?local.transform.position.x:0,local!=null&&local.IsJumping?1:0,
                 IsOpen?(int)Page+1:0,course.IsGameOver?1:0,(float)course.round.masterBeat.BeatPosition,
                 slot>=0&&slot<course.traps.Length?course.traps[slot].CurrentTravel:0,gameObject.name);
+            if(PublicDrills!=null)LeftRight_UpdateDrills(JsonUtility.ToJson(new BrowserDrills{
+                isPublic=PublicDrills.IsPublic,listed=PublicDrills.IsListed,refreshing=PublicDrills.Refreshing,
+                joining=PublicDrills.Joining,status=online.IsHost?PublicDrills.HostStatus:PublicDrills.BrowserStatus,rooms=PublicDrills.Rooms}));
+            if(Results!=null)LeftRight_UpdateResults(JsonUtility.ToJson(Results.State()));
         }
 #endif
         // A real HTML input supplies the mobile keyboard; IMGUI's code field remains
@@ -52,6 +70,10 @@ namespace LeftRight.Rebuild
             WebGLInput.captureAllKeyboardInput=focused!="1";
 #endif
         }
+        public void SubmitSurvivalName(string name)=>Results.SubmitName(name);
+        public void RetrySurvivalScores(string unused)=>Results.Refresh();
+        public void ReplayFromResults(string unused)=>Results.PlayAgain();
+        public void MenuFromResults(string unused)=>Results.MainMenu();
         string joinCode = "";
         readonly System.Collections.Generic.Dictionary<Transform,float> laneZ = new System.Collections.Generic.Dictionary<Transform,float>();
         float masterVolume;
@@ -62,6 +84,7 @@ namespace LeftRight.Rebuild
         GUIStyle title, label, small, button, centered;
         VictoryDirector victory;
         public SurvivalScore Scores { get; private set; }
+        public SurvivalResults Results { get; private set; }
         public ObstacleSpawner Obstacles { get; private set; }
 
         void Awake()
@@ -69,9 +92,14 @@ namespace LeftRight.Rebuild
             victory = GetComponent<VictoryDirector>();
             Scores = gameObject.AddComponent<SurvivalScore>();
             Scores.Initialize(course,this);
+            Results=gameObject.AddComponent<SurvivalResults>();
+            Results.Initialize(this,victory,new UnitySurvivalLeaderboard());
             Obstacles=course.GetComponent<ObstacleSpawner>();
             if(Obstacles==null)Obstacles=course.gameObject.AddComponent<ObstacleSpawner>();
             Obstacles.Initialize(course);
+            PublicDrills=GetComponent<PublicDrillLobby>();
+            if(PublicDrills==null)PublicDrills=gameObject.AddComponent<PublicDrillLobby>();
+            PublicDrills.Initialize(this,online);
             // The menu must win startup ordering over the round's automatic Start.
             course.round.playOnStart = false;
             masterVolume = PlayerPrefs.GetFloat("Rebuild.MasterVolume", 1);
@@ -82,6 +110,7 @@ namespace LeftRight.Rebuild
             foreach(var player in allPlayers)laneZ[player.transform]=player.transform.localPosition.z;
             foreach(var trap in allTraps)laneZ[trap.transform]=trap.transform.localPosition.z;
             foreach(Transform child in group)laneZ[child]=child.localPosition.z;
+            course.round.Preparing+=ArrangeSurvivalLane;
         }
         void Start() => Open();
 
@@ -92,14 +121,20 @@ namespace LeftRight.Rebuild
             course.round.CancelStart(); IsOpen = true;
             Page = MenuPage.Main; view.MenuActive = true;
             view.RoundSummaryActive = true;
-            SetPlayerCount(PlayerCount);
+            if(IsSurvival)RestoreLaneOrder();
+            IsSurvival=false;SetPlayerCount(localPlayerCount);
         }
 
         public void SetPlayerCount(int count)
         {
             if (!IsOpen) return;
+            IsSurvival=false;localPlayerCount=Mathf.Clamp(count,2,4);
+            ApplyRoster(localPlayerCount);
+        }
+        void ApplyRoster(int count)
+        {
             course.round.CancelStart();
-            PlayerCount = Mathf.Clamp(count, 2, 4);
+            PlayerCount = count;
             for (int i = 0; i < allPlayers.Length; i++)
             {
                 bool active = i < PlayerCount;
@@ -126,6 +161,7 @@ namespace LeftRight.Rebuild
         public void Play()
         {
             if (!IsOpen) return;
+            IsSurvival=false;
             // Session mode chooses ownership/network behavior; both modes follow
             // the locally controlled recruit once the match begins.
             view.SetMode(GameViewMode.Local);
@@ -134,9 +170,31 @@ namespace LeftRight.Rebuild
             course.round.BeginRound();
         }
 
+        public void PlaySurvival()
+        {
+            if(!IsOpen||(online!=null&&(online.Active||online.Busy)))return;
+            RestoreLaneOrder();IsSurvival=true;ApplyRoster(1);
+            view.SetMode(GameViewMode.Local);IsOpen=false;view.MenuActive=false;view.RoundSummaryActive=false;
+            course.round.BeginRound();
+        }
+        void ArrangeSurvivalLane()
+        {
+            if(!IsSurvival)return;
+            // Keep the lone walkway beside the instructor, without the empty gap
+            // left by hidden multiplayer lanes. Preparing runs AFTER player reset,
+            // so replay cannot put the recruit back on its old, now-hidden lane.
+            float destination=laneZ[lanePlatforms[allPlayers.Length-1]],source=laneZ[allPlayers[0].transform];
+            foreach(var target in new[]{allPlayers[0].transform,allTraps[0].transform,lanePlatforms[0]})
+            {var p=target.localPosition;p.z=destination;target.localPosition=p;}
+            foreach(Transform child in lanePlatforms[0].parent)
+                if((child.name=="Walkway footing"||child.name=="Bank retaining board")&&Mathf.Abs(laneZ[child]-source)<.01f)
+                {var p=child.localPosition;p.z=destination;child.localPosition=p;}
+        }
+
         public void OpenOnlineLobby()
         {
             course.round.CancelStart();IsOpen=true;Page=MenuPage.Online;
+            if(IsSurvival){RestoreLaneOrder();IsSurvival=false;SetPlayerCount(localPlayerCount);}
             view.MenuActive=true;view.RoundSummaryActive=true;
         }
 
@@ -271,7 +329,9 @@ namespace LeftRight.Rebuild
                 if(MenuButton(new Rect(410,398,460,66),"ONLINE MATCH"))Page=MenuPage.Online;
                 GUI.enabled=enabled;
                 GUI.Label(new Rect(410,466,460,28),"HOST / JOIN",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
-                if(MenuButton(new Rect(410,517,460,62),"SETTINGS"))ShowSettings();
+                if(MenuButton(new Rect(410,512,460,56),"SURVIVAL",true))PlaySurvival();
+                if(MenuButton(new Rect(410,584,460,52),"SETTINGS"))ShowSettings();
+                DrawPublicDrills(new Rect(914,304,342,320),4);
             }
             else if(Page==MenuPage.LocalGame)
             {
@@ -286,6 +346,12 @@ namespace LeftRight.Rebuild
             else if(Page==MenuPage.Online)
             {
                 GUI.Label(new Rect(250,280,780,40),"PLAY WITH A FRIEND",centered);
+                if(!online.Active||online.IsHost)
+                {
+                    bool old=GUI.enabled;GUI.enabled=old&&!online.Busy;
+                    DrawPublicOption(new Rect(914,430,342,44));GUI.enabled=old;
+                    GUI.Label(new Rect(914,488,330,108),online.Active?PublicDrills.HostStatus:"Public rooms appear on the start screen. Private rooms use a shared code.",new GUIStyle(small){alignment=TextAnchor.UpperLeft});
+                }
                 if(!online.Active)
                 {
                     bool enabled=GUI.enabled;GUI.enabled=!online.Busy;
@@ -327,6 +393,52 @@ namespace LeftRight.Rebuild
             GUI.color=oldColor;GUI.backgroundColor=oldBackground;GUI.matrix=oldMatrix;
         }
 
+        void DrawPublicOption(Rect rect)
+        {
+            var style=new GUIStyle(GUI.skin.toggle){font=menuFont,fontSize=14,padding=new RectOffset(26,0,0,0)};
+            style.normal.textColor=style.onNormal.textColor=new Color(.94f,.91f,.8f);
+            bool value=GUI.Toggle(rect,PublicDrills.IsPublic,"PUBLIC ROOM",style);
+            if(value!=PublicDrills.IsPublic)PublicDrills.SetPublic(value);
+        }
+
+        void DrawPublicDrills(Rect rect,int perPage)
+        {
+            if(PublicDrills==null)return;
+            GUI.Label(new Rect(rect.x,rect.y,rect.width-96,44),"DRILLS SOON ABOUT\nTO TAKE PLACE",new GUIStyle(small){fontSize=11});
+            bool enabled=GUI.enabled;GUI.enabled=enabled&&PublicDrills.CanRefresh;
+            if(GUI.Button(new Rect(rect.xMax-88,rect.y,88,44),PublicDrills.Refreshing?"...":"REFRESH",new GUIStyle(button){fontSize=10}))_=PublicDrills.RefreshAsync();
+            GUI.enabled=enabled;
+            var rooms=PublicDrills.Rooms;
+            if(rooms.Length==0)
+            {
+                GUI.Label(new Rect(rect.x,rect.y+66,rect.width,100),PublicDrills.BrowserStatus,new GUIStyle(small){fontSize=12});return;
+            }
+            int pages=(rooms.Length+perPage-1)/perPage;drillPage=Mathf.Clamp(drillPage,0,pages-1);
+            float height=(rect.height-92)/perPage;
+            for(int row=0;row<perPage;row++)
+            {
+                int index=drillPage*perPage+row;if(index>=rooms.Length)break;
+                var room=rooms[index];float y=rect.y+48+row*height;
+                Bar(new Rect(rect.x,y,rect.width,height-4),new Color(.12f,.16f,.1f,.85f));
+                string name=room.Name??"Drill";if(name.Length>18)name=name.Substring(0,15)+"...";
+                GUI.Label(new Rect(rect.x+8,y+4,rect.width-104,24),name.ToUpperInvariant(),new GUIStyle(small){fontSize=12});
+                GUI.Label(new Rect(rect.x+8,y+29,rect.width-104,24),room.Players+" / "+room.Capacity+" PLAYERS",new GUIStyle(small){fontSize=11});
+                GUI.enabled=enabled&&OnlineAvailable&&!online.Active&&!online.Busy&&!PublicDrills.Joining;
+                if(GUI.Button(new Rect(rect.xMax-88,y+2,88,perPage==2?56:44),PublicDrills.Joining?"...":"JOIN",new GUIStyle(button){fontSize=12}))_=PublicDrills.JoinAsync(room);
+            }
+            GUI.enabled=enabled;
+            if(pages>1)
+            {
+                float y=rect.yMax-44;
+                if(MenuButton(new Rect(rect.x,y,56,44),"<"))drillPage=(drillPage+pages-1)%pages;
+                string status=string.IsNullOrEmpty(PublicDrills.BrowserStatus)?(drillPage+1)+" / "+pages:PublicDrills.BrowserStatus;
+                GUI.Label(new Rect(rect.x+64,y,rect.width-128,44),status,new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=11});
+                if(MenuButton(new Rect(rect.xMax-56,y,56,44),">"))drillPage=(drillPage+1)%pages;
+            }
+            else if(!string.IsNullOrEmpty(PublicDrills.BrowserStatus))
+                GUI.Label(new Rect(rect.x,rect.yMax-44,rect.width,44),PublicDrills.BrowserStatus,new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=11});
+        }
+
         void DrawPortraitMenu()
         {
             // A separate 480x860 layout keeps phone targets at thumb size instead
@@ -343,12 +455,14 @@ namespace LeftRight.Rebuild
             GUI.Label(new Rect(36,156,408,54),"FOLLOW THE ORDERS.\nBE THE LAST ONE STANDING.",new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=13});
             if(Page==MenuPage.Main)
             {
-                if(MenuButton(new Rect(24,265,432,64),"START LOCAL GAME",true))ShowLocalGame();
+                if(MenuButton(new Rect(24,230,432,60),"START LOCAL GAME",true))ShowLocalGame();
                 GUI.enabled=enabled&&OnlineAvailable;
-                if(MenuButton(new Rect(24,355,432,64),"ONLINE MATCH"))Page=MenuPage.Online;
+                if(MenuButton(new Rect(24,306,432,60),"ONLINE MATCH"))Page=MenuPage.Online;
                 GUI.enabled=enabled;
-                GUI.Label(new Rect(24,429,432,32),"HOST / JOIN",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
-                if(MenuButton(new Rect(24,495,432,64),"SETTINGS"))ShowSettings();
+                GUI.Label(new Rect(24,370,432,24),"HOST / JOIN",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                if(MenuButton(new Rect(24,404,432,60),"SURVIVAL",true))PlaySurvival();
+                if(MenuButton(new Rect(24,480,432,52),"SETTINGS"))ShowSettings();
+                DrawPublicDrills(new Rect(24,550,432,244),2);
             }
             else if(Page==MenuPage.LocalGame)
             {
@@ -368,9 +482,10 @@ namespace LeftRight.Rebuild
                     GUI.enabled=enabled&&!online.Busy;
                     for(int count=2;count<=4;count++)
                         if(MenuButton(new Rect(24+(count-2)*150,270,132,56),count.ToString(),count==PlayerCount))SetPlayerCount(count);
-                    if(MenuButton(new Rect(24,345,432,60),online.Busy?"CONNECTING...":"HOST ONLINE",true))online.HostInternetFromMenu(PlayerCount);
-                    joinCode=GUI.TextField(new Rect(24,420,270,56),joinCode,12,new GUIStyle(GUI.skin.textField){font=menuFont,fontSize=20,alignment=TextAnchor.MiddleCenter}).ToUpperInvariant();
-                    if(MenuButton(new Rect(310,420,146,56),"JOIN"))online.JoinInternetFromMenu(joinCode);
+                    DrawPublicOption(new Rect(24,328,432,40));
+                    if(MenuButton(new Rect(24,370,432,54),online.Busy?"CONNECTING...":"HOST ONLINE",true))online.HostInternetFromMenu(PlayerCount);
+                    joinCode=GUI.TextField(new Rect(24,436,270,56),joinCode,12,new GUIStyle(GUI.skin.textField){font=menuFont,fontSize=20,alignment=TextAnchor.MiddleCenter}).ToUpperInvariant();
+                    if(MenuButton(new Rect(310,436,146,56),"JOIN"))online.JoinInternetFromMenu(joinCode);
                     GUI.enabled=enabled;
                     GUI.Label(new Rect(24,494,432,60),online.Busy?"Please wait for online services...":"Enter your friend's room code.",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
                     GUI.Label(new Rect(24,565,432,96),online.Status,new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
@@ -387,7 +502,12 @@ namespace LeftRight.Rebuild
                     GUI.enabled=enabled&&online.CanStart;
                     if(MenuButton(new Rect(24,490,432,64),online.IsHost?"START MATCH":"WAITING FOR HOST",true))online.RequestRound();
                     GUI.enabled=enabled;
-                    GUI.Label(new Rect(24,574,432,64),"Empty slots are filled\nwith computers.",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                    GUI.Label(new Rect(24,574,432,32),"Empty slots use computers.",new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=11});
+                    if(online.IsHost)
+                    {
+                        DrawPublicOption(new Rect(24,610,432,44));
+                        GUI.Label(new Rect(24,654,432,30),PublicDrills.HostStatus,new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=10});
+                    }
                 }
                 if(MenuButton(new Rect(24,690,432,56),online.Active?"DISCONNECT":online.Busy?"CANCEL":"BACK"))Back();
             }
@@ -406,43 +526,23 @@ namespace LeftRight.Rebuild
 
         void DrawRoundResult()
         {
-            // Reuse the title menu's pixel font, nine-slice buttons and reference
-            // resolution. Keep the actions below the winner instead of dimming the scene.
-            Styles();
-            float scale = Mathf.Min(Screen.width / 1280f, Screen.height / 720f);
-            var oldMatrix = GUI.matrix; var oldColor = GUI.color; var oldBackground = GUI.backgroundColor;
-            bool oldEnabled = GUI.enabled;
-            GUI.matrix = Matrix4x4.TRS(new Vector3((Screen.width-1280*scale)*.5f,(Screen.height-720*scale)*.5f,0),Quaternion.identity,Vector3.one*scale);
-            GUI.color = Color.white;
-            Bar(new Rect(256,356,768,340),new Color(.035f,.055f,.04f,.96f));
-            Bar(new Rect(256,356,768,4),new Color(.5f,.54f,.32f));
-            Bar(new Rect(256,692,768,4),new Color(.5f,.54f,.32f));
-            GUI.Label(new Rect(280,374,720,28),"SURVIVAL RESULTS",centered);
-            GUI.Label(new Rect(280,409,720,24),(Scores.NewBest?"NEW PERSONAL BEST  ":"PERSONAL BEST  ")+SurvivalScore.Format(Scores.BestSeconds),new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
-            var ranking=Enumerable.Range(0,Scores.Times.Length)
-                .OrderByDescending(i=>course.players[i]==course.Winner).ThenByDescending(i=>Scores.Times[i]).ToArray();
-            string[] names={"GREEN","BLUE","YELLOW","RED"};
-            for(int rank=0;rank<ranking.Length;rank++)
-            {
-                int i=ranking[rank];float y=449+rank*34;
-                if(course.players[i]==course.Winner)Bar(new Rect(286,y-2,708,30),new Color(.25f,.3f,.17f));
-                GUI.Label(new Rect(304,y,400,28),(rank+1)+". "+names[i]+(course.players[i]==course.Winner?"  WINNER":""),label);
-                GUI.Label(new Rect(774,y,202,28),SurvivalScore.Format(Scores.Times[i]),new GUIStyle(label){alignment=TextAnchor.MiddleRight});
-            }
-            bool waiting = online != null && online.Active && !online.IsHost;
-            GUI.enabled = oldEnabled && !waiting;
-            if(MenuButton(new Rect(286,610,344,58),waiting?"WAITING FOR HOST":"PLAY AGAIN",true))victory.StartAgain();
-            GUI.enabled = oldEnabled;
-            if(MenuButton(new Rect(650,610,344,58),"MAIN MENU"))Open();
-            GUI.matrix=oldMatrix;GUI.color=oldColor;GUI.backgroundColor=oldBackground;GUI.enabled=oldEnabled;
+#if !UNITY_WEBGL || UNITY_EDITOR
+            SurvivalResultsPanel.Draw(Results);
+#endif
+        }
+
+        void OnDestroy()
+        {
+            if(course!=null&&course.round!=null)course.round.Preparing-=ArrangeSurvivalLane;
         }
 
         void DrawSurvivalTimer()
         {
             Styles();
-            float scale=Mathf.Min(Screen.width/1280f,Screen.height/720f);
+            bool portraitSolo=IsSurvival&&Screen.height>Screen.width;
+            float scale=portraitSolo?Screen.width/480f:Mathf.Min(Screen.width/1280f,Screen.height/720f);
             var oldMatrix=GUI.matrix;var oldColor=GUI.color;
-            GUI.matrix=Matrix4x4.TRS(new Vector3((Screen.width-1280*scale)*.5f,(Screen.height-720*scale)*.5f,0),Quaternion.identity,Vector3.one*scale);
+            GUI.matrix=Matrix4x4.TRS(portraitSolo?Vector3.zero:new Vector3((Screen.width-1280*scale)*.5f,(Screen.height-720*scale)*.5f,0),Quaternion.identity,Vector3.one*scale);
             GUI.color=Color.white;
             Bar(new Rect(16,16,238,78),new Color(.035f,.055f,.04f,.9f));
             Bar(new Rect(16,16,4,78),new Color(.72f,.75f,.44f));

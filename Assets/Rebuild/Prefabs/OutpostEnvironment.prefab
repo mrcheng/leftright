@@ -11224,7 +11224,8 @@ MonoBehaviour:
   followSmoothSeconds: 1.5
   startPullback: 3
   startCampWidth: 26
-  onlineDistance: 18
+  onlineDistance: 9
+  followLaneWidth: 22
   onlineFieldOfView: 60
 --- !u!114 &9172920809540155542
 MonoBehaviour:

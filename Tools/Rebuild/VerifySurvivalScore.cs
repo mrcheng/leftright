@@ -1,10 +1,12 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEditor;
 using LeftRight.Rebuild;
 if(!EditorApplication.isPlaying)throw new Exception("Enter Play Mode first.");
 var menu=UnityEngine.Object.FindAnyObjectByType<StartMenu>();var course=menu.course;var score=menu.Scores;
+var overrides=course.GetComponentsInChildren<RecruitController>(true).ToDictionary(p=>p,p=>p.InputOverride);
 string key="Rebuild.SurvivalBestSeconds";bool had=PlayerPrefs.HasKey(key);float old=PlayerPrefs.GetFloat(key);
 float lead=course.round.leadInSeconds,reaction=course.reactionBeats;
 int checks=0;void Check(bool value,string message){if(!value)throw new Exception(message);checks++;}
@@ -38,5 +40,6 @@ try
 finally
 {
  course.NetworkReplica=false;course.round.leadInSeconds=lead;course.reactionBeats=reaction;menu.Open();
+ foreach(var entry in overrides)entry.Key.InputOverride=entry.Value;
  if(had)PlayerPrefs.SetFloat(key,old);else PlayerPrefs.DeleteKey(key);PlayerPrefs.Save();
 }

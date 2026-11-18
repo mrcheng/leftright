@@ -13,7 +13,9 @@ namespace LeftRight.Rebuild
         public float followSmoothSeconds = 1.5f;
         public float startPullback = 3f;
         public float startCampWidth = 26f;
-        public float onlineDistance = 18f;
+        public float onlineDistance = 9f;
+        [Min(1), Tooltip("Horizontal world width at the recruit: the 20-unit lane almost fills the screen.")]
+        public float followLaneWidth = 22f;
         public float onlineFieldOfView = 60f;
         public GameViewMode Mode { get; private set; }
         public bool CinematicActive { get; set; }
@@ -26,6 +28,7 @@ namespace LeftRight.Rebuild
         Quaternion wideRotation;
         float wideFieldOfView, fieldVelocity;
         Texture2D gear;
+        StartMenu menu;
 
         void Awake()
         {
@@ -34,6 +37,7 @@ namespace LeftRight.Rebuild
             wideFieldOfView = gameCamera.fieldOfView;
             UpdateWideFraming();
             Mode = GameViewMode.Local;
+            menu=GetComponent<StartMenu>();
             gear = MakeGear();
         }
 
@@ -86,7 +90,13 @@ namespace LeftRight.Rebuild
                 Vector3 playerFeet = player.transform.position;
                 Vector3 instructorFeet = course.round.officer.transform.position;
                 Vector3 center = Vector3.Lerp(playerFeet, instructorFeet, .35f) + Vector3.up * 1.2f;
-                float distance = onlineDistance;
+                // Frame the front lane consistently across phone/desktop aspect ratios.
+                // Measure width at the recruit's depth, rather than at the aim point
+                // behind them. The instructor visibility checks can still pull back
+                // when the player walks toward either end of the lane.
+                float horizontal = Mathf.Tan(onlineFieldOfView*Mathf.Deg2Rad*.5f)*Mathf.Max(.4f,gameCamera.aspect);
+                float playerDepth=(Quaternion.Inverse(wideRotation)*(playerFeet-center)).z;
+                float distance = Mathf.Max(onlineDistance,followLaneWidth*.5f/horizontal-playerDepth);
                 distance = FitPoint(playerFeet - Vector3.up * .1f, center, distance);
                 distance = FitPoint(playerFeet + Vector3.up * 2.25f, center, distance);
                 distance = FitPoint(instructorFeet - Vector3.up * .1f, center, distance);
@@ -129,11 +139,10 @@ namespace LeftRight.Rebuild
 
         void OnGUI()
         {
-            if (MenuActive) return;
+            if (MenuActive||menu?.Results?.Visible==true) return;
             const float margin = 14, button = 38;
             if (GUI.Button(new Rect(Screen.width - margin - button, margin, button, button), gear))
             {
-                var menu = GetComponent<StartMenu>();
                 if (menu != null) menu.OpenMatchSettings();
             }
         }

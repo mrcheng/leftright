@@ -36,6 +36,15 @@ namespace LeftRight.Editor
         public static void WritePage()
         {
             string build=Path.Combine(Output,"Build");
+            Directory.CreateDirectory(Path.Combine(Output,"style"));
+            string CopyResultsUi(string name)
+            {
+                byte[] bytes=File.ReadAllBytes("Tools/Web/"+name);
+                using var hash=System.Security.Cryptography.SHA256.Create();
+                string revision=System.BitConverter.ToString(hash.ComputeHash(bytes)).Replace("-","").Substring(0,16).ToLowerInvariant();
+                string target="style/"+revision+Path.GetExtension(name);
+                File.WriteAllBytes(Path.Combine(Output,target),bytes);return target;
+            }
             // Unity can leave development intermediates beside a compressed rebuild.
             // Only the compressed versions are shipped when both versions exist.
             foreach(string compressed in Directory.GetFiles(build,"*.unityweb"))
@@ -61,7 +70,9 @@ namespace LeftRight.Editor
                 .Replace("__LOADER__",FileMatching("*.loader.js"))
                 .Replace("__DATA__",FileMatching("*.data*"))
                 .Replace("__FRAMEWORK__",FileMatching("*.framework.js*"))
-                .Replace("__WASM__",FileMatching("*.wasm*"));
+                .Replace("__WASM__",FileMatching("*.wasm*"))
+                .Replace("__RESULTS_STYLE__",CopyResultsUi("results.css"))
+                .Replace("__RESULTS_SCRIPT__",CopyResultsUi("results.js"));
             File.WriteAllText(Path.Combine(Output,"index.html"),html);
             Directory.CreateDirectory(Path.Combine(Output,"style"));
             foreach(string name in new[]{"PressStart2P.ttf","Font-License.txt"})

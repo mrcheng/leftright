@@ -18,21 +18,17 @@ async function check(engine,device,label){
   await page.goto(url);
   await page.waitForFunction(()=>document.getElementById('loading').style.display==='none',null,{timeout:240000});
   await page.waitForFunction(()=>window.leftRightLobby?.menu,null,{timeout:15000});
+  assert(await page.locator('#rotate-phone').isVisible(),'portrait phones must rotate before playing');
+  assert(await page.locator('#game').evaluate(node=>node.inert),'portrait game cannot receive input');
+  await page.screenshot({path:path.join(out,label+'-rotate-phone.png')});
+  await page.setViewportSize({width:844,height:390});await page.waitForTimeout(500);
+  assert(!await page.locator('#rotate-phone').isVisible(),'rotation reveals the game');
+  assert(!await page.locator('#game').evaluate(node=>node.inert),'landscape restores game input');
   assert(await page.locator('#fullscreen').isVisible(),'fullscreen button stays available on phones');
   const fsBox=await page.locator('#fullscreen').boundingBox();assert(fsBox.x>250&&fsBox.y<50,'fullscreen is upper right');
   await page.locator('#fullscreen').tap();assert(await page.locator('#fullscreen-help').isVisible(),'unsupported fullscreen provides help');
   await page.locator('#fullscreen-help button').tap();
-  let r=await page.locator('#game').boundingBox();assert(Math.abs(r.width-390)<2&&Math.abs(r.height-844)<2,'portrait fallback fills viewport');
-  await page.screenshot({path:path.join(out,label+'-portrait-menu.png')});
-  async function portraitTap(x,y){const scale=Math.min(390/480,844/860);await page.touchscreen.tap((390-480*scale)/2+x*scale,(844-860*scale)/2+y*scale);await page.waitForTimeout(300)}
-  await portraitTap(240,297);await page.waitForFunction(()=>window.leftRightLobby.menuPage===1);
-  await portraitTap(240,718);await page.waitForFunction(()=>window.leftRightLobby.menuPage===0);
-  await portraitTap(240,387);await page.waitForFunction(()=>window.leftRightLobby.menuPage===3);
-  const field=await page.locator('#join-code').boundingBox();assert(field.width>200&&field.height>=44,'portrait room entry is thumb sized');
-  await page.locator('#join-code').fill('ABC123');
-  await portraitTap(240,718);await page.waitForFunction(()=>window.leftRightLobby.menuPage===0);
-  await page.setViewportSize({width:844,height:390});await page.waitForTimeout(500);
-  r=await page.locator('#game').boundingBox();assert(Math.abs(r.width-844)<2&&Math.abs(r.height-390)<2,'landscape fallback fills viewport');
+  let r=await page.locator('#game').boundingBox();assert(Math.abs(r.width-844)<2&&Math.abs(r.height-390)<2,'landscape fallback fills viewport');
   if(engine===webkit){
    // Windows WebKit has no Web Audio implementation. Check its iPhone-sized
    // viewport/menu/native keyboard layout; actual audio/gameplay is tested in
@@ -76,6 +72,9 @@ async function check(engine,device,label){
   assert(state.audio.includes('running'),'audio unlocked by gestures');
   await page.screenshot({path:path.join(out,label+'-mobile.png')});
   await page.setViewportSize({width:390,height:844});await page.waitForTimeout(250);r=await page.locator('#game').boundingBox();assert(Math.abs(r.height-844)<2,'still fills viewport after rotation');
+  assert(await page.locator('#rotate-phone').isVisible(),'portrait is blocked during a running game too');
+  assert.equal(await page.evaluate(()=>window.leftRightInput.axis),0,'rotation clears held input');
+  await page.setViewportSize({width:844,height:390});await page.waitForTimeout(250);
   await page.evaluate(()=>{document.body.requestFullscreen=window.__requestFullscreen});
   await page.locator('#fullscreen').tap();await page.waitForFunction(()=>!!document.fullscreenElement);
   await page.locator('#fullscreen').tap();await page.waitForFunction(()=>!document.fullscreenElement);

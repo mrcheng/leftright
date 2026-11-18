@@ -8,7 +8,8 @@ namespace LeftRight.Rebuild
     [DefaultExecutionOrder(150)]
     public sealed class SurvivalScore : MonoBehaviour
     {
-        const string BestKey = "Rebuild.SurvivalBestSeconds";
+        const string MatchBestKey = "Rebuild.SurvivalBestSeconds", SoloBestKey = "Rebuild.SurvivalSoloBestSeconds";
+        string BestKey => menu.IsSurvival?SoloBestKey:MatchBestKey;
         public float ElapsedSeconds { get; private set; }
         public float BestSeconds { get; private set; }
         public bool NewBest { get; private set; }
@@ -31,7 +32,7 @@ namespace LeftRight.Rebuild
             HasRound=Finished=NewBest=false;ElapsedSeconds=0;
             Times=new float[course.players.Length];stopped=new bool[Times.Length];
         }
-        void Begin(){Clear();HasRound=true;}
+        void Begin(){Clear();BestSeconds=PlayerPrefs.GetFloat(BestKey,0);HasRound=true;}
 
         void LateUpdate()
         {

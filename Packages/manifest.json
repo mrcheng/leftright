@@ -4,6 +4,7 @@
     "com.unity.netcode.gameobjects": "2.14.0",
     "com.unity.pipeline": "1.0.0",
     "com.unity.render-pipelines.universal": "17.6.0",
+    "com.unity.services.leaderboards": "2.4.0",
     "com.unity.services.multiplayer": "2.5.0",
     "com.unity.ugui": "2.6.0",
     "com.unity.modules.animation": "1.0.0",

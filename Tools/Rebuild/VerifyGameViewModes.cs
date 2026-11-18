@@ -18,8 +18,11 @@ try
  Check(Vector3.Distance(camera.transform.position,wide)<.01f,"Menu retains the saved course framing");
  menu.Play();course.enabled=false;
  foreach(var p in course.players){p.InputOverride=0;p.walkSpeed=0;}
- await Task.Delay(2400);
+ await Task.Delay(6000);
  Check(settings.Mode==GameViewMode.Local&&Vector3.Distance(camera.transform.position,wide)>1,"Local match follows its recruit during countdown");
+ var feet=settings.LocalPlayer.transform.position;
+ float left=camera.WorldToViewportPoint(feet+Vector3.left*10).x,right=camera.WorldToViewportPoint(feet+Vector3.right*10).x;
+ Check(left>-.1f&&left<.15f&&right>.85f&&right<1.1f,"Starting follow frames the first lane edges close to the screen edges");
  var player=settings.LocalPlayer;var pos=player.transform.position;
  float before=camera.transform.position.x;pos.x=5;player.transform.position=pos;
  await Task.Delay(70);float early=camera.transform.position.x;await Task.Delay(1800);
@@ -39,7 +42,7 @@ try
   }
  }
  Check(Mathf.Abs(Mathf.DeltaAngle(camera.transform.eulerAngles.z,0))<.001f,"Follow stays horizontally level");
- menu.Open();await Task.Delay(150);
+ camera.aspect=aspect;menu.Open();await Task.Delay(150);
  Check(Vector3.Distance(camera.transform.position,wide)<.01f,"Opening menu restores wide framing");
 }
 finally

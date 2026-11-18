@@ -165,6 +165,17 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.services.leaderboards": {
+      "version": "2.4.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.services.core": "1.19.0",
+        "com.unity.services.deployment": "1.8.0",
+        "com.unity.services.authentication": "3.9.0"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.services.multiplayer": {
       "version": "2.5.0",
       "depth": 0,

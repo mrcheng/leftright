@@ -22,12 +22,17 @@ async function click(page,x,y){const r=await page.locator('#game').boundingBox()
 (async()=>{
  try{
   const host=await open('host');console.log('Browser host loaded');
-  await click(host,640,430);await click(host,640,457);
+  await click(host,640,430);
+  if(process.env.PRIVATE_HOST==='1'){
+   await click(host,1050,452);await host.waitForFunction(()=>window.leftRightDrills?.isPublic===false);
+  }
+  await click(host,640,457);
   await host.waitForFunction(()=>window.leftRightLobby?.code?.length===6,{},{timeout:60000});
   const code=await host.evaluate(()=>window.leftRightLobby.code);
   console.log('Browser created Relay room');await host.screenshot({path:path.join(out,'host-room.png')});
   const peer=await open('peer');
-  if(portraitPeer){const scale=Math.min(390/480,844/860);await peer.touchscreen.tap(195,(844-860*scale)/2+387*scale);await peer.waitForFunction(()=>window.leftRightLobby?.menuPage===3)}else await click(peer,640,430);
+  if(portraitPeer){await peer.waitForSelector('#rotate-phone:visible');await peer.setViewportSize({width:844,height:390});await peer.waitForSelector('#rotate-phone:hidden')}
+  await click(peer,640,430);
   if(mobilePeer){await peer.locator('#join-code').fill(code);await peer.locator('#join-form button').tap()}
   else {await click(peer,550,522);await peer.keyboard.type(code,{delay:120});await click(peer,790,522)}
   await host.waitForFunction(()=>window.leftRightLobby?.humans===2,{},{timeout:60000});

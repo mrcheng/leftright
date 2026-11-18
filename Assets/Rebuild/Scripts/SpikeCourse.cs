@@ -88,7 +88,8 @@ namespace LeftRight.Rebuild
 
         void Update()
         {
-            if (IsGameOver && Keyboard.current != null && Keyboard.current.enterKey.wasPressedThisFrame)
+            if (IsGameOver && Keyboard.current != null && Keyboard.current.enterKey.wasPressedThisFrame &&
+                !(GetComponent<StartMenu>()?.Results?.Visible??false))
                 round.BeginRound();
         }
 

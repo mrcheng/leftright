@@ -241,6 +241,7 @@ namespace LeftRight.Rebuild
             }
             course.NetworkReplica = false; spawner.enabled = true;
             RoundActive = true;
+            menu.PublicDrills?.StopAdvertising();
             course.round.BeginScheduled(AudioSettings.dspTime + StartTime - Now, false);
             course.round.masterBeat.NetworkElapsedSeconds = () => Now - StartTime;
             Status = "Online round " + RoundNumber; nextSnapshot = 0;
@@ -416,6 +417,7 @@ namespace LeftRight.Rebuild
         public void Leave(string reason = "Disconnected.")
         {
             if(stopping)return; stopping=true; Active=false;RoundActive=false;
+            menu.PublicDrills?.StopAdvertising();
             connectionAttempt++;Busy=false;UsesRelay=false;JoinCode="";
             course.NetworkReplica=false;course.round.masterBeat.NetworkElapsedSeconds=null;
             foreach(var player in GetComponentsInChildren<RecruitController>(true))
@@ -434,6 +436,7 @@ namespace LeftRight.Rebuild
 
         void OnDestroy()
         {
+            menu.PublicDrills?.StopAdvertising();
             connectionAttempt++;
             if(manager!=null){manager.OnClientDisconnectCallback-=Disconnected;manager.Shutdown();Destroy(networkRoot);}
             if(course!=null){course.Completed-=OnCompleted;course.round.officer.DirectionChanged-=OnCue;course.round.NetworkStartRequest=null;course.round.masterBeat.NetworkElapsedSeconds=null;}

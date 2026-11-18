@@ -13,6 +13,8 @@ namespace LeftRight.Rebuild
         public float victoryDelaySeconds = 1f;
         [Min(.1f)] public float victoryDurationSeconds = 5f;
         [Min(.1f)] public float zoomOutSeconds = 1.5f;
+        [Min(0), Tooltip("Show a Survival death briefly before results, without a winner sequence.")]
+        public float soloResultsDelaySeconds = 1.5f;
         public AudioSource cheerSource;
         public AudioClip cheerClip;
         [Range(0, 1)] public float cheerVolume = .9f;
@@ -31,6 +33,8 @@ namespace LeftRight.Rebuild
         Vector3 returnPosition, returnTargetPosition;
         Quaternion returnRotation, returnTargetRotation;
         float playbackOffset;
+        bool soloResultsPending;
+        float soloResultsAt;
 
         public void BeginNetworkVictory(RecruitController winner, int sequenceIndex, float remainingDelay)
         {
@@ -50,6 +54,11 @@ namespace LeftRight.Rebuild
         void OnCompleted(RecruitController winner)
         {
             ResetVictory();
+            if(course.players.Length==1)
+            {
+                soloResultsPending=true;soloResultsAt=Time.unscaledTime+soloResultsDelaySeconds;
+                return;
+            }
             // Single-player losses have no winner; multiplayer ties are resolved by the course.
             if (winner == null) return;
             Winner = winner;
@@ -72,6 +81,11 @@ namespace LeftRight.Rebuild
 
         void LateUpdate()
         {
+            if(soloResultsPending&&Time.unscaledTime>=soloResultsAt)
+            {
+                soloResultsPending=false;ShowRestartPrompt=true;
+                if(view!=null){view.RoundSummaryActive=true;view.CinematicActive=false;}
+            }
             if (IsPending && Time.unscaledTime >= beginsAt)
             {
                 IsPending = false;
@@ -132,6 +146,7 @@ namespace LeftRight.Rebuild
             playback?.Stop(); playback = null;
             if (cheerSource != null) cheerSource.Stop();
             IsReturning = false; ShowRestartPrompt = false;
+            soloResultsPending=false;
             if (view != null) { view.CinematicActive = false; view.RoundSummaryActive = false; }
             Winner = null; SelectedSequence = null; IsPending = false;
             playbackOffset = 0;
