@@ -15,8 +15,8 @@ namespace LeftRight.Rebuild
         public RecruitRagdoll ragdoll;
         public float walkSpeed = 1.5f;
         public float collisionRadius = .25f;
-        [Min(.1f)] public float jumpHeight = .85f;
-        [Min(.2f)] public float jumpDuration = .65f;
+        [Min(.1f)] public float jumpHeight = 1f;
+        [Min(.2f)] public float jumpDuration = 1.05f;
         public bool IsJumping { get; private set; }
         public float JumpPhase { get; private set; }
         public float JumpOffset => Mathf.Max(0,transform.localPosition.y-startingPosition.y);

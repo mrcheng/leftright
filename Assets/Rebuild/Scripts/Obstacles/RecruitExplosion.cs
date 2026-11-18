@@ -5,7 +5,7 @@ using UnityEngine;
 namespace LeftRight.Rebuild
 {
     /// <summary>Cosmetic mesh fragmentation. Gameplay dies once on the host; pieces,
-    /// smoke and liquid use their own RNG and cannot affect scoring or spawn rolls.</summary>
+    /// sparks and liquid use their own RNG and cannot affect scoring or spawn rolls.</summary>
     public sealed class RecruitExplosion : MonoBehaviour
     {
         sealed class Fragment
@@ -22,7 +22,8 @@ namespace LeftRight.Rebuild
         bool[] visible;
         readonly List<Mesh> meshes=new List<Mesh>();
         readonly List<Fragment> pieces=new List<Fragment>();
-        readonly List<Transform> clouds=new List<Transform>();
+        readonly List<Transform> sparks=new List<Transform>();
+        readonly List<Vector3> sparkVelocities=new List<Vector3>();
         readonly List<Material> materials=new List<Material>();
         readonly System.Random random=new System.Random(Guid.NewGuid().GetHashCode());
         Light flash;
@@ -85,17 +86,22 @@ namespace LeftRight.Rebuild
                     BloodSplash.Spawn(floor,blood,root.transform,1).AimBurst(player.transform.position+Vector3.up*.6f,new Vector3((i-1)*1.5f,1,Random(-.5f,.5f)));
                 }
             }
-            var cloudMesh=new Mesh{name="Low-poly blast cloud"};
-            cloudMesh.vertices=new[]{Vector3.up,Vector3.down,Vector3.left,Vector3.right,Vector3.forward,Vector3.back};
-            cloudMesh.triangles=new[]{0,4,3,0,2,4,0,5,2,0,3,5,1,3,4,1,4,2,1,2,5,1,5,3};
-            cloudMesh.RecalculateNormals();cloudMesh.RecalculateBounds();meshes.Add(cloudMesh);
-            for(int i=0;i<12;i++)
+            var sparkMesh=new Mesh{name="Tiny blast spark"};
+            sparkMesh.vertices=new[]{Vector3.up,Vector3.down,Vector3.left,Vector3.right,Vector3.forward,Vector3.back};
+            sparkMesh.triangles=new[]{0,4,3,0,2,4,0,5,2,0,3,5,1,3,4,1,4,2,1,2,5,1,5,3};
+            sparkMesh.RecalculateNormals();sparkMesh.RecalculateBounds();meshes.Add(sparkMesh);
+            var sparkMaterial=new Material(Shader.Find("Universal Render Pipeline/Lit")){color=new Color(1,.5f,.08f)};
+            sparkMaterial.EnableKeyword("_EMISSION");sparkMaterial.SetColor("_EmissionColor",new Color(2,1,.1f));materials.Add(sparkMaterial);
+            for(int i=0;i<10;i++)
             {
-                var cloud=new GameObject("Blast and smoke");cloud.layer=2;
-                cloud.AddComponent<MeshFilter>().sharedMesh=cloudMesh;cloud.AddComponent<MeshRenderer>();
-                cloud.transform.SetParent(root.transform,false);cloud.transform.localPosition=new Vector3(Random(-.3f,.3f),Random(.05f,.7f),Random(-.3f,.3f));
-                var material=new Material(Shader.Find("Universal Render Pipeline/Lit")){color=i<5?new Color(1,.35f,.025f):new Color(.18f,.17f,.13f)};
-                cloud.GetComponent<Renderer>().sharedMaterial=material;materials.Add(material);clouds.Add(cloud.transform);
+                // Start tiny, then move outward and shrink. No full-size first frame,
+                // growing smoke shells or solid geometry obscuring the body fragments.
+                var spark=new GameObject("Blast spark");spark.layer=2;
+                spark.AddComponent<MeshFilter>().sharedMesh=sparkMesh;spark.AddComponent<MeshRenderer>().sharedMaterial=sparkMaterial;
+                spark.transform.SetParent(root.transform,false);spark.transform.localPosition=Vector3.up*.12f;
+                spark.transform.localScale=new Vector3(.025f,.08f,.025f);sparks.Add(spark.transform);
+                var velocity=new Vector3(Random(-3,3),Random(1,4),Random(-2,2));sparkVelocities.Add(velocity);
+                spark.transform.rotation=Quaternion.FromToRotation(Vector3.up,velocity);
             }
             flash=root.AddComponent<Light>();flash.type=LightType.Point;flash.color=new Color(1,.55f,.16f);flash.range=6;flash.intensity=9;
             var output=root.AddComponent<AudioSource>();output.spatialBlend=.15f;output.volume=.95f;
@@ -105,14 +111,14 @@ namespace LeftRight.Rebuild
         {
             if(root==null)return;
             float dt=Mathf.Min(Time.unscaledDeltaTime,.04f);age+=dt;
-            if(flash!=null)flash.intensity=9*Mathf.Clamp01(1-age/.18f);
-            for(int i=0;i<clouds.Count;i++)
+            if(flash!=null)flash.intensity=9*Mathf.Clamp01(1-age/.12f);
+            for(int i=0;i<sparks.Count;i++)
             {
-                var cloud=clouds[i];if(cloud==null)continue;
-                float life=i<5?.22f:1.8f,t=age/life;
-                cloud.gameObject.SetActive(t<1);
-                cloud.localScale=Vector3.one*((i<5?.35f:.45f)+age*.9f)*Mathf.Clamp01((1-t)*4);
-                cloud.position+=Vector3.up*dt*(i<5?.2f:.8f);
+                var spark=sparks[i];if(spark==null)continue;
+                float life=.16f+i*.01f,t=age/life;
+                spark.gameObject.SetActive(t<1);
+                spark.localScale=new Vector3(.025f,.08f,.025f)*Mathf.Clamp01(1-t);
+                spark.position+=sparkVelocities[i]*dt;
             }
             foreach(var piece in pieces)
             {
@@ -132,7 +138,7 @@ namespace LeftRight.Rebuild
             if(root!=null)Destroy(root);root=null;
             foreach(var mesh in meshes)if(mesh!=null)Destroy(mesh);
             foreach(var material in materials)if(material!=null)Destroy(material);
-            meshes.Clear();materials.Clear();pieces.Clear();clouds.Clear();originals=null;HasBlastSound=false;
+            meshes.Clear();materials.Clear();pieces.Clear();sparks.Clear();sparkVelocities.Clear();originals=null;HasBlastSound=false;
         }
         void OnDestroy()=>ResetExplosion();
     }

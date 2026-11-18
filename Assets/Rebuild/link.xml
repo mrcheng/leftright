@@ -1,0 +1,9 @@
+<linker>
+  <!-- CreatePrimitive constructs these collider types inside the engine. They
+       are not present in the saved scene, so WebGL stripping otherwise removes
+       them before mines and victory props can create their temporary shapes. -->
+  <assembly fullname="UnityEngine.PhysicsModule">
+    <type fullname="UnityEngine.CapsuleCollider" preserve="all" />
+    <type fullname="UnityEngine.SphereCollider" preserve="all" />
+  </assembly>
+</linker>

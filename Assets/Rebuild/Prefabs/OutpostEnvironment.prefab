@@ -3530,8 +3530,8 @@ MonoBehaviour:
   ragdoll: {fileID: 8707450313448154583}
   walkSpeed: 1.5
   collisionRadius: 0.25
-  jumpHeight: 0.85
-  jumpDuration: 0.65
+  jumpHeight: 1
+  jumpDuration: 1.05
   penetrationDepth: 0.2
   computerControlled: 0
 --- !u!114 &3161106312658057680
@@ -10566,8 +10566,8 @@ MonoBehaviour:
   ragdoll: {fileID: 1736973414303000727}
   walkSpeed: 1.5
   collisionRadius: 0.25
-  jumpHeight: 0.85
-  jumpDuration: 0.65
+  jumpHeight: 1
+  jumpDuration: 1.05
   penetrationDepth: 0.2
   computerControlled: 0
 --- !u!114 &7306324594253873810
@@ -13433,8 +13433,8 @@ MonoBehaviour:
   ragdoll: {fileID: 7275702797370310810}
   walkSpeed: 1.5
   collisionRadius: 0.25
-  jumpHeight: 0.85
-  jumpDuration: 0.65
+  jumpHeight: 1
+  jumpDuration: 1.05
   penetrationDepth: 0.2
   computerControlled: 0
 --- !u!114 &4792743479264114476
@@ -14518,8 +14518,8 @@ MonoBehaviour:
   ragdoll: {fileID: 1570689859011268439}
   walkSpeed: 1.5
   collisionRadius: 0.25
-  jumpHeight: 0.85
-  jumpDuration: 0.65
+  jumpHeight: 1
+  jumpDuration: 1.05
   penetrationDepth: 0.2
   computerControlled: 0
 --- !u!114 &8735724236596725201

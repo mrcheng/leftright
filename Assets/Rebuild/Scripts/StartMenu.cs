@@ -18,6 +18,20 @@ namespace LeftRight.Rebuild
         public MenuPage Page { get; private set; }
         public OnlineMatch online;
         public bool OnlineAvailable => online != null;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        float nextWebStatus;
+        [System.Runtime.InteropServices.DllImport("__Internal")]
+        static extern void LeftRight_UpdateLobby(string code,string status,int humans,int host,int playing,float x,int jumping);
+        void LateUpdate()
+        {
+            if(online==null||Time.unscaledTime<nextWebStatus)return;
+            nextWebStatus=Time.unscaledTime+.25f;
+            // Only friend-facing lobby data reaches the HTML copy-code button.
+            var local=online.RoundActive&&online.LocalSlot<course.players.Length?course.players[online.LocalSlot]:null;
+            LeftRight_UpdateLobby(online.JoinCode,online.Status,online.HumanCount,online.IsHost?1:0,online.RoundActive?1:0,
+                local!=null?local.transform.position.x:0,local!=null&&local.IsJumping?1:0);
+        }
+#endif
         string joinCode = "";
         readonly System.Collections.Generic.Dictionary<Transform,float> laneZ = new System.Collections.Generic.Dictionary<Transform,float>();
         float masterVolume;

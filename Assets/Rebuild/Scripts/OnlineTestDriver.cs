@@ -19,6 +19,9 @@ namespace LeftRight.Rebuild
         bool autoStart;
         IEnumerator Start()
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            enabled=false;yield break;
+#else
             var args=Environment.GetCommandLineArgs();
             if(!args.Contains("-lr-test")){enabled=false;yield break;}
             online=GetComponent<OnlineMatch>();
@@ -31,6 +34,7 @@ namespace LeftRight.Rebuild
             else if(args.Contains("-lr-relay-join"))online.JoinInternetFromMenu(Value("-lr-relay-join"));
             else if(args.Contains("-lr-host"))online.Host(int.Parse(Value("-lr-host","2")));
             else if(args.Contains("-lr-join"))online.Join(Value("-lr-join","127.0.0.1"));
+#endif
         }
         void Update()
         {

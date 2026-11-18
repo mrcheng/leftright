@@ -86,9 +86,9 @@ namespace LeftRight.Rebuild
                 var request=code==null?connection.HostAsync(capacity-1):connection.JoinAsync(code);
                 // Cloud retries must not leave the menu disabled indefinitely. Late
                 // responses are ignored; faulted background requests are observed.
-                if(await Task.WhenAny(request,Task.Delay(30000))!=request)
+                if(await Task.WhenAny(request,ConnectionDeadline(attempt))!=request)
                 {
-                    _=request.ContinueWith(t=>{var ignored=t.Exception;},TaskContinuationOptions.OnlyOnFaulted);
+                    _=ObserveLateRequest(request);
                     throw new TimeoutException();
                 }
                 var ticket=await request;
@@ -121,6 +121,17 @@ namespace LeftRight.Rebuild
             }
             finally {if(attempt==connectionAttempt)Busy=false;}
         }
+
+        async Task ConnectionDeadline(int attempt)
+        {
+            // Browser builds have no managed timer threads. A Unity frame wait works
+            // on every platform and stops as soon as this connection completes/cancels.
+            double until=Time.realtimeSinceStartupAsDouble+30;
+            while(this!=null&&Busy&&attempt==connectionAttempt&&Time.realtimeSinceStartupAsDouble<until)
+                await Awaitable.NextFrameAsync();
+        }
+        static async Task ObserveLateRequest(Task request)
+        {try{await request;}catch{/* The menu has already reported timeout/cancellation. */}}
 
         void Awake()
         {
@@ -163,7 +174,7 @@ namespace LeftRight.Rebuild
             transport.DisconnectTimeoutMS = 5000;
             manager = networkRoot.AddComponent<NetworkManager>();
             manager.NetworkConfig = new NetworkConfig { NetworkTransport = transport, EnableSceneManagement = false,
-                ConnectionApproval = true, TickRate = 30, ProtocolVersion = 3 };
+                ConnectionApproval = true, TickRate = 30, ProtocolVersion = 4 };
             transport.SetConnectionData("127.0.0.1", port, "0.0.0.0");
             manager.OnClientConnectedCallback += Connected;
             manager.OnClientDisconnectCallback += Disconnected;

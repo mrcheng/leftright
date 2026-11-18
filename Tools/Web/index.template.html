@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10160e">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23b5be73'/%3E%3Ctext x='7' y='44' font-family='monospace' font-size='38' font-weight='bold' fill='%2310160e'%3ELR%3C/text%3E%3C/svg%3E">
+<meta name="description" content="Follow the orders. Survive the longest. Play Left Right online with friends, right in your browser.">
+<title>Left Right — Play with friends</title>
+<style>
+@font-face{font-family:Drill;src:url(style/PressStart2P.ttf) format('truetype');font-display:swap}
+*{box-sizing:border-box}body{margin:0;background:#0c120d;color:#f4e9ba;font-family:Drill,monospace;min-height:100vh;display:flex;flex-direction:column}
+header,footer{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 28px;font-size:10px;line-height:1.9}
+header{border-bottom:3px solid #717b49}h1{font-size:16px;margin:0;white-space:nowrap}h1 span{color:#b5be73}header p{color:#a7af93;margin:0}
+button{font:inherit;color:#11190e;background:#b5be73;border:3px solid #747f48;padding:14px 20px;cursor:pointer;box-shadow:inset -3px -3px #8b9556}
+button:hover{background:#d0d78f}button:focus-visible{outline:3px solid #f4e9ba;outline-offset:4px}button:disabled{opacity:.6;cursor:wait}
+main{flex:1;display:grid;place-items:center;padding:16px}#stage{position:relative;width:min(100%,1440px);aspect-ratio:16/9;background:#10160e;border:1px solid #39442e;overflow:hidden}
+canvas{width:100%;height:100%;display:block;outline:0;background:#10160e}#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;background:#10160e;text-align:center;padding:24px;z-index:1}
+#loading h2{font-size:28px;line-height:1.7;margin:0}#loading p{font-size:10px;color:#a7af93;max-width:600px;line-height:2}progress{width:min(440px,80%);height:14px;accent-color:#b5be73}#error{color:#ffd0a6;white-space:pre-wrap}
+footer{color:#a7af93;font-size:9px;border-top:1px solid #39442e}kbd{color:#f4e9ba;border:1px solid #717b49;padding:5px 7px}footer p{margin:0}#room-code{color:#f4e9ba;font-size:14px;margin:0 10px}#copy-room{padding:9px;font-size:9px}
+body:fullscreen header,body:fullscreen footer{display:none}body:fullscreen main{padding:0;width:100%;height:100vh}body:fullscreen #stage{width:100%;height:100%;aspect-ratio:auto;border:0}
+@media(max-width:750px){header,footer{padding:14px;flex-wrap:wrap}header p{display:none}h1{font-size:12px}main{padding:0}#loading h2{font-size:18px}button{padding:12px}footer p{line-height:2.5}}
+</style>
+</head>
+<body>
+<header><h1><span>←</span> LEFT | RIGHT <span>→</span></h1><p>FOLLOW THE ORDERS. SURVIVE THE LONGEST.</p><button id="fullscreen">FULLSCREEN</button></header>
+<main><div id="stage"><canvas id="game" tabindex="0" aria-label="Left Right multiplayer game"></canvas>
+<div id="loading"><h2>LEFT | RIGHT</h2><p id="status">Ready to enter the outpost.</p><button id="play">PLAY</button><progress id="progress" max="1" value="0" hidden></progress><p id="error" role="alert" hidden></p></div></div></main>
+<footer><p><kbd>A</kbd> <kbd>D</kbd> MOVE &nbsp; <kbd>SPACE</kbd> JUMP</p><div id="room" hidden>ROOM <strong id="room-code"></strong><button id="copy-room">COPY CODE</button></div><p id="instructions">ONLINE MATCH → HOST ONLINE → SHARE THE CODE → FRIEND JOINS</p></footer>
+<script>
+const canvas=document.getElementById('game'),loading=document.getElementById('loading'),status=document.getElementById('status'),progress=document.getElementById('progress'),play=document.getElementById('play');
+let instance;
+window.addEventListener('leftright-lobby',event=>{
+ window.leftRightLobby={...event.detail,updatedAt:performance.now()};
+ const room=document.getElementById('room');room.hidden=!event.detail.code;
+ document.getElementById('room-code').textContent=event.detail.code;
+ document.getElementById('instructions').textContent=event.detail.code?(event.detail.playing?'MATCH IN PROGRESS':event.detail.humans+(event.detail.humans===1?' PLAYER CONNECTED — ':' PLAYERS CONNECTED — ')+(event.detail.host?'SHARE YOUR CODE':'WAITING FOR HOST')):'ONLINE MATCH → HOST ONLINE → SHARE THE CODE → FRIEND JOINS';
+});
+document.getElementById('copy-room').onclick=async()=>{
+ try{await navigator.clipboard.writeText(document.getElementById('room-code').textContent);document.getElementById('copy-room').textContent='COPIED';setTimeout(()=>document.getElementById('copy-room').textContent='COPY CODE',1500)}catch{document.getElementById('copy-room').textContent='SELECT CODE';getSelection().selectAllChildren(document.getElementById('room-code'))}
+};
+document.getElementById('fullscreen').onclick=()=>{document.body.requestFullscreen?.().catch(()=>{});canvas.focus()};
+canvas.addEventListener('pointerdown',()=>canvas.focus());
+function fail(message){loading.style.display='flex';status.textContent='Could not start the game.';const error=document.getElementById('error');error.hidden=false;error.textContent=String(message);play.hidden=false;play.disabled=false;play.textContent='RELOAD';play.onclick=()=>location.reload()}
+play.onclick=()=>{
+ play.disabled=true;play.hidden=true;progress.hidden=false;status.textContent='Loading the outpost. The first visit takes a moment…';
+ const script=document.createElement('script');script.src='__LOADER__';script.onerror=()=>fail('Download failed. Check your connection and reload.');
+ script.onload=()=>createUnityInstance(canvas,{
+  dataUrl:'__DATA__',frameworkUrl:'__FRAMEWORK__',codeUrl:'__WASM__',streamingAssetsUrl:'StreamingAssets',
+  companyName:'MrCheng',productName:'Left Right',productVersion:'prototype',
+  showBanner:(message,type)=>{if(type==='error')fail(message)}
+ },value=>{progress.value=value;status.textContent=value<.9?'Loading the outpost… '+Math.round(value*100)+'%':'Preparing the game…'}).then(game=>{
+  instance=game;loading.style.display='none';canvas.focus();
+ }).catch(fail);
+ document.body.appendChild(script);
+};
+</script>
+</body></html>

@@ -48,7 +48,7 @@ namespace LeftRight.Rebuild
                 {
                     if(mine==null||mine.LaneIndex!=System.Array.IndexOf(player.course.players,player)||mine.Id==attemptedMine)continue;
                     float distance=(mine.transform.position.x-player.transform.position.x)*Mathf.Sign(input);
-                    if(distance<.4f||distance>.54f)continue;
+                    if(distance<.65f||distance>.9f)continue;
                     attemptedMine=mine.Id;if(random.NextDouble()>=mistakeChance)player.TryJump();
                 }
         }

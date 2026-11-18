@@ -29,6 +29,11 @@ namespace LeftRight.Rebuild
 
     public sealed class UnityRelayConnection : IRelayConnection
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
+        const string ConnectionType="wss";
+#else
+        const string ConnectionType="dtls";
+#endif
         static Task initialize;
         static async Task Initialize()
         {
@@ -54,15 +59,21 @@ namespace LeftRight.Rebuild
             await Ready();
             var allocation=await RelayService.Instance.CreateAllocationAsync(guestCapacity);
             string code=await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
-            var data=AllocationUtils.ToRelayServerData(allocation,"dtls");
-            return new RelayTransportTicket(code,transport=>transport.SetRelayServerData(data));
+            var data=AllocationUtils.ToRelayServerData(allocation,ConnectionType);
+            return new RelayTransportTicket(code,transport=>{
+                transport.UseWebSockets=ConnectionType=="wss";
+                transport.SetRelayServerData(data);
+            });
         }
         public async Task<RelayTransportTicket> JoinAsync(string code)
         {
             await Ready();
             var allocation=await RelayService.Instance.JoinAllocationAsync(code);
-            var data=AllocationUtils.ToRelayServerData(allocation,"dtls");
-            return new RelayTransportTicket(code,transport=>transport.SetRelayServerData(data));
+            var data=AllocationUtils.ToRelayServerData(allocation,ConnectionType);
+            return new RelayTransportTicket(code,transport=>{
+                transport.UseWebSockets=ConnectionType=="wss";
+                transport.SetRelayServerData(data);
+            });
         }
         public static string FriendlyError(Exception error)
         {
@@ -83,4 +94,5 @@ namespace LeftRight.Rebuild
             return "Could not reach online services. Check your connection and try again.";
         }
     }
+
 }

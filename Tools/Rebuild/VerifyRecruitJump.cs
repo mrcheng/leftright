@@ -21,7 +21,7 @@ try
  Check(p.transform.localPosition.x>x,"Horizontal movement continues during jump");
  Check(Quaternion.Angle(p.march.leftKnee.localRotation,p.march.rightKnee.localRotation)<5,"Both knees tuck together");
  Check(!course.players[1].IsJumping,"Other recruits do not copy local jump");
- p.InputOverride=0;await Task.Delay(550);
+ p.InputOverride=0;await Task.Delay((int)(p.jumpDuration*1000));
  Check(!p.IsJumping&&Mathf.Abs(p.transform.localPosition.y-ground)<.001f,"Landing restores exact lane height");
  Check(p.TryJump(),"A new press can jump again after landing");
  await Task.Delay(100);

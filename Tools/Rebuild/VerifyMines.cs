@@ -38,7 +38,7 @@ try
  float mineX=target.transform.position.x;
  var position=player.transform.position;position.x=mineX-.5f;player.transform.position=position;
  Check(player.TryJump(),"Recruit can jump toward an armed mine");player.InputOverride=1;
- await Task.Delay(800);player.InputOverride=0;
+ await Task.Delay((int)((player.jumpDuration+.15f)*1000));player.InputOverride=0;
  Check(!player.IsEliminated&&!target.Detonated&&player.transform.position.x>mineX+.32f,"Full jump arc clears pressure plate and lands safely");
  position=player.transform.position;position.x=mineX;player.transform.position=position;
  Check(target.CheckContact(player),"Ground contact detonates mine");
