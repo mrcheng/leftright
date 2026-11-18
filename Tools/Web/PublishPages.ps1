@@ -43,6 +43,10 @@ $config = Join-Path $workspace 'Temp/pages-config.json'
 $hasPages = & gh api "repos/$Repository" --jq '.has_pages'
 $method = if ($hasPages -eq 'true') { 'PUT' } else { 'POST' }
 & gh api --method $method "repos/$Repository/pages" --input $config --silent
+if ($LASTEXITCODE -ne 0 -and $method -eq 'POST') {
+    # Pushing the first gh-pages branch can enable Pages before has_pages updates.
+    & gh api --method PUT "repos/$Repository/pages" --input $config --silent
+}
 if ($LASTEXITCODE -ne 0) { throw 'Could not configure GitHub Pages.' }
 & gh api --method POST "repos/$Repository/pages/builds" --silent
 if ($LASTEXITCODE -ne 0) { throw 'Could not request Pages deployment.' }
