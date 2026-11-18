@@ -43,9 +43,9 @@ canvas.addEventListener('pointerdown',()=>canvas.focus());
 function fail(message){loading.style.display='flex';status.textContent='Could not start the game.';const error=document.getElementById('error');error.hidden=false;error.textContent=String(message);play.hidden=false;play.disabled=false;play.textContent='RELOAD';play.onclick=()=>location.reload()}
 play.onclick=()=>{
  play.disabled=true;play.hidden=true;progress.hidden=false;status.textContent='Loading the outpost. The first visit takes a moment…';
- const script=document.createElement('script');script.src='Build/a55b6b73105e8273.loader.js';script.onerror=()=>fail('Download failed. Check your connection and reload.');
+ const script=document.createElement('script');script.src='Build/a47bfa12b75c72aa.loader.js';script.onerror=()=>fail('Download failed. Check your connection and reload.');
  script.onload=()=>createUnityInstance(canvas,{
-  dataUrl:'Build/c4c0c77562a78d92.data.unityweb',frameworkUrl:'Build/86b001748e3c2b28.framework.js.unityweb',codeUrl:'Build/67f3ef20b6031148.wasm.unityweb',streamingAssetsUrl:'StreamingAssets',
+  dataUrl:'Build/e571f32ef3252c63.data.unityweb',frameworkUrl:'Build/15917b2b500e59d7.framework.js.unityweb',codeUrl:'Build/7dd8246c32e645a5.wasm.unityweb',streamingAssetsUrl:'StreamingAssets',
   companyName:'MrCheng',productName:'Left Right',productVersion:'prototype',
   showBanner:(message,type)=>{if(type==='error')fail(message)}
  },value=>{progress.value=value;status.textContent=value<.9?'Loading the outpost… '+Math.round(value*100)+'%':'Preparing the game…'}).then(game=>{
