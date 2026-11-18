@@ -10,9 +10,11 @@ namespace LeftRight.Rebuild
     {
         public SpikeCourse course;
         public Camera gameCamera;
-        public float followSmoothSeconds = .85f;
-        public float onlineDistance = 10f;
-        public float onlineFieldOfView = 52f;
+        public float followSmoothSeconds = 1.5f;
+        public float startPullback = 3f;
+        public float startCampWidth = 26f;
+        public float onlineDistance = 18f;
+        public float onlineFieldOfView = 60f;
         public GameViewMode Mode { get; private set; }
         public bool CinematicActive { get; set; }
         public bool RoundSummaryActive { get; set; }
@@ -20,16 +22,17 @@ namespace LeftRight.Rebuild
         public Vector3 CoursePosition => widePosition;
         public Quaternion CourseRotation => wideRotation;
         public float CourseFieldOfView => wideFieldOfView;
-        Vector3 widePosition, velocity;
+        Vector3 widePosition, savedWidePosition, velocity;
         Quaternion wideRotation;
         float wideFieldOfView, fieldVelocity;
         Texture2D gear;
 
         void Awake()
         {
-            widePosition = gameCamera.transform.position;
+            savedWidePosition = gameCamera.transform.position;
             wideRotation = gameCamera.transform.rotation;
             wideFieldOfView = gameCamera.fieldOfView;
+            UpdateWideFraming();
             Mode = GameViewMode.Local;
             gear = MakeGear();
         }
@@ -60,6 +63,7 @@ namespace LeftRight.Rebuild
 
         void LateUpdate()
         {
+            UpdateWideFraming();
             if (CinematicActive) return;
             if (RoundSummaryActive)
             {
@@ -110,6 +114,17 @@ namespace LeftRight.Rebuild
             float horizontal = vertical * Mathf.Max(.4f, gameCamera.aspect);
             return Mathf.Max(distance, Mathf.Abs(local.x) / horizontal - local.z,
                 Mathf.Abs(local.y) / vertical - local.z);
+        }
+
+        void UpdateWideFraming()
+        {
+            // Fit the camp's width rather than cropping a landscape introduction
+            // into a narrow phone screen. Keep the saved aim point and level angle;
+            // recompute from the saved pose on rotation, never accumulate offsets.
+            const float savedAimDistance = 20f;
+            float horizontal = Mathf.Tan(wideFieldOfView * Mathf.Deg2Rad * .5f) * Mathf.Max(.2f, gameCamera.aspect);
+            float pullback = Mathf.Max(startPullback, startCampWidth * .5f / horizontal - savedAimDistance);
+            widePosition = savedWidePosition - (wideRotation * Vector3.forward) * Mathf.Max(0, pullback);
         }
 
         void OnGUI()

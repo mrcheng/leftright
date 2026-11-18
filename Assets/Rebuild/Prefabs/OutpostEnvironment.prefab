@@ -11221,9 +11221,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.GameViewSettings
   course: {fileID: 990741086452730322}
   gameCamera: {fileID: 2350197880109829823}
-  followSmoothSeconds: 0.85
-  onlineDistance: 10
-  onlineFieldOfView: 52
+  followSmoothSeconds: 1.5
+  startPullback: 3
+  startCampWidth: 26
+  onlineDistance: 18
+  onlineFieldOfView: 60
 --- !u!114 &9172920809540155542
 MonoBehaviour:
   m_ObjectHideFlags: 0
