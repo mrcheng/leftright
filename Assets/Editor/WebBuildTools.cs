@@ -43,7 +43,20 @@ namespace LeftRight.Editor
                 string plain=compressed.Substring(0,compressed.Length-".unityweb".Length);
                 if(File.Exists(plain))File.Delete(plain);
             }
-            string FileMatching(string pattern)=>"Build/"+Path.GetFileName(Directory.GetFiles(build,pattern).Single());
+            string FileMatching(string pattern)
+            {
+                string file=Directory.GetFiles(build,pattern).OrderByDescending(File.GetLastWriteTimeUtc).First();
+                // Give each artifact a content address. Cached Pages clients can keep
+                // an old game intact while a new audio/code/data bundle is deployed.
+                using var hash=System.Security.Cryptography.SHA256.Create();
+                using var stream=File.OpenRead(file);
+                string revision=System.BitConverter.ToString(hash.ComputeHash(stream)).Replace("-","").Substring(0,16).ToLowerInvariant();
+                stream.Close();
+                string name=Path.GetFileName(file),suffix=name.Substring(name.IndexOf('.')+1);
+                string versioned=Path.Combine(build,revision+"."+suffix);
+                if(file!=versioned){File.Copy(file,versioned,true);File.Delete(file);}
+                return "Build/"+Path.GetFileName(versioned);
+            }
             string html=File.ReadAllText("Tools/Web/index.template.html")
                 .Replace("__LOADER__",FileMatching("*.loader.js"))
                 .Replace("__DATA__",FileMatching("*.data*"))
