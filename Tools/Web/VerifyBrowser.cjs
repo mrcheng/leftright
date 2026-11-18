@@ -38,8 +38,8 @@ async function click(page,x,y){const r=await page.locator('#game').boundingBox()
   const before=await peer.evaluate(()=>window.leftRightLobby.x);
   let touch;
   if(mobilePeer){
-   touch=await peer.context().newCDPSession(peer);const r=await peer.locator('#game').boundingBox(),j=await peer.locator('#jump').boundingBox();
-   await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:r.x+r.width*.75,y:r.y+r.height*.55,id:1},{x:j.x+j.width/2,y:j.y+j.height/2,id:2}]});
+   touch=await peer.context().newCDPSession(peer);const r=await peer.locator('#move-right').boundingBox(),j=await peer.locator('#jump-right').boundingBox();
+   await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:r.x+r.width/2,y:r.y+r.height/2,id:1},{x:j.x+j.width/2,y:j.y+j.height/2,id:2}]});
   }else {await peer.keyboard.down('d');await peer.keyboard.press('Space')}
   await peer.waitForFunction(x=>window.leftRightLobby?.x>x+.1&&window.leftRightLobby?.jumping,before,{timeout:5000});
   await peer.screenshot({path:path.join(out,'peer-playing.png')});if(touch)await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});else await peer.keyboard.up('d');
