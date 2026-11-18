@@ -98,9 +98,9 @@ document.getElementById('copy-room').onclick=async()=>{
  try{await navigator.clipboard.writeText(window.leftRightLobby.code);button.textContent='COPIED';setTimeout(()=>button.textContent='COPY',1500)}catch{button.textContent=window.leftRightLobby.code}
 };
 function fail(message){loading.style.display='flex';status.textContent='Could not start the game.';const error=document.getElementById('error');error.hidden=false;error.textContent=String(message);const reload=document.getElementById('play');reload.hidden=false;reload.onclick=()=>location.reload()}
-const script=document.createElement('script');script.src='Build/19c767f44fa9f4eb.loader.js';script.onerror=()=>fail('Download failed. Check your connection and reload.');
+const script=document.createElement('script');script.src='Build/15961497451c8c9f.loader.js';script.onerror=()=>fail('Download failed. Check your connection and reload.');
 script.onload=()=>createUnityInstance(canvas,{
- dataUrl:'Build/13a0a2122eaf85d0.data.unityweb',frameworkUrl:'Build/5c03d39100e476be.framework.js.unityweb',codeUrl:'Build/18491dbb768c825f.wasm.unityweb',streamingAssetsUrl:'StreamingAssets',
+ dataUrl:'Build/63aab3828afe1018.data.unityweb',frameworkUrl:'Build/55ba7456141026c2.framework.js.unityweb',codeUrl:'Build/a78c4e5f3698ceec.wasm.unityweb',streamingAssetsUrl:'StreamingAssets',
  companyName:'MrCheng',productName:'Left Right',productVersion:'prototype',
  showBanner:(message,type)=>{if(type==='error')fail(message)}
 },value=>{progress.value=value;status.textContent='Loading… '+Math.round(value*100)+'%'}).then(game=>{instance=game;loading.style.display='none';canvas.focus()}).catch(fail);
