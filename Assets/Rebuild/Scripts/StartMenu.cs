@@ -126,8 +126,8 @@ namespace LeftRight.Rebuild
         public void Play()
         {
             if (!IsOpen) return;
-            // This entry point starts a local match. Follow-camera belongs exclusively
-            // to a future online session, never to a user camera preference.
+            // Session mode chooses ownership/network behavior; both modes follow
+            // the locally controlled recruit once the match begins.
             view.SetMode(GameViewMode.Local);
             IsOpen = false; view.RoundSummaryActive = false;
             view.MenuActive = false;
@@ -249,6 +249,7 @@ namespace LeftRight.Rebuild
                 return;
             }
             Styles();
+            if (Screen.height > Screen.width) { DrawPortraitMenu(); return; }
             float scale = Mathf.Min(Screen.width / 1280f, Screen.height / 720f);
             var oldMatrix = GUI.matrix; var oldColor = GUI.color; var oldBackground = GUI.backgroundColor;
             GUI.matrix = Matrix4x4.TRS(new Vector3((Screen.width-1280*scale)*.5f,(Screen.height-720*scale)*.5f,0),Quaternion.identity,Vector3.one*scale);
@@ -324,6 +325,83 @@ namespace LeftRight.Rebuild
             }
             GUI.Label(new Rect(240,663,800,32),"OUTPOST DRILL  /  PROTOTYPE",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
             GUI.color=oldColor;GUI.backgroundColor=oldBackground;GUI.matrix=oldMatrix;
+        }
+
+        void DrawPortraitMenu()
+        {
+            // A separate 480x860 layout keeps phone targets at thumb size instead
+            // of shrinking the entire 1280-wide desktop menu. Browser room controls
+            // use this same centered reference rectangle in index.template.html.
+            float scale=Mathf.Min(Screen.width/480f,Screen.height/860f);
+            var matrix=GUI.matrix;var color=GUI.color;var background=GUI.backgroundColor;
+            bool enabled=GUI.enabled;
+            GUI.matrix=Matrix4x4.TRS(new Vector3((Screen.width-480*scale)*.5f,(Screen.height-860*scale)*.5f,0),Quaternion.identity,Vector3.one*scale);
+            Bar(new Rect(-2000,-2000,6000,6000),new Color(.035f,.055f,.04f,.95f));
+            Bar(new Rect(-2000,0,6000,6),new Color(.5f,.54f,.32f));
+            Bar(new Rect(-2000,854,6000,6),new Color(.5f,.54f,.32f));
+            GUI.Label(new Rect(24,80,432,64),"LEFT | RIGHT",new GUIStyle(title){fontSize=32});
+            GUI.Label(new Rect(36,156,408,54),"FOLLOW THE ORDERS.\nBE THE LAST ONE STANDING.",new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=13});
+            if(Page==MenuPage.Main)
+            {
+                if(MenuButton(new Rect(24,265,432,64),"START LOCAL GAME",true))ShowLocalGame();
+                GUI.enabled=enabled&&OnlineAvailable;
+                if(MenuButton(new Rect(24,355,432,64),"ONLINE MATCH"))Page=MenuPage.Online;
+                GUI.enabled=enabled;
+                GUI.Label(new Rect(24,429,432,32),"HOST / JOIN",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                if(MenuButton(new Rect(24,495,432,64),"SETTINGS"))ShowSettings();
+            }
+            else if(Page==MenuPage.LocalGame)
+            {
+                GUI.Label(new Rect(24,238,432,40),"LOCAL GAME",centered);
+                GUI.Label(new Rect(24,294,432,32),"NUMBER OF RECRUITS",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                for(int count=2;count<=4;count++)
+                    if(MenuButton(new Rect(24+(count-2)*150,342,132,64),count.ToString(),count==PlayerCount))SetPlayerCount(count);
+                GUI.Label(new Rect(24,434,432,64),"YOU + "+(PlayerCount-1)+" COMPUTER"+(PlayerCount==2?"":"S"),centered);
+                if(MenuButton(new Rect(24,530,432,64),"START GAME",true))Play();
+                if(MenuButton(new Rect(24,690,432,56),"BACK"))Back();
+            }
+            else if(Page==MenuPage.Online)
+            {
+                GUI.Label(new Rect(24,224,432,40),"PLAY WITH A FRIEND",centered);
+                if(!online.Active)
+                {
+                    GUI.enabled=enabled&&!online.Busy;
+                    for(int count=2;count<=4;count++)
+                        if(MenuButton(new Rect(24+(count-2)*150,270,132,56),count.ToString(),count==PlayerCount))SetPlayerCount(count);
+                    if(MenuButton(new Rect(24,345,432,60),online.Busy?"CONNECTING...":"HOST ONLINE",true))online.HostInternetFromMenu(PlayerCount);
+                    joinCode=GUI.TextField(new Rect(24,420,270,56),joinCode,12,new GUIStyle(GUI.skin.textField){font=menuFont,fontSize=20,alignment=TextAnchor.MiddleCenter}).ToUpperInvariant();
+                    if(MenuButton(new Rect(310,420,146,56),"JOIN"))online.JoinInternetFromMenu(joinCode);
+                    GUI.enabled=enabled;
+                    GUI.Label(new Rect(24,494,432,60),online.Busy?"Please wait for online services...":"Enter your friend's room code.",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                    GUI.Label(new Rect(24,565,432,96),online.Status,new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                }
+                else
+                {
+                    GUI.Label(new Rect(24,270,432,56),online.Status,new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                    if(online.IsHost&&online.UsesRelay)
+                    {
+                        GUI.Label(new Rect(24,330,270,48),online.JoinCode,new GUIStyle(centered){fontSize=28});
+                        if(MenuButton(new Rect(316,330,140,48),"COPY"))GUIUtility.systemCopyBuffer=online.JoinCode;
+                    }
+                    GUI.Label(new Rect(24,410,432,40),online.HumanCount+" / "+online.Capacity+" PLAYERS",centered);
+                    GUI.enabled=enabled&&online.CanStart;
+                    if(MenuButton(new Rect(24,490,432,64),online.IsHost?"START MATCH":"WAITING FOR HOST",true))online.RequestRound();
+                    GUI.enabled=enabled;
+                    GUI.Label(new Rect(24,574,432,64),"Empty slots are filled\nwith computers.",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                }
+                if(MenuButton(new Rect(24,690,432,56),online.Active?"DISCONNECT":online.Busy?"CANCEL":"BACK"))Back();
+            }
+            else
+            {
+                GUI.Label(new Rect(24,250,432,40),"SETTINGS",centered);
+                GUI.Label(new Rect(24,330,432,40),"VOLUME  "+Mathf.RoundToInt(masterVolume*100)+"%",centered);
+                if(MenuButton(new Rect(24,395,64,64),"-"))SetMasterVolume(masterVolume-.1f);
+                for(int step=0;step<10;step++)Bar(new Rect(104+step*27,415,20,24),step<Mathf.RoundToInt(masterVolume*10)?new Color(.72f,.75f,.44f):new Color(.18f,.24f,.17f));
+                if(MenuButton(new Rect(392,395,64,64),"+"))SetMasterVolume(masterVolume+.1f);
+                if(MenuButton(new Rect(24,690,432,56),"BACK"))Back();
+            }
+            GUI.Label(new Rect(24,798,432,32),"OUTPOST DRILL / PROTOTYPE",new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=11});
+            GUI.matrix=matrix;GUI.color=color;GUI.backgroundColor=background;GUI.enabled=enabled;
         }
 
         void DrawRoundResult()

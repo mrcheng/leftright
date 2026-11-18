@@ -29,6 +29,11 @@ button,button *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:
 #gui-overlay>*{pointer-events:auto}#join-form{position:absolute;left:32.03125%;top:69.1667%;width:35.9375%;height:7.0833%;display:flex;gap:3.26%;z-index:3}
 #join-code{min-width:0;width:61.9565%;background:#10160e;color:#f4e9ba;border:2px solid #717b49;text-align:center;font-size:clamp(16px,1.4vw,18px)}#join-form button{flex:1;font-size:clamp(9px,1.25vw,16px)}
 #copy-room{position:absolute;left:58.59375%;top:50%;width:10.15625%;height:5.5556%;z-index:3;font-size:clamp(8px,1vw,14px)}#join-form[hidden],#copy-room[hidden]{display:none}
+@media(max-aspect-ratio:1/1){
+ #gui-overlay{width:min(100vw,55.813953dvh);height:min(100dvh,179.166667vw)}
+ #join-form{left:5%;top:48.837209%;width:90%;height:6.511628%;gap:3.703704%}#join-code{width:62.5%}
+ #copy-room{left:65.833333%;top:38.372093%;width:29.166667%;height:5.581395%;font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -67,7 +72,7 @@ window.addEventListener('leftright-lobby',event=>{
 const fullscreenHelp=document.getElementById('fullscreen-help');
 function showFullscreenHelp(){fullscreenHelp.querySelector('span').textContent=/iPhone|iPad|iPod/.test(navigator.userAgent)?'For fullscreen on iPhone: use Safari’s Share menu → Add to Home Screen, then open the game from that icon.':'The game already fills this browser window. Your browser does not allow native fullscreen here.';fullscreenHelp.hidden=false}
 fullscreenHelp.querySelector('button').onclick=()=>fullscreenHelp.hidden=true;
-fullscreen.onclick=()=>{resetInput();canvas.focus();fullscreenHelp.hidden=true;if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});else if(document.body.requestFullscreen)document.body.requestFullscreen().then(()=>screen.orientation?.lock?.('landscape').catch(()=>{})).catch(showFullscreenHelp);else showFullscreenHelp()};
+fullscreen.onclick=()=>{resetInput();canvas.focus();fullscreenHelp.hidden=true;if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});else if(document.body.requestFullscreen)document.body.requestFullscreen().catch(showFullscreenHelp);else showFullscreenHelp()};
 document.addEventListener('fullscreenchange',()=>{const active=!!document.fullscreenElement;fullscreen.textContent=active?'×':'⛶';fullscreen.setAttribute('aria-label',active?'Exit fullscreen':'Fullscreen');resetInput()});
 canvas.addEventListener('pointerdown',()=>canvas.focus());
 // Only the four compact buttons capture gameplay touches. The rest of the view

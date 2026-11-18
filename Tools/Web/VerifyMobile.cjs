@@ -23,6 +23,14 @@ async function check(engine,device,label){
   await page.locator('#fullscreen').tap();assert(await page.locator('#fullscreen-help').isVisible(),'unsupported fullscreen provides help');
   await page.locator('#fullscreen-help button').tap();
   let r=await page.locator('#game').boundingBox();assert(Math.abs(r.width-390)<2&&Math.abs(r.height-844)<2,'portrait fallback fills viewport');
+  await page.screenshot({path:path.join(out,label+'-portrait-menu.png')});
+  async function portraitTap(x,y){const scale=Math.min(390/480,844/860);await page.touchscreen.tap((390-480*scale)/2+x*scale,(844-860*scale)/2+y*scale);await page.waitForTimeout(300)}
+  await portraitTap(240,297);await page.waitForFunction(()=>window.leftRightLobby.menuPage===1);
+  await portraitTap(240,718);await page.waitForFunction(()=>window.leftRightLobby.menuPage===0);
+  await portraitTap(240,387);await page.waitForFunction(()=>window.leftRightLobby.menuPage===3);
+  const field=await page.locator('#join-code').boundingBox();assert(field.width>200&&field.height>=44,'portrait room entry is thumb sized');
+  await page.locator('#join-code').fill('ABC123');
+  await portraitTap(240,718);await page.waitForFunction(()=>window.leftRightLobby.menuPage===0);
   await page.setViewportSize({width:844,height:390});await page.waitForTimeout(500);
   r=await page.locator('#game').boundingBox();assert(Math.abs(r.width-844)<2&&Math.abs(r.height-390)<2,'landscape fallback fills viewport');
   if(engine===webkit){

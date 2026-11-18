@@ -3,13 +3,13 @@
 const fs=require('fs'),path=require('path'),os=require('os');
 const {chromium,devices}=require(process.env.PLAYWRIGHT_MODULE||path.join(os.homedir(),'.codex/tmp/leftright-web-qa/node_modules/playwright'));
 const url=process.argv[2]||'http://127.0.0.1:8123';
-const mobilePeer=process.env.MOBILE_PEER==='1';
+const mobilePeer=process.env.MOBILE_PEER==='1',portraitPeer=mobilePeer&&process.env.MOBILE_PORTRAIT==='1';
 const out=path.resolve('Logs/WebQA');fs.mkdirSync(out,{recursive:true});
 const errors=[],browsers=[],pages=[];
 const launch={headless:true,executablePath:process.env.CHROME_PATH||undefined,args:['--enable-unsafe-swiftshader','--use-angle=swiftshader','--disable-background-timer-throttling','--disable-renderer-backgrounding']};
 async function open(label){
  const browser=await chromium.launch(launch);browsers.push(browser);
- const page=await browser.newPage(label==='peer'&&mobilePeer?{...devices['Pixel 7'],viewport:{width:844,height:390},deviceScaleFactor:1}:{viewport:{width:1280,height:900}});
+ const page=await browser.newPage(label==='peer'&&mobilePeer?{...devices['Pixel 7'],viewport:portraitPeer?{width:390,height:844}:{width:844,height:390},deviceScaleFactor:1}:{viewport:{width:1280,height:900}});
  pages.push({page,label});
  page.on('pageerror',error=>errors.push(label+': '+error.message));
  page.on('console',message=>{if(message.type()==='error'&&!message.text().includes('status of 404'))errors.push(label+': '+message.text())});
@@ -26,7 +26,8 @@ async function click(page,x,y){const r=await page.locator('#game').boundingBox()
   await host.waitForFunction(()=>window.leftRightLobby?.code?.length===6,{},{timeout:60000});
   const code=await host.evaluate(()=>window.leftRightLobby.code);
   console.log('Browser created Relay room');await host.screenshot({path:path.join(out,'host-room.png')});
-  const peer=await open('peer');await click(peer,640,430);
+  const peer=await open('peer');
+  if(portraitPeer){const scale=Math.min(390/480,844/860);await peer.touchscreen.tap(195,(844-860*scale)/2+387*scale);await peer.waitForFunction(()=>window.leftRightLobby?.menuPage===3)}else await click(peer,640,430);
   if(mobilePeer){await peer.locator('#join-code').fill(code);await peer.locator('#join-form button').tap()}
   else {await click(peer,550,522);await peer.keyboard.type(code,{delay:120});await click(peer,790,522)}
   await host.waitForFunction(()=>window.leftRightLobby?.humans===2,{},{timeout:60000});

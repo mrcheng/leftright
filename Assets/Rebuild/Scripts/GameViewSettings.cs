@@ -4,8 +4,8 @@ namespace LeftRight.Rebuild
 {
     public enum GameViewMode { Local, Online }
 
-    /// <summary>Camera behavior follows session type: local gets the full course;
-    /// a future online session enables following its locally owned recruit.</summary>
+    /// <summary>Follow the locally controlled recruit in every match. Menus,
+    /// results and victory cinematics retain their own camera framing.</summary>
     public sealed class GameViewSettings : MonoBehaviour
     {
         public SpikeCourse course;
@@ -39,8 +39,8 @@ namespace LeftRight.Rebuild
             Mode = mode;
             if(mode==GameViewMode.Local)
             {
-                // Returning from an online session must start local play at the actual
-                // full-course framing, not carry over a few seconds of follow inertia.
+                // A new local session begins its follow transition from the menu pose,
+                // without carrying momentum from the previous online recruit.
                 velocity=Vector3.zero;fieldVelocity=0;
                 gameCamera.transform.SetPositionAndRotation(widePosition,wideRotation);
                 gameCamera.fieldOfView=wideFieldOfView;
@@ -71,7 +71,7 @@ namespace LeftRight.Rebuild
                 return;
             }
             var player = LocalPlayer;
-            bool close = !RoundSummaryActive && Mode == GameViewMode.Online && player != null &&
+            bool close = !RoundSummaryActive && player != null &&
                 (course.round.IsCountingDown || course.round.HasStarted);
             Vector3 desired = widePosition;
             float fov = close ? onlineFieldOfView : wideFieldOfView;
