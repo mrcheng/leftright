@@ -27,8 +27,8 @@ namespace LeftRight.Rebuild
         /// <summary>One notification for the current beat; seeks/loops never replay missed beats.
         /// Delivered on the first rendered frame observing the beat, not on the audio thread.</summary>
         public event Action<long> Beat;
-        // Network sessions supply elapsed authoritative time; offline play keeps using
-        // audio samples. Cosmetic animation and penalties consequently share one clock.
+        // Network sessions supply authoritative elapsed time. Browsers use the audio
+        // clock: compressed/streamed clips need not expose a usable sample cursor.
         public Func<double> NetworkElapsedSeconds;
 
         AudioClip previousClip;
@@ -54,7 +54,14 @@ namespace LeftRight.Rebuild
             if (!IsPlaying) return; // Scheduled lead-in and paused audio cannot advance the clock.
             double firstBeat = round ? timing.roundFirstBeatSeconds : timing.titleFirstBeatSeconds;
             double seconds = (double)music.timeSamples / music.clip.frequency;
-            BeatPosition = (NetworkElapsedSeconds != null ? NetworkElapsedSeconds() : seconds - firstBeat) * BeatsPerMinute / 60.0;
+            double elapsed = seconds - firstBeat;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            // ScheduleTitleOnFirstBeat starts playback at the measured downbeat. DSP
+            // time advances with the browser audio context, including across loops;
+            // do not drive penalties from AudioSource.timeSamples on the web.
+            elapsed = AudioSettings.dspTime - audioOutput.MusicStartDspTime;
+#endif
+            BeatPosition = (NetworkElapsedSeconds != null ? NetworkElapsedSeconds() : elapsed) * BeatsPerMinute / 60.0;
             long current = BeatIndex;
             if (current == lastBeat) return;
             lastBeat = current;

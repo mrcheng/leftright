@@ -21,17 +21,37 @@ namespace LeftRight.Rebuild
 #if UNITY_WEBGL && !UNITY_EDITOR
         float nextWebStatus;
         [System.Runtime.InteropServices.DllImport("__Internal")]
-        static extern void LeftRight_UpdateLobby(string code,string status,int humans,int host,int playing,float x,int jumping);
+        static extern void LeftRight_UpdateLobby(string code,string status,int humans,int host,int playing,float x,int jumping,
+            int menu,int over,float beat,float travel,string receiver);
         void LateUpdate()
         {
             if(online==null||Time.unscaledTime<nextWebStatus)return;
             nextWebStatus=Time.unscaledTime+.25f;
-            // Only friend-facing lobby data reaches the HTML copy-code button.
-            var local=online.RoundActive&&online.LocalSlot<course.players.Length?course.players[online.LocalSlot]:null;
-            LeftRight_UpdateLobby(online.JoinCode,online.Status,online.HumanCount,online.IsHost?1:0,online.RoundActive?1:0,
-                local!=null?local.transform.position.x:0,local!=null&&local.IsJumping?1:0);
+            // Public presentation state also enables the browser's touch controls in
+            // local games. Never send service credentials to the page.
+            int slot=online.Active?online.LocalSlot:0;
+            var local=slot>=0&&slot<course.players.Length?course.players[slot]:null;
+            bool playing=online.RoundActive||course.round.IsCountingDown||course.round.HasStarted;
+            LeftRight_UpdateLobby(online.JoinCode,online.Status,online.HumanCount,online.IsHost?1:0,playing?1:0,
+                local!=null?local.transform.position.x:0,local!=null&&local.IsJumping?1:0,
+                IsOpen?(int)Page+1:0,course.IsGameOver?1:0,(float)course.round.masterBeat.BeatPosition,
+                slot>=0&&slot<course.traps.Length?course.traps[slot].CurrentTravel:0,gameObject.name);
         }
 #endif
+        // A real HTML input supplies the mobile keyboard; IMGUI's code field remains
+        // available to desktop players. Resolve this receiver from the live scene.
+        public void JoinBrowserRoom(string code)
+        {
+            if(online==null||online.Active||online.Busy)return;
+            OpenOnlineLobby();
+            online.JoinInternetFromMenu(code.Trim().ToUpperInvariant());
+        }
+        public void SetBrowserTextFocus(string focused)
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            WebGLInput.captureAllKeyboardInput=focused!="1";
+#endif
+        }
         string joinCode = "";
         readonly System.Collections.Generic.Dictionary<Transform,float> laneZ = new System.Collections.Generic.Dictionary<Transform,float>();
         float masterVolume;

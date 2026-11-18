@@ -1,57 +1,90 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10160e">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23b5be73'/%3E%3Ctext x='7' y='44' font-family='monospace' font-size='38' font-weight='bold' fill='%2310160e'%3ELR%3C/text%3E%3C/svg%3E">
 <meta name="description" content="Follow the orders. Survive the longest. Play Left Right online with friends, right in your browser.">
-<title>Left Right — Play with friends</title>
+<title>Left Right</title>
 <style>
 @font-face{font-family:Drill;src:url(style/PressStart2P.ttf) format('truetype');font-display:swap}
-*{box-sizing:border-box}body{margin:0;background:#0c120d;color:#f4e9ba;font-family:Drill,monospace;min-height:100vh;display:flex;flex-direction:column}
-header,footer{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 28px;font-size:10px;line-height:1.9}
-header{border-bottom:3px solid #717b49}h1{font-size:16px;margin:0;white-space:nowrap}h1 span{color:#b5be73}header p{color:#a7af93;margin:0}
-button{font:inherit;color:#11190e;background:#b5be73;border:3px solid #747f48;padding:14px 20px;cursor:pointer;box-shadow:inset -3px -3px #8b9556}
-button:hover{background:#d0d78f}button:focus-visible{outline:3px solid #f4e9ba;outline-offset:4px}button:disabled{opacity:.6;cursor:wait}
-main{flex:1;display:grid;place-items:center;padding:16px}#stage{position:relative;width:min(100%,1440px);aspect-ratio:16/9;background:#10160e;border:1px solid #39442e;overflow:hidden}
-canvas{width:100%;height:100%;display:block;outline:0;background:#10160e}#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;background:#10160e;text-align:center;padding:24px;z-index:1}
-#loading h2{font-size:28px;line-height:1.7;margin:0}#loading p{font-size:10px;color:#a7af93;max-width:600px;line-height:2}progress{width:min(440px,80%);height:14px;accent-color:#b5be73}#error{color:#ffd0a6;white-space:pre-wrap}
-footer{color:#a7af93;font-size:9px;border-top:1px solid #39442e}kbd{color:#f4e9ba;border:1px solid #717b49;padding:5px 7px}footer p{margin:0}#room-code{color:#f4e9ba;font-size:14px;margin:0 10px}#copy-room{padding:9px;font-size:9px}
-body:fullscreen header,body:fullscreen footer{display:none}body:fullscreen main{padding:0;width:100%;height:100vh}body:fullscreen #stage{width:100%;height:100%;aspect-ratio:auto;border:0}
-@media(max-width:750px){header,footer{padding:14px;flex-wrap:wrap}header p{display:none}h1{font-size:12px}main{padding:0}#loading h2{font-size:18px}button{padding:12px}footer p{line-height:2.5}}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#10160e;color:#f4e9ba;font-family:Drill,monospace}
+#stage{position:fixed;inset:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#10160e}
+canvas{width:100%;height:100%;display:block;outline:0;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button,input{font:inherit}button{color:#11190e;background:#b5be73;border:2px solid #747f48;cursor:pointer}button:hover{background:#d0d78f}button:focus-visible,input:focus-visible{outline:2px solid #f4e9ba;outline-offset:2px}
+#loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:#10160e;z-index:5;text-align:center;padding:24px}
+#status{font-size:10px;line-height:2}progress{width:min(380px,70%);height:10px;accent-color:#b5be73}#error{font-size:10px;line-height:2;color:#ffd0a6;white-space:pre-wrap}#play{padding:15px;font-size:12px}
+#fullscreen{position:absolute;top:max(6px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:3;font-size:15px;width:30px;height:28px;opacity:.55}#fullscreen[hidden]{display:none}
+#touch-controls{display:none;position:absolute;inset:0;pointer-events:none;z-index:2;user-select:none}body.touch-playing #touch-controls{display:block}
+.touch-hint{position:absolute;bottom:max(18px,env(safe-area-inset-bottom));font-size:10px;text-shadow:2px 2px #10160e;opacity:.7}.touch-hint:first-child{left:max(20px,env(safe-area-inset-left))}.touch-hint:nth-child(2){right:max(20px,env(safe-area-inset-right))}
+#jump{position:absolute;bottom:max(8px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);pointer-events:auto;touch-action:none;min-width:95px;min-height:52px;background:#b5be73c9;font-size:10px}
+/* Native input/clipboard are placed over their matching in-game lobby controls,
+   so phone keyboards work without introducing a second menu around the game. */
+#gui-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,177.777778dvh);height:min(100dvh,56.25vw);pointer-events:none;z-index:3}
+#gui-overlay>*{pointer-events:auto}#join-form{position:absolute;left:32.03125%;top:69.1667%;width:35.9375%;height:7.0833%;display:flex;gap:3.26%;z-index:3}
+#join-code{min-width:0;width:61.9565%;background:#10160e;color:#f4e9ba;border:2px solid #717b49;text-align:center;font-size:clamp(9px,1.4vw,18px)}#join-form button{flex:1;font-size:clamp(9px,1.25vw,16px)}
+#copy-room{position:absolute;left:58.59375%;top:50%;width:10.15625%;height:5.5556%;z-index:3;font-size:clamp(8px,1vw,14px)}#join-form[hidden],#copy-room[hidden]{display:none}
 </style>
 </head>
 <body>
-<header><h1><span>←</span> LEFT | RIGHT <span>→</span></h1><p>FOLLOW THE ORDERS. SURVIVE THE LONGEST.</p><button id="fullscreen">FULLSCREEN</button></header>
-<main><div id="stage"><canvas id="game" tabindex="0" aria-label="Left Right multiplayer game"></canvas>
-<div id="loading"><h2>LEFT | RIGHT</h2><p id="status">Ready to enter the outpost.</p><button id="play">PLAY</button><progress id="progress" max="1" value="0" hidden></progress><p id="error" role="alert" hidden></p></div></div></main>
-<footer><p><kbd>A</kbd> <kbd>D</kbd> MOVE &nbsp; <kbd>SPACE</kbd> JUMP</p><div id="room" hidden>ROOM <strong id="room-code"></strong><button id="copy-room">COPY CODE</button></div><p id="instructions">ONLINE MATCH → HOST ONLINE → SHARE THE CODE → FRIEND JOINS</p></footer>
+<div id="stage"><canvas id="game" tabindex="0" aria-label="Left Right multiplayer game"></canvas>
+<button id="fullscreen" title="Fullscreen" aria-label="Fullscreen" hidden>⛶</button>
+<div id="touch-controls"><span class="touch-hint">◀ HOLD LEFT</span><span class="touch-hint">HOLD RIGHT ▶</span><button id="jump">JUMP</button></div>
+<div id="gui-overlay"><form id="join-form" hidden><input id="join-code" aria-label="Friend's room code" placeholder="ROOM CODE" maxlength="12" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false"><button>JOIN</button></form>
+<button id="copy-room" hidden>COPY</button></div>
+<div id="loading"><p id="status">Loading…</p><progress id="progress" max="1" value="0"></progress><p id="error" role="alert" hidden></p><button id="play" hidden>RELOAD</button></div>
+</div>
 <script>
-const canvas=document.getElementById('game'),loading=document.getElementById('loading'),status=document.getElementById('status'),progress=document.getElementById('progress'),play=document.getElementById('play');
+const canvas=document.getElementById('game'),loading=document.getElementById('loading'),status=document.getElementById('status'),progress=document.getElementById('progress');
+const touchDevice=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
+const fullscreen=document.getElementById('fullscreen'),joinCode=document.getElementById('join-code');
 let instance;
+window.leftRightInput={axis:0,jump:false};
+const touches=new Map();
+function canMove(){const s=window.leftRightLobby;return s&&s.playing&&!s.menu&&!s.over}
+function resetInput(){touches.clear();window.leftRightInput.axis=0;window.leftRightInput.jump=false}
+function updateAxis(){// Opposite fingers cancel; releasing one keeps the other held.
+ window.leftRightInput.axis=Math.sign([...touches.values()].reduce((sum,axis)=>sum+axis,0));
+}
 window.addEventListener('leftright-lobby',event=>{
- window.leftRightLobby={...event.detail,updatedAt:performance.now()};
- const room=document.getElementById('room');room.hidden=!event.detail.code;
- document.getElementById('room-code').textContent=event.detail.code;
- document.getElementById('instructions').textContent=event.detail.code?(event.detail.playing?'MATCH IN PROGRESS':event.detail.humans+(event.detail.humans===1?' PLAYER CONNECTED — ':' PLAYERS CONNECTED — ')+(event.detail.host?'SHARE YOUR CODE':'WAITING FOR HOST')):'ONLINE MATCH → HOST ONLINE → SHARE THE CODE → FRIEND JOINS';
+ const state=event.detail;window.leftRightLobby={...state,updatedAt:performance.now()};
+ document.body.classList.toggle('touch-playing',touchDevice&&canMove());
+ if(!canMove())resetInput();
+ document.getElementById('join-form').hidden=!touchDevice||!!state.code||!state.menu||state.menuPage!==3;
+ document.getElementById('copy-room').hidden=!state.code||!state.host||!state.menu||state.menuPage!==3;
 });
+// The game always fills the viewport, including iPhone browsers without native
+// fullscreen. Native fullscreen is an optional enhancement, not a layout dependency.
+fullscreen.hidden=!document.body.requestFullscreen;
+fullscreen.onclick=()=>{resetInput();canvas.focus();if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});else document.body.requestFullscreen?.().then(()=>screen.orientation?.lock?.('landscape')).catch(()=>{})};
+document.addEventListener('fullscreenchange',()=>{const active=!!document.fullscreenElement;fullscreen.textContent=active?'×':'⛶';fullscreen.setAttribute('aria-label',active?'Exit fullscreen':'Fullscreen');resetInput()});
+function side(event){const r=canvas.getBoundingClientRect();return event.clientX<r.x+r.width/2?-1:1}
+canvas.addEventListener('pointerdown',event=>{
+ canvas.focus();if(event.pointerType==='mouse'||!canMove())return;
+ const r=canvas.getBoundingClientRect();
+ // Keep the in-game settings button available in the top-right corner.
+ if(event.clientX>r.right-r.width*.09&&event.clientY<r.y+r.height*.13)return;
+ event.preventDefault();canvas.setPointerCapture(event.pointerId);touches.set(event.pointerId,side(event));updateAxis();
+});
+canvas.addEventListener('pointermove',event=>{if(touches.has(event.pointerId)){touches.set(event.pointerId,side(event));updateAxis()}});
+for(const name of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(name,event=>{touches.delete(event.pointerId);updateAxis()});
+document.getElementById('jump').addEventListener('pointerdown',event=>{event.preventDefault();if(canMove())window.leftRightInput.jump=true;canvas.focus()});
+window.addEventListener('blur',resetInput);window.addEventListener('resize',resetInput);document.addEventListener('visibilitychange',resetInput);
+function browserMessage(method,value){const receiver=window.leftRightLobby?.receiver;if(instance&&receiver)instance.SendMessage(receiver,method,value)}
+joinCode.addEventListener('focus',()=>browserMessage('SetBrowserTextFocus','1'));
+joinCode.addEventListener('blur',()=>browserMessage('SetBrowserTextFocus','0'));
+document.getElementById('join-form').onsubmit=event=>{event.preventDefault();window.leftRightResumeAudio?.();joinCode.blur();browserMessage('JoinBrowserRoom',joinCode.value)};
 document.getElementById('copy-room').onclick=async()=>{
- try{await navigator.clipboard.writeText(document.getElementById('room-code').textContent);document.getElementById('copy-room').textContent='COPIED';setTimeout(()=>document.getElementById('copy-room').textContent='COPY CODE',1500)}catch{document.getElementById('copy-room').textContent='SELECT CODE';getSelection().selectAllChildren(document.getElementById('room-code'))}
+ const button=document.getElementById('copy-room');
+ try{await navigator.clipboard.writeText(window.leftRightLobby.code);button.textContent='COPIED';setTimeout(()=>button.textContent='COPY',1500)}catch{button.textContent=window.leftRightLobby.code}
 };
-document.getElementById('fullscreen').onclick=()=>{document.body.requestFullscreen?.().catch(()=>{});canvas.focus()};
-canvas.addEventListener('pointerdown',()=>canvas.focus());
-function fail(message){loading.style.display='flex';status.textContent='Could not start the game.';const error=document.getElementById('error');error.hidden=false;error.textContent=String(message);play.hidden=false;play.disabled=false;play.textContent='RELOAD';play.onclick=()=>location.reload()}
-play.onclick=()=>{
- play.disabled=true;play.hidden=true;progress.hidden=false;status.textContent='Loading the outpost. The first visit takes a moment…';
- const script=document.createElement('script');script.src='__LOADER__';script.onerror=()=>fail('Download failed. Check your connection and reload.');
- script.onload=()=>createUnityInstance(canvas,{
-  dataUrl:'__DATA__',frameworkUrl:'__FRAMEWORK__',codeUrl:'__WASM__',streamingAssetsUrl:'StreamingAssets',
-  companyName:'MrCheng',productName:'Left Right',productVersion:'prototype',
-  showBanner:(message,type)=>{if(type==='error')fail(message)}
- },value=>{progress.value=value;status.textContent=value<.9?'Loading the outpost… '+Math.round(value*100)+'%':'Preparing the game…'}).then(game=>{
-  instance=game;loading.style.display='none';canvas.focus();
- }).catch(fail);
- document.body.appendChild(script);
-};
+function fail(message){loading.style.display='flex';status.textContent='Could not start the game.';const error=document.getElementById('error');error.hidden=false;error.textContent=String(message);const reload=document.getElementById('play');reload.hidden=false;reload.onclick=()=>location.reload()}
+const script=document.createElement('script');script.src='__LOADER__';script.onerror=()=>fail('Download failed. Check your connection and reload.');
+script.onload=()=>createUnityInstance(canvas,{
+ dataUrl:'__DATA__',frameworkUrl:'__FRAMEWORK__',codeUrl:'__WASM__',streamingAssetsUrl:'StreamingAssets',
+ companyName:'MrCheng',productName:'Left Right',productVersion:'prototype',
+ showBanner:(message,type)=>{if(type==='error')fail(message)}
+},value=>{progress.value=value;status.textContent='Loading… '+Math.round(value*100)+'%'}).then(game=>{instance=game;loading.style.display='none';canvas.focus()}).catch(fail);
+document.body.appendChild(script);
 </script>
 </body></html>

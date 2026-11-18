@@ -97,6 +97,10 @@ namespace LeftRight.Rebuild
             var keyboard = Keyboard.current;
             float axis = keyboard == null ? 0 :
                 (keyboard.dKey.isPressed ? 1 : 0) - (keyboard.aKey.isPressed ? 1 : 0);
+#if UNITY_WEBGL && !UNITY_EDITOR
+            float touch = LeftRight_MoveInput();
+            if (Mathf.Abs(touch) > Mathf.Abs(axis)) axis = touch;
+#endif
             if (Gamepad.current != null)
             {
                 var pad = Gamepad.current;
@@ -107,9 +111,24 @@ namespace LeftRight.Rebuild
             return axis;
         }
 
-        public bool ReadJumpPressed() => isLocallyControlled &&
-            ((Keyboard.current!=null&&Keyboard.current.spaceKey.wasPressedThisFrame)||
-             (Gamepad.current!=null&&Gamepad.current.buttonSouth.wasPressedThisFrame));
+#if UNITY_WEBGL && !UNITY_EDITOR
+        [System.Runtime.InteropServices.DllImport("__Internal")]
+        static extern float LeftRight_MoveInput();
+        [System.Runtime.InteropServices.DllImport("__Internal")]
+        static extern int LeftRight_JumpPressed();
+#endif
+        public bool ReadJumpPressed()
+        {
+            if (!isLocallyControlled) return false;
+            // Consume the touch edge once, through the same path as keyboard/network
+            // input. Holding jump must not hop repeatedly or affect another recruit.
+            bool touch = false;
+#if UNITY_WEBGL && !UNITY_EDITOR
+            touch = LeftRight_JumpPressed() != 0;
+#endif
+            return touch || (Keyboard.current!=null&&Keyboard.current.spaceKey.wasPressedThisFrame)||
+                (Gamepad.current!=null&&Gamepad.current.buttonSouth.wasPressedThisFrame);
+        }
 
         public bool TryJump()
         {
