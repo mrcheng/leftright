@@ -11080,6 +11080,7 @@ GameObject:
   - component: {fileID: 8156725526682356770}
   - component: {fileID: 7408402796270050849}
   - component: {fileID: 987338904262047222}
+  - component: {fileID: 3541850252793865271}
   m_Layer: 0
   m_Name: OutpostEnvironment
   m_TagString: Untagged
@@ -11245,6 +11246,7 @@ MonoBehaviour:
   victoryDelaySeconds: 1
   victoryDurationSeconds: 5
   zoomOutSeconds: 1.5
+  soloResultsDelaySeconds: 1.5
   cheerSource: {fileID: 1979224164419689538}
   cheerClip: {fileID: 8300000, guid: 07314799c479f9a4eb2ae29f92c7f69f, type: 3}
   cheerVolume: 0.9
@@ -11318,6 +11320,23 @@ MonoBehaviour:
   maximumSpawnDistance: 2
   spikeMargin: 0.8
   automaticSpawning: 1
+--- !u!114 &3541850252793865271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6663512733640326206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7bc2ae1d032aaf488494d8fb7c9f3a6, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.SurvivalLightning
+  strikeSeconds: {x: 30, y: 40}
+  warningSeconds: 3
+  rumbleClip: {fileID: 8300000, guid: 066e64dcfde48e54eb2d8b5d4422163a, type: 3}
+  strikeClip: {fileID: 8300000, guid: 66f67e3f2cdcb644a8b8386555d9c60e, type: 3}
+  woodClip: {fileID: 8300000, guid: 89ac50bf71b446e499c029427e9e3cbc, type: 3}
 --- !u!1 &6664416983528790334
 GameObject:
   m_ObjectHideFlags: 0

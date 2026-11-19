@@ -64,6 +64,7 @@ namespace LeftRight.Rebuild
         }
         public LaneMine SpawnMine(int lane,float x)
         {
+            if(course.GetComponent<SurvivalLightning>()?.BlocksSpawn(x)??false)return null;
             if(lane<0||lane>=course.players.Length||HasMine(lane)||!course.round.HasStarted||course.IsGameOver)return null;
             var p=course.players[lane];var trap=course.traps[lane];
             if(p.IsPinned||p.IsEliminated||x<=trap.LeftTip+spikeMargin||x>=trap.RightTip-spikeMargin||!ClearOfCrates(lane,x))return null;

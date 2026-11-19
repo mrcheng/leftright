@@ -111,6 +111,9 @@ namespace LeftRight.Rebuild
             foreach(var trap in allTraps)laneZ[trap.transform]=trap.transform.localPosition.z;
             foreach(Transform child in group)laneZ[child]=child.localPosition.z;
             course.round.Preparing+=ArrangeSurvivalLane;
+            var lightning=GetComponent<SurvivalLightning>();
+            if(lightning==null)lightning=gameObject.AddComponent<SurvivalLightning>();
+            lightning.Initialize(this);
         }
         void Start() => Open();
 

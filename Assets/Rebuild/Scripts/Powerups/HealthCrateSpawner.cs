@@ -93,6 +93,7 @@ namespace LeftRight.Rebuild
 
         public HealthCratePickup SpawnCrate(int lane, float x)
         {
+            if(course.GetComponent<SurvivalLightning>()?.BlocksSpawn(x)??false)return null;
             if (lane < 0 || lane >= course.players.Length || HasCrate(lane)) return null;
             var player = course.players[lane]; var trap = course.traps[lane];
             var obstacles=course.GetComponent<ObstacleSpawner>();

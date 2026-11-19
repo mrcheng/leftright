@@ -14,10 +14,12 @@ namespace LeftRight.Rebuild
             float leftMin=Mathf.Max(trap.LeftTip+margin,center-far),leftMax=Mathf.Min(trap.RightTip-margin,center-near);
             float rightMin=Mathf.Max(trap.LeftTip+margin,center+near),rightMax=Mathf.Min(trap.RightTip-margin,center+far);
             bool leftValid=leftMin<=leftMax,rightValid=rightMin<=rightMax;
+            var lightning=player.course.GetComponent<SurvivalLightning>();
             for(int attempt=0;attempt<12&&(leftValid||rightValid);attempt++)
             {
                 bool left=leftValid&&(!rightValid||random.Next(2)==0);
                 x=Mathf.Lerp(left?leftMin:rightMin,left?leftMax:rightMax,(float)random.NextDouble());
+                if(lightning!=null&&lightning.BlocksSpawn(x))continue;
                 if(available==null||available(x))return true;
             }
             x=0;return false;

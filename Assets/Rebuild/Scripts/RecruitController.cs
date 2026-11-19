@@ -56,6 +56,8 @@ namespace LeftRight.Rebuild
         Vector3 visualRestScale;
         float visualWidth, squeezeThickness;
         bool releasedAfterSqueeze;
+        public bool IsFallingThrough {get;private set;}
+        float dropSpeed;
 
         void Awake()
         {
@@ -166,6 +168,7 @@ namespace LeftRight.Rebuild
         {
             var explosion=GetComponent<RecruitExplosion>();if(explosion!=null)explosion.ResetExplosion();
             WasBlasted=false;
+            IsFallingThrough=false;dropSpeed=0;
             CancelJump();
             if (ragdoll != null) ragdoll.ResetRagdoll();
             if (hitAudio != null) hitAudio.ResetAudio();
@@ -209,6 +212,14 @@ namespace LeftRight.Rebuild
             var explosion=GetComponent<RecruitExplosion>();
             if(explosion==null)explosion=gameObject.AddComponent<RecruitExplosion>();
             explosion.Burst(this,blood,sound);
+        }
+
+        public void FallThroughLane()
+        {
+            if(IsEliminated||IsPinned)return;
+            Vector3 position=transform.position;Eliminate();transform.position=position;
+            IsFallingThrough=true;releasedAfterSqueeze=true;dropSpeed=0;
+            if(hitAudio!=null)hitAudio.PlayFalling();
         }
 
         public void PinTo(Transform bank, bool fromLeft, float spikeReach)
@@ -293,6 +304,13 @@ namespace LeftRight.Rebuild
 
         void LateUpdate()
         {
+            if(IsFallingThrough)
+            {
+                float dt=Mathf.Min(.05f,Time.unscaledDeltaTime);dropSpeed+=9.81f*dt;
+                var position=transform.position;position.y=Mathf.Max(.03f,position.y-dropSpeed*dt);transform.position=position;
+                transform.rotation=Quaternion.RotateTowards(transform.rotation,Quaternion.Euler(0,0,85),180*dt);
+                return;
+            }
             if (IsPinned) { FollowPinnedBank(); return; }
             if (releasedAfterSqueeze) return; // The flexible snapshot now owns the visible fall.
             if (!IsEliminated) return;
