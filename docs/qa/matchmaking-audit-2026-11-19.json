@@ -1,0 +1,1028 @@
+{
+  "date": "2026-11-19",
+  "deployedSource": "8a82343729ee1a7f2aeaf25892aee33c1b270ebc",
+  "url": "https://mrcheng.github.io/leftright/",
+  "physicalIphoneTested": false,
+  "productionCodeChanged": false,
+  "runs": [
+    {
+      "label": "2-main-list",
+      "capacity": 2,
+      "route": "main-list",
+      "public": true,
+      "started": "2026-11-19T16:01:16.133Z",
+      "result": "FAIL",
+      "error": "TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.",
+      "suite": ".",
+      "peer": {
+        "code": "",
+        "status": "Connection lost. Reconnect or host another game.",
+        "humans": 0,
+        "host": false,
+        "playing": false,
+        "menu": true,
+        "menuPage": 0
+      },
+      "host": {
+        "code": "TCBGRB",
+        "status": "2 players connected. Host can start.",
+        "humans": 2,
+        "host": true,
+        "playing": false,
+        "menu": true,
+        "menuPage": 5
+      }
+    },
+    {
+      "label": "2-join-list",
+      "capacity": 2,
+      "route": "join-list",
+      "public": true,
+      "started": "2026-11-19T16:02:42.340Z",
+      "result": "PASS",
+      "suite": ".",
+      "connected": {
+        "host": {
+          "code": "NN689B",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "NN689B",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "2-code-public",
+      "capacity": 2,
+      "route": "code-public",
+      "public": true,
+      "started": "2026-11-19T16:04:22.915Z",
+      "result": "PASS",
+      "suite": ".",
+      "connected": {
+        "host": {
+          "code": "L6BRCH",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "L6BRCH",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "2-code-private",
+      "capacity": 2,
+      "route": "code-private",
+      "public": false,
+      "started": "2026-11-19T16:05:58.462Z",
+      "result": "PASS",
+      "suite": ".",
+      "connected": {
+        "host": {
+          "code": "NPJG7T",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "NPJG7T",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "3-main-list",
+      "capacity": 3,
+      "route": "main-list",
+      "public": true,
+      "started": "2026-11-19T16:07:42.409Z",
+      "result": "PASS",
+      "suite": ".",
+      "connected": {
+        "host": {
+          "code": "P9CFQD",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "P9CFQD",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "3-join-list",
+      "capacity": 3,
+      "route": "join-list",
+      "public": true,
+      "started": "2026-11-19T16:09:20.728Z",
+      "result": "PASS",
+      "suite": ".",
+      "connected": {
+        "host": {
+          "code": "FWBCDJ",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "FWBCDJ",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "3-code-public",
+      "capacity": 3,
+      "route": "code-public",
+      "public": true,
+      "started": "2026-11-19T16:10:25.914Z",
+      "result": "PASS",
+      "suite": ".",
+      "connected": {
+        "host": {
+          "code": "DK6J6N",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "DK6J6N",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "3-code-private",
+      "capacity": 3,
+      "route": "code-private",
+      "public": false,
+      "started": "2026-11-19T16:11:14.796Z",
+      "result": "PASS",
+      "suite": ".",
+      "connected": {
+        "host": {
+          "code": "PGRQG6",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "PGRQG6",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "4-main-list",
+      "capacity": 4,
+      "route": "main-list",
+      "public": true,
+      "started": "2026-11-19T16:12:02.387Z",
+      "result": "PASS",
+      "suite": ".",
+      "connected": {
+        "host": {
+          "code": "CDFM96",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "CDFM96",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "4-join-list",
+      "capacity": 4,
+      "route": "join-list",
+      "public": true,
+      "started": "2026-11-19T16:12:52.385Z",
+      "result": "PASS",
+      "suite": ".",
+      "connected": {
+        "host": {
+          "code": "HRNGJL",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "HRNGJL",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "4-code-public",
+      "capacity": 4,
+      "route": "code-public",
+      "public": true,
+      "started": "2026-11-19T16:13:41.303Z",
+      "result": "PASS",
+      "suite": ".",
+      "connected": {
+        "host": {
+          "code": "K9BDBB",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "K9BDBB",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "4-code-private",
+      "capacity": 4,
+      "route": "code-private",
+      "public": false,
+      "started": "2026-11-19T16:14:32.340Z",
+      "result": "PASS",
+      "suite": ".",
+      "connected": {
+        "host": {
+          "code": "THGJBT",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "THGJBT",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "2-main-list",
+      "capacity": 2,
+      "route": "main-list",
+      "public": true,
+      "started": "2026-11-19T16:04:35.249Z",
+      "result": "PASS",
+      "suite": "phone-host",
+      "connected": {
+        "host": {
+          "code": "P6QWPG",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "P6QWPG",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "2-join-list",
+      "capacity": 2,
+      "route": "join-list",
+      "public": true,
+      "started": "2026-11-19T16:06:26.978Z",
+      "result": "PASS",
+      "suite": "phone-host",
+      "connected": {
+        "host": {
+          "code": "J79J9Q",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "J79J9Q",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "phone-host-2-code-private",
+      "started": "2026-11-19T16:15:36.235Z",
+      "result": "PASS",
+      "startedBoth": true,
+      "suite": "edge-cases",
+      "connected": {
+        "host": {
+          "code": "7NK7BW",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "7NK7BW",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "phone-host-3-main-list",
+      "started": "2026-11-19T16:16:04.471Z",
+      "result": "PASS",
+      "startedBoth": true,
+      "suite": "edge-cases",
+      "connected": {
+        "host": {
+          "code": "PPKTK8",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "PPKTK8",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "phone-host-3-join-list",
+      "started": "2026-11-19T16:16:28.736Z",
+      "result": "PASS",
+      "startedBoth": true,
+      "suite": "edge-cases",
+      "connected": {
+        "host": {
+          "code": "H78PFD",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "H78PFD",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "phone-host-3-code-public",
+      "started": "2026-11-19T16:16:53.250Z",
+      "result": "PASS",
+      "startedBoth": true,
+      "suite": "edge-cases",
+      "connected": {
+        "host": {
+          "code": "P7HNDW",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "P7HNDW",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "phone-host-4-main-list",
+      "started": "2026-11-19T16:17:17.653Z",
+      "result": "PASS",
+      "startedBoth": true,
+      "suite": "edge-cases",
+      "connected": {
+        "host": {
+          "code": "RNBTMN",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "RNBTMN",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "phone-host-4-join-list",
+      "started": "2026-11-19T16:17:41.098Z",
+      "result": "PASS",
+      "startedBoth": true,
+      "suite": "edge-cases",
+      "connected": {
+        "host": {
+          "code": "KKLJBN",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "KKLJBN",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "phone-host-4-code-public",
+      "started": "2026-11-19T16:18:06.000Z",
+      "result": "PASS",
+      "startedBoth": true,
+      "suite": "edge-cases",
+      "connected": {
+        "host": {
+          "code": "9C9HQL",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "9C9HQL",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "phone-host-4-code-private",
+      "started": "2026-11-19T16:18:33.397Z",
+      "result": "PASS",
+      "startedBoth": true,
+      "suite": "edge-cases",
+      "connected": {
+        "host": {
+          "code": "9QWWWN",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "9QWWWN",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "fill-3-human-players",
+      "started": "2026-11-19T16:18:57.346Z",
+      "result": "PASS",
+      "startedAll": true,
+      "suite": "edge-cases",
+      "connected": [
+        {
+          "code": "HJ8R6W",
+          "status": "3 players connected. Host can start.",
+          "humans": 3,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        {
+          "code": "HJ8R6W",
+          "status": "3 players connected. Waiting for host.",
+          "humans": 3,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        },
+        {
+          "code": "HJ8R6W",
+          "status": "3 players connected. Waiting for host.",
+          "humans": 3,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      ]
+    },
+    {
+      "label": "fill-4-human-players",
+      "started": "2026-11-19T16:19:46.939Z",
+      "result": "PASS",
+      "startedAll": true,
+      "suite": "edge-cases",
+      "connected": [
+        {
+          "code": "GJJQ7K",
+          "status": "4 players connected. Host can start.",
+          "humans": 4,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        {
+          "code": "GJJQ7K",
+          "status": "4 players connected. Waiting for host.",
+          "humans": 4,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        },
+        {
+          "code": "GJJQ7K",
+          "status": "4 players connected. Waiting for host.",
+          "humans": 4,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        },
+        {
+          "code": "GJJQ7K",
+          "status": "4 players connected. Waiting for host.",
+          "humans": 4,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      ]
+    },
+    {
+      "label": "desktop-enter-code",
+      "started": "2026-11-19T16:20:54.872Z",
+      "result": "PASS",
+      "enterSubmitted": false,
+      "buttonFallbackConnected": true,
+      "suite": "edge-cases",
+      "afterEnter": {
+        "code": "",
+        "status": "",
+        "humans": 0,
+        "host": false,
+        "playing": false,
+        "menu": true,
+        "menuPage": 3
+      },
+      "finding": "M4: scenario completed through JOIN-button fallback; Enter itself did not submit."
+    },
+    {
+      "label": "frozen-host-pending-count",
+      "started": "2026-11-19T16:21:17.312Z",
+      "result": "PASS",
+      "suite": "edge-cases",
+      "pending": {
+        "code": "6MNTRH",
+        "status": "Connecting to your friend's game...",
+        "humans": 0,
+        "host": false,
+        "playing": false,
+        "menu": true,
+        "menuPage": 3
+      },
+      "finding": "M2 pending count observed; this Page Lifecycle attempt did not demonstrate host suspension."
+    },
+    {
+      "label": "full-room-and-invalid-codes",
+      "started": "2026-11-19T16:21:45.700Z",
+      "result": "PASS",
+      "suite": "edge-cases",
+      "fullAttempt": {
+        "code": "",
+        "status": "Connection lost. Reconnect or host another game.",
+        "humans": 0,
+        "host": false,
+        "playing": false,
+        "menu": true,
+        "menuPage": 0
+      },
+      "emptyCode": {
+        "code": "",
+        "status": "Enter the join code shared by your friend.",
+        "humans": 0,
+        "host": false,
+        "playing": false,
+        "menu": true,
+        "menuPage": 3
+      },
+      "invalidCode": {
+        "code": "",
+        "status": "Could not reach online services. Check your connection and try again.",
+        "humans": 0,
+        "host": false,
+        "playing": false,
+        "menu": true,
+        "menuPage": 3
+      }
+    },
+    {
+      "label": "started-room-rejects-late-join",
+      "started": "2026-11-19T16:22:49.655Z",
+      "result": "PASS",
+      "suite": "edge-cases",
+      "lateAttempt": {
+        "code": "",
+        "status": "Match already started.",
+        "humans": 0,
+        "host": false,
+        "playing": false,
+        "menu": true,
+        "menuPage": 0
+      }
+    },
+    {
+      "label": "back-during-public-lookup",
+      "result": "BUG REPRODUCED",
+      "suite": "cancel-race",
+      "before": {
+        "code": "",
+        "status": "",
+        "humans": 0,
+        "host": false,
+        "playing": false,
+        "menu": true,
+        "menuPage": 0
+      },
+      "after": {
+        "host": {
+          "code": "MFCCND",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "MFCCND",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "native-mobile-enter-lowercase-spaces",
+      "result": "PASS",
+      "suite": "cancel-race",
+      "peer": {
+        "code": "CQ8JWP",
+        "status": "2 players connected. Waiting for host.",
+        "humans": 2,
+        "host": false,
+        "playing": false,
+        "menu": true,
+        "menuPage": 3
+      },
+      "host": {
+        "code": "CQ8JWP",
+        "status": "2 players connected. Host can start.",
+        "humans": 2,
+        "host": true,
+        "playing": false,
+        "menu": true,
+        "menuPage": 5
+      }
+    },
+    {
+      "label": "verified-paused-host",
+      "result": "OBSERVED",
+      "suite": "cancel-race",
+      "pending": {
+        "code": "G8QLPQ",
+        "status": "Connecting to your friend's game...",
+        "humans": 0,
+        "host": false,
+        "playing": false,
+        "menu": true,
+        "menuPage": 3
+      },
+      "afterStall": {
+        "code": "G8QLPQ",
+        "status": "Connecting to your friend's game...",
+        "humans": 0,
+        "host": false,
+        "playing": false,
+        "menu": true,
+        "menuPage": 3
+      },
+      "afterResume": {
+        "host": {
+          "code": "G8QLPQ",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "G8QLPQ",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "known-expired-owned-code",
+      "result": "OBSERVED",
+      "suite": "cancel-race",
+      "peer": {
+        "code": "",
+        "status": "Code not found. Ask your friend for a fresh code.",
+        "humans": 0,
+        "host": false,
+        "playing": false,
+        "menu": true,
+        "menuPage": 3
+      }
+    },
+    {
+      "label": "phone-2-public-code",
+      "capacity": 2,
+      "public": true,
+      "hostPhone": true,
+      "result": "PASS",
+      "suite": "final-controls",
+      "connected": {
+        "host": {
+          "code": "M9GHGL",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "M9GHGL",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "phone-3-private-code",
+      "capacity": 3,
+      "public": false,
+      "hostPhone": true,
+      "result": "PASS",
+      "suite": "final-controls",
+      "connected": {
+        "host": {
+          "code": "9BLHWB",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "9BLHWB",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "desktop-2-main-retry-1",
+      "capacity": 2,
+      "public": true,
+      "hostPhone": false,
+      "result": "PASS",
+      "suite": "final-controls",
+      "connected": {
+        "host": {
+          "code": "9PD9BH",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "9PD9BH",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    },
+    {
+      "label": "desktop-2-main-retry-2",
+      "capacity": 2,
+      "public": true,
+      "hostPhone": false,
+      "result": "PASS",
+      "suite": "final-controls",
+      "connected": {
+        "host": {
+          "code": "RMMG8F",
+          "status": "2 players connected. Host can start.",
+          "humans": 2,
+          "host": true,
+          "playing": false,
+          "menu": true,
+          "menuPage": 5
+        },
+        "peer": {
+          "code": "RMMG8F",
+          "status": "2 players connected. Waiting for host.",
+          "humans": 2,
+          "host": false,
+          "playing": false,
+          "menu": true,
+          "menuPage": 3
+        }
+      }
+    }
+  ],
+  "scenarioRuns": 36,
+  "findings": {
+    "M1": "Confirmed cancellation race",
+    "M2": "Confirmed wrong pending capacity",
+    "M3": "Confirmed hidden join failures",
+    "M4": "Confirmed desktop Enter does not submit",
+    "M5": "Confirmed misleading expected-failure messages",
+    "M6": "One intermittent presence/connection failure under overlapping software-rendered load; two later hardware control runs passed; transport trigger unproven"
+  }
+}
