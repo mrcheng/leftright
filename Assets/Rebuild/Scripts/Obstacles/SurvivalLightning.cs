@@ -113,7 +113,7 @@ namespace LeftRight.Rebuild
         {
             if(first==null||!first.broken)return;
             var player=course.players[0];float x=player.transform.position.x,height=player.JumpOffset;
-            if(player.IsEliminated||player.IsPinned){sampled=false;return;}
+            if(player.IsEliminated||player.IsPinned||player.IsTrappedInHole){sampled=false;return;}
             float from=sampled?lastX:x,fromHeight=sampled?lastHeight:height;
             lastX=x;lastHeight=height;sampled=true;
             // Sweep both position and jump clearance so a low-frame-rate crossing
@@ -123,7 +123,7 @@ namespace LeftRight.Rebuild
             float start=0,end=1,dx=x-from;
             if(Mathf.Abs(dx)>.00001f){float a=(left-from)/dx,b=(right-from)/dx;start=Mathf.Clamp01(Mathf.Min(a,b));end=Mathf.Clamp01(Mathf.Max(a,b));}
             if(Mathf.Min(Mathf.Lerp(fromHeight,height,start),Mathf.Lerp(fromHeight,height,end))>=.15f)return;
-            player.FallThroughLane();course.traps[0].RetractForVictory();
+            player.FallThroughLane();
         }
         void MakeBolt(Vector3 hit)
         {

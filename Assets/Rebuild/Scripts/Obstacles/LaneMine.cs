@@ -21,7 +21,7 @@ namespace LeftRight.Rebuild
         public bool CheckContact(RecruitController player)
         {
             if(Detonated||owner.course.NetworkReplica||!IsArmed||owner.course.IsGameOver||
-                !owner.course.round.masterBeat.IsPlaying||player!=owner.course.players[LaneIndex]||player.IsPinned||player.IsEliminated)return false;
+                !owner.course.round.masterBeat.IsPlaying||player!=owner.course.players[LaneIndex]||player.IsPinned||player.IsTrappedInHole||player.IsEliminated)return false;
             float x=player.transform.position.x,height=player.JumpOffset;
             float from=sampled?previousX:x,fromHeight=sampled?previousHeight:height;
             previousX=x;previousHeight=height;sampled=true;

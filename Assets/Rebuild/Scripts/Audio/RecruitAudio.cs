@@ -12,12 +12,15 @@ namespace LeftRight.Rebuild
 
         void Awake() => output.volume *= Mathf.Clamp01(PlayerPrefs.GetFloat("AudioLevel", 1f));
 
-        public void PlaySpiked()
+        public void PlaySpiked(bool playScream=true)
         {
             if (spiked) return;
             spiked = true;
-            output.clip = scream;
-            output.Play();
+            if(playScream)
+            {
+                output.clip = scream;
+                output.Play();
+            }
             output.PlayOneShot(spikeImpact, .75f);
         }
 

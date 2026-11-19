@@ -68,7 +68,7 @@ namespace LeftRight.Rebuild
                 long first = Mathf.Max(0, firstSpawnBeat), interval = Mathf.Max(1, intervalBeats);
                 nextOpportunity[lane] = first + ((beat - first) / interval + 1) * interval;
                 var player = course.players[lane]; var trap = course.traps[lane];
-                if (player.IsPinned || player.IsEliminated || HasCrate(lane)) continue;
+                if (player.IsPinned || player.IsTrappedInHole || player.IsEliminated || HasCrate(lane)) continue;
                 // Use remaining lost space, not historical MissedBeats: healing may have restored it already.
                 if (trap.TravelAfterRecovery + .0001f < Mathf.Max(0, minimumLostBeats) * trap.inwardPerMiss) continue;
                 if (TryChoosePosition(lane, out float x)) SpawnCrate(lane, x);
@@ -98,7 +98,7 @@ namespace LeftRight.Rebuild
             var player = course.players[lane]; var trap = course.traps[lane];
             var obstacles=course.GetComponent<ObstacleSpawner>();
             if(obstacles!=null&&obstacles.BlocksHealth(lane,x))return null;
-            if (!course.round.HasStarted || course.IsGameOver || player.IsPinned || player.IsEliminated ||
+            if (!course.round.HasStarted || course.IsGameOver || player.IsPinned || player.IsTrappedInHole || player.IsEliminated ||
                 x <= trap.LeftTip + .45f || x >= trap.RightTip - .45f) return null;
             var crate = Instantiate(cratePrefab, new Vector3(x, .65f, player.transform.position.z), Quaternion.identity, transform);
             crate.restoredBeats = restoredBeats;

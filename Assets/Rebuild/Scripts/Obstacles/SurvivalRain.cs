@@ -124,7 +124,7 @@ namespace LeftRight.Rebuild
         }
         public float WetnessAt(RecruitController player)
         {
-            if(player.IsEliminated||player.IsPinned||player.IsJumping||player.NetworkReplica||!menu.IsSurvival||menu.course.IsGameOver)return 0;
+            if(player.IsEliminated||player.IsPinned||player.IsTrappedInHole||player.IsJumping||player.NetworkReplica||!menu.IsSurvival||menu.course.IsGameOver)return 0;
             float wetness=0;
             foreach(var p in puddles)
             {

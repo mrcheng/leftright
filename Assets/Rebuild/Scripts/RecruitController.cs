@@ -30,7 +30,8 @@ namespace LeftRight.Rebuild
         public bool PinnedFromLeft { get; private set; }
         public float penetrationDepth = .20f;
         public float Horizontal { get; private set; }
-        public bool IsMoving => Mathf.Abs(Horizontal) > .2f && !IsEliminated && !IsPinned;
+        public bool IsMoving => Mathf.Abs(Horizontal) > .2f && !IsEliminated && !IsPinned && !IsTrappedInHole;
+        public bool IsTrappedInHole=>holeTrap!=null&&holeTrap.IsWedged;
         public bool DirectionRight { get; private set; }
         public float? InputOverride { get; set; }
         public bool computerControlled;
@@ -57,7 +58,7 @@ namespace LeftRight.Rebuild
         float visualWidth, squeezeThickness;
         bool releasedAfterSqueeze;
         public bool IsFallingThrough {get;private set;}
-        float dropSpeed;
+        RecruitHoleTrap holeTrap;
         SurvivalRain rain;
         float groundSpeed,slickness;
 
@@ -78,7 +79,7 @@ namespace LeftRight.Rebuild
             movementTime = now;
             if (NetworkReplica) { UpdateJump(); return; }
             bool canMove = round.IsCountingDown || (round.HasStarted && round.masterBeat.IsPlaying);
-            if (IsEliminated || IsPinned || !canMove || course.IsGameOver)
+            if (IsEliminated || IsPinned || IsTrappedInHole || !canMove || course.IsGameOver)
             {
                 Horizontal = 0;
                 groundSpeed=slickness=0;
@@ -153,7 +154,7 @@ namespace LeftRight.Rebuild
         {
             // Jumping changes height and pose, while ordinary direction penalties and
             // spike contacts still apply. Holding Space never creates repeated jumps.
-            if(IsJumping||IsPinned||IsEliminated||course.IsGameOver||
+            if(IsJumping||IsPinned||IsTrappedInHole||IsEliminated||course.IsGameOver||
                 !(round.IsCountingDown||(round.HasStarted&&round.masterBeat.IsPlaying)))return false;
             IsJumping=true;JumpPhase=0;jumpStarted=Time.realtimeSinceStartupAsDouble;landingUntil=0;
             return true;
@@ -185,10 +186,11 @@ namespace LeftRight.Rebuild
         {
             var explosion=GetComponent<RecruitExplosion>();if(explosion!=null)explosion.ResetExplosion();
             WasBlasted=false;
-            IsFallingThrough=false;dropSpeed=0;
+            IsFallingThrough=false;
             groundSpeed=slickness=0;
             CancelJump();
             if (ragdoll != null) ragdoll.ResetRagdoll();
+            if(holeTrap!=null)holeTrap.ResetTrap();
             if (hitAudio != null) hitAudio.ResetAudio();
             IsEliminated = false;
             releasedAfterSqueeze = false;
@@ -234,15 +236,23 @@ namespace LeftRight.Rebuild
 
         public void FallThroughLane()
         {
-            if(IsEliminated||IsPinned)return;
-            Vector3 position=transform.position;Eliminate();transform.position=position;
-            IsFallingThrough=true;releasedAfterSqueeze=true;dropSpeed=0;
+            if(IsEliminated||IsPinned||IsTrappedInHole)return;
+            CancelJump();Horizontal=0;groundSpeed=slickness=0;
+            march.ResetMarch();march.enabled=false;
+            transform.localRotation=startingRotation*Quaternion.Euler(0,DirectionRight?-90:90,0);
+            if(holeTrap==null)holeTrap=gameObject.AddComponent<RecruitHoleTrap>();
+            IsFallingThrough=true;holeTrap.Begin(this,course.traps[System.Array.IndexOf(course.players,this)].transform.position.y);
             if(hitAudio!=null)hitAudio.PlayFalling();
         }
 
         public void PinTo(Transform bank, bool fromLeft, float spikeReach)
         {
             if (IsPinned || IsEliminated) return;
+            if(IsTrappedInHole)
+            {
+                holeTrap.Capture(fromLeft,course.traps[System.Array.IndexOf(course.players,this)].bloodMaterial);
+                IsFallingThrough=false;
+            }
             CancelJump();
             Horizontal = 0;
             PinnedFromLeft = fromLeft;
@@ -252,12 +262,13 @@ namespace LeftRight.Rebuild
             pinnedFacing = startingRotation * Quaternion.Euler(0, fromLeft ? -90 : 90, 0);
             transform.localRotation = pinnedFacing;
             pinnedBank = bank;
-            if (hitAudio != null) hitAudio.PlaySpiked();
+            // Hole victims already screamed on entry; capture adds only the impact.
+            if (hitAudio != null) hitAudio.PlaySpiked(holeTrap==null||!holeTrap.IsSeparated);
             var position = transform.position;
             position.x = bank.position.x + (fromLeft ? 1 : -1) * (spikeReach - penetrationDepth);
             transform.position = position;
             pinnedOffset = bank.InverseTransformPoint(position);
-            visualWidth = GetComponentInChildren<SkinnedMeshRenderer>().bounds.size.x;
+            visualWidth = holeTrap!=null&&holeTrap.IsSeparated?holeTrap.UpperWidth:GetComponentInChildren<SkinnedMeshRenderer>().bounds.size.x;
             Spiked?.Invoke(this);
         }
 
@@ -322,13 +333,7 @@ namespace LeftRight.Rebuild
 
         void LateUpdate()
         {
-            if(IsFallingThrough)
-            {
-                float dt=Mathf.Min(.05f,Time.unscaledDeltaTime);dropSpeed+=9.81f*dt;
-                var position=transform.position;position.y=Mathf.Max(.03f,position.y-dropSpeed*dt);transform.position=position;
-                transform.rotation=Quaternion.RotateTowards(transform.rotation,Quaternion.Euler(0,0,85),180*dt);
-                return;
-            }
+            if(IsTrappedInHole)return; // The wedged/kicking pose owns the short drop.
             if (IsPinned) { FollowPinnedBank(); return; }
             if (releasedAfterSqueeze) return; // The flexible snapshot now owns the visible fall.
             if (!IsEliminated) return;

@@ -15,6 +15,8 @@ namespace LeftRight.Rebuild
         [Min(.1f)] public float zoomOutSeconds = 1.5f;
         [Min(0), Tooltip("Show a Survival death briefly before results, without a winner sequence.")]
         public float soloResultsDelaySeconds = 1.5f;
+        [Min(0),Tooltip("Let a hole victim's upper-body crush/retraction finish before Survival results.")]
+        public float holeResultsDelaySeconds = 4.5f;
         public AudioSource cheerSource;
         public AudioClip cheerClip;
         [Range(0, 1)] public float cheerVolume = .9f;
@@ -56,7 +58,9 @@ namespace LeftRight.Rebuild
             ResetVictory();
             if(course.players.Length==1)
             {
-                soloResultsPending=true;soloResultsAt=Time.unscaledTime+soloResultsDelaySeconds;
+                var hole=course.players[0].GetComponent<RecruitHoleTrap>();
+                float delay=hole!=null&&hole.IsSeparated?Mathf.Max(soloResultsDelaySeconds,holeResultsDelaySeconds):soloResultsDelaySeconds;
+                soloResultsPending=true;soloResultsAt=Time.unscaledTime+delay;
                 return;
             }
             // Single-player losses have no winner; multiplayer ties are resolved by the course.

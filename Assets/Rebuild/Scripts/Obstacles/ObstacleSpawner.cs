@@ -47,7 +47,7 @@ namespace LeftRight.Rebuild
                 long first=Mathf.Max(0,firstSpawnBeat),interval=Mathf.Max(1,intervalBeats);
                 nextOpportunity[lane]=first+((beat-first)/interval+1)*interval;
                 var p=course.players[lane];
-                if(p.IsPinned||p.IsEliminated||HasMine(lane))continue;
+                if(p.IsPinned||p.IsTrappedInHole||p.IsEliminated||HasMine(lane))continue;
                 if(LaneSpawnPlacement.TryChoose(p,course.traps[lane],minimumSpawnDistance,
                     Mathf.Max(minimumSpawnDistance,maximumSpawnDistance),spikeMargin,random,
                     x=>ClearOfCrates(lane,x),out float x))SpawnMine(lane,x);
@@ -67,7 +67,7 @@ namespace LeftRight.Rebuild
             if(course.GetComponent<SurvivalLightning>()?.BlocksSpawn(x)??false)return null;
             if(lane<0||lane>=course.players.Length||HasMine(lane)||!course.round.HasStarted||course.IsGameOver)return null;
             var p=course.players[lane];var trap=course.traps[lane];
-            if(p.IsPinned||p.IsEliminated||x<=trap.LeftTip+spikeMargin||x>=trap.RightTip-spikeMargin||!ClearOfCrates(lane,x))return null;
+            if(p.IsPinned||p.IsTrappedInHole||p.IsEliminated||x<=trap.LeftTip+spikeMargin||x>=trap.RightTip-spikeMargin||!ClearOfCrates(lane,x))return null;
             double beat=course.round.masterBeat.BeatPosition;
             return Create(++nextId,lane,x,beat+Mathf.Max(1,armingBeats),beat+Mathf.Max(armingBeats+1,lifetimeBeats));
         }

@@ -22,7 +22,7 @@ namespace LeftRight.Rebuild
             if (!player.computerControlled) { player.ComputerInput = 0; return; }
             var round = player.round;
             bool running = round.HasStarted && round.masterBeat.IsPlaying && !player.course.IsGameOver;
-            if (!running || player.IsPinned || player.IsEliminated)
+            if (!running || player.IsPinned || player.IsTrappedInHole || player.IsEliminated)
             { player.ComputerInput = 0; lastRunning = false; attemptedMine=-1; return; }
             bool right = round.officer.DirectionRight;
             if (!lastRunning || right != lastDirection)

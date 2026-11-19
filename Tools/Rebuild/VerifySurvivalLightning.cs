@@ -45,10 +45,12 @@ try
  player.InputOverride=0;await Wait(()=>!player.IsJumping);
  Check(!player.IsEliminated,"The normal jump crosses the missing boards safely");
  await Task.Delay(3500);Check(lightning.HasStruck&&lightning.BrokenCount==2&&!lightning.IsWarning,"The lane never schedules a second strike");
- Place((lightning.HoleLeft+lightning.HoleRight)*.5f);await Wait(()=>player.IsEliminated);
- Check(player.IsFallingThrough,"Walking onto the gap eliminates with a downward fall");
+ Place((lightning.HoleLeft+lightning.HoleRight)*.5f);await Wait(()=>player.IsTrappedInHole);
+ Check(player.IsFallingThrough&&!player.IsEliminated,"Walking into the gap slides the living recruit into a wedged state");
  Check(player.hitAudio.output.isPlaying&&player.hitAudio.output.clip==player.hitAudio.scream,"Falling through the gap plays the recruit's scream");
- await Task.Delay(450);Check(player.transform.position.y<.1f,"The recruit falls onto the ground below the lane");
+ await Task.Delay(700);Check(player.transform.position.y<.2f&&!course.IsGameOver,"The recruit stays halfway under the lane while spikes remain active");
+ course.traps[0].FinishSqueeze();await Wait(()=>player.IsEliminated,10);
+ Check(player.GetComponent<RecruitHoleTrap>().IsSeparated,"Spike capture separates the lower half before the upper-body squeeze");
  await Wait(()=>menu.Results.Visible);Check(menu.Scores.Finished&&menu.GetComponent<VictoryDirector>().SelectedSequence==null,"Gap death ends Survival without a winner animation");
  menu.Results.PlayAgain();player=course.players[0];player.InputOverride=0;
  Check(lightning.BrokenCount==0&&!lightning.HasStruck&&!player.IsFallingThrough,"Replay restores boards, strike allowance and recruit");

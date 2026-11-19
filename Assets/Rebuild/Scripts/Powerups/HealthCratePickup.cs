@@ -25,7 +25,7 @@ namespace LeftRight.Rebuild
         public bool TryCollect(RecruitController player)
         {
             if (IsCollected || course == null || !course.round.HasStarted || !course.round.masterBeat.IsPlaying ||
-                course.IsGameOver || player != course.players[LaneIndex] || player.IsPinned || player.IsEliminated) return false;
+                course.IsGameOver || player != course.players[LaneIndex] || player.IsPinned || player.IsTrappedInHole || player.IsEliminated) return false;
             if (Mathf.Abs(player.transform.position.x - transform.position.x) > collectionRadius ||
                 Mathf.Abs(player.transform.position.z - transform.position.z) > .5f) return false;
             // Claim before applying the effect: another collection in this frame cannot heal twice.
