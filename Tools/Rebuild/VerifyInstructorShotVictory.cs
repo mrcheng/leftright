@@ -15,7 +15,7 @@ float lead=round.leadInSeconds,delay=director.victoryDelaySeconds;var speeds=cou
 var started=typeof(VictoryDirector).GetField("startedAt",BindingFlags.Instance|BindingFlags.NonPublic);
 try
 {
- Check(savedPool.Length==3&&savedPool.OfType<ArmsRaisedVictory>().Count()==1,"Saved pool contains three distinct sequences with equal 1/N selection");
+ Check(savedPool.Length>=3&&savedPool.OfType<ArmsRaisedVictory>().Count()==1,"Saved pool retains the original sequences with equal 1/N selection");
  Check(shot.pistolPrefab!=null&&shot.gunshot!=null&&shot.bloodMaterial!=null,"Second sequence owns its pistol, sound and blood settings");
  round.leadInSeconds=.05f;director.victoryDelaySeconds=0;director.sequences=new VictorySequence[]{shot};
  foreach(var player in course.players){player.walkSpeed=0;player.InputOverride=0;}

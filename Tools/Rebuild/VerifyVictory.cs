@@ -16,7 +16,7 @@ var pool=new VictorySequence[]{savedPool.OfType<ArmsRaisedVictory>().Single()};f
 var extra=ScriptableObject.CreateInstance<ArmsRaisedVictory>();
 try
 {
- Check(director!=null&&savedPool.Length==3&&savedPool.OfType<InstructorShotVictory>().Count()==1,"Saved scene includes three distinct victory assets");
+ Check(director!=null&&savedPool.Length>=3&&savedPool.OfType<InstructorShotVictory>().Count()==1,"Saved scene retains the original victory assets");
  director.sequences=pool;
  Check(Mathf.Approximately(delay,1),"Default victory delay is an editable one second");
  foreach(var player in course.players){player.walkSpeed=0;player.InputOverride=0;}

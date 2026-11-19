@@ -117,6 +117,7 @@ namespace LeftRight.Rebuild
             var rain=GetComponent<SurvivalRain>();
             if(rain==null)rain=gameObject.AddComponent<SurvivalRain>();
             rain.Initialize(this,lightning);
+            GetComponentInChildren<OfficerVodkaBottle>(true)?.Initialize(course.round);
         }
         void Start() => Open();
 

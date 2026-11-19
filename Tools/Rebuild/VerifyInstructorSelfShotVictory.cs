@@ -18,9 +18,9 @@ var started=typeof(VictoryDirector).GetField("startedAt",BindingFlags.Instance|B
 async Task<float> Win(){round.BeginRound();await Wait(()=>round.HasStarted);for(int lane=1;lane<4;lane++)course.players[lane].Eliminate();await Wait(()=>director.IsPlaying);return (float)started.GetValue(director);}
 try
 {
- Check(savedPool.Length==3&&savedPool.Distinct().Count()==3,"Three distinct saved assets get equal one-in-three selection chances");
+ Check(savedPool.Length>=3&&savedPool.Distinct().Count()==savedPool.Length,"Distinct saved assets retain equal one-in-N selection chances");
  Check(self.pistolPrefab!=null&&self.shoutClip!=null&&self.gunshot!=null&&self.bloodMaterial!=null,"Third asset owns its dialogue, pistol, gunshot and blood settings");
- Check(!self.PlayOpeningCheer&&savedPool.Where(s=>s!=self).All(s=>s.PlayOpeningCheer),"Only the dialogue-led sequence suppresses the opening cheer");
+ Check(!self.PlayOpeningCheer&&savedPool.Where(s=>s is ArmsRaisedVictory||s is InstructorShotVictory).All(s=>s.PlayOpeningCheer),"The dialogue-led sequence suppresses cheer while the original cheering sequences retain it");
  var samples=new float[self.shoutClip.samples*self.shoutClip.channels];
  Check(self.shoutClip.GetData(samples,0)&&samples.Max(v=>Mathf.Abs(v))>.2f&&self.shoutClip.length>.7f,"Generated voice line contains audible speech");
  Check(self.shoutAt+self.shoutClip.length<self.fireAt,"The shout completes before the pistol fires");
