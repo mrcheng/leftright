@@ -24,7 +24,16 @@ namespace LeftRight.Rebuild
         public Vector3 CoursePosition => widePosition;
         public Quaternion CourseRotation => wideRotation;
         public float CourseFieldOfView => wideFieldOfView;
-        public Vector3 GameplayFocus=>LocalPlayer!=null?Vector3.Lerp(LocalPlayer.transform.position,course.round.officer.transform.position,.35f)+Vector3.up*1.2f:widePosition+wideRotation*Vector3.forward*20;
+        public Vector3 GameplayFocus=>menu!=null&&menu.IsCouch?CouchCenter:LocalPlayer!=null?Vector3.Lerp(LocalPlayer.transform.position,course.round.officer.transform.position,.35f)+Vector3.up*1.2f:widePosition+wideRotation*Vector3.forward*20;
+        Vector3 CouchCenter
+        {
+            get
+            {
+                var bounds=new Bounds(course.round.officer.transform.position+Vector3.up*1.3f,Vector3.zero);
+                foreach(var p in course.players)bounds.Encapsulate(p.transform.position+Vector3.up*1.1f);
+                return bounds.center;
+            }
+        }
         Vector3 widePosition, savedWidePosition, velocity;
         Quaternion wideRotation;
         float wideFieldOfView, fieldVelocity;
@@ -103,6 +112,16 @@ namespace LeftRight.Rebuild
         {
             UpdateWideFraming();rotation=wideRotation;fov=onlineFieldOfView;
             if(LocalPlayer==null){position=widePosition;fov=wideFieldOfView;return;}
+            if(menu!=null&&menu.IsCouch)
+            {
+                // Shared-screen humans must all remain visible, including after P1
+                // dies. Keep the saved level angle and fit every recruit's full height.
+                Vector3 focus=CouchCenter;float couchDistance=onlineDistance;
+                foreach(var p in course.players){couchDistance=FitPoint(p.transform.position-Vector3.up*.1f,focus,couchDistance);couchDistance=FitPoint(p.transform.position+Vector3.up*2.25f,focus,couchDistance);}
+                var instructor=course.round.officer.transform.position;
+                couchDistance=FitPoint(instructor,focus,couchDistance);couchDistance=FitPoint(instructor+Vector3.up*2.65f,focus,couchDistance);
+                position=focus-wideRotation*Vector3.forward*couchDistance;return;
+            }
             // Bias toward the local front recruit, retaining enough horizontal/vertical
             // field of view for the instructor at either end of the player's lane.
             Vector3 playerFeet = LocalPlayer.transform.position;

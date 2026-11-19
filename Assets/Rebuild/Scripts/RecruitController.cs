@@ -6,6 +6,7 @@ namespace LeftRight.Rebuild
     public sealed class RecruitController : MonoBehaviour
     {
         public int playerIndex;
+        [Range(0,3)] public int keyboardSlot;
         [Tooltip("Only the locally owned recruit reads this client's keyboard/gamepad. Lane index is not input ownership.")]
         public bool isLocallyControlled;
         public RecruitMarch march;
@@ -21,6 +22,18 @@ namespace LeftRight.Rebuild
         public float JumpPhase { get; private set; }
         public float JumpOffset => Mathf.Max(0,transform.localPosition.y-startingPosition.y);
         public bool WasBlasted { get; private set; }
+        public bool IsShocked => shock != null && shock.IsActive && round.masterBeat.BeatPosition < shock.EndsBeat;
+        public double ShockStartedBeat => shock != null ? shock.StartedBeat : 0;
+        public double ShockEndsBeat => shock != null ? shock.EndsBeat : 0;
+        RecruitShock shock;
+        public void ApplyShock(double started, double ends)
+        {
+            if(ends<=round.masterBeat.BeatPosition||IsPinned||IsEliminated||IsTrappedInHole)return;
+            if(shock==null)shock=gameObject.AddComponent<RecruitShock>();
+            CancelJump();Horizontal=0;groundSpeed=slickness=0;
+            shock.Begin(this,started,ends);
+        }
+        public void ClearShock(){if(shock!=null)shock.Stop();}
         public float LandingAmount => Mathf.Clamp01((float)((landingUntil-Time.realtimeSinceStartupAsDouble)/.14));
         double jumpStarted, landingUntil;
         public bool IsEliminated { get; private set; }
@@ -30,7 +43,7 @@ namespace LeftRight.Rebuild
         public bool PinnedFromLeft { get; private set; }
         public float penetrationDepth = .20f;
         public float Horizontal { get; private set; }
-        public bool IsMoving => Mathf.Abs(Horizontal) > .2f && !IsEliminated && !IsPinned && !IsTrappedInHole;
+        public bool IsMoving => Mathf.Abs(Horizontal) > .2f && !IsEliminated && !IsPinned && !IsTrappedInHole && !IsShocked;
         public bool IsTrappedInHole=>holeTrap!=null&&holeTrap.IsWedged;
         public bool DirectionRight { get; private set; }
         public float? InputOverride { get; set; }
@@ -79,7 +92,7 @@ namespace LeftRight.Rebuild
             movementTime = now;
             if (NetworkReplica) { UpdateJump(); return; }
             bool canMove = round.IsCountingDown || (round.HasStarted && round.masterBeat.IsPlaying);
-            if (IsEliminated || IsPinned || IsTrappedInHole || !canMove || course.IsGameOver)
+            if (IsEliminated || IsPinned || IsTrappedInHole || IsShocked || !canMove || course.IsGameOver)
             {
                 Horizontal = 0;
                 groundSpeed=slickness=0;
@@ -116,12 +129,12 @@ namespace LeftRight.Rebuild
             if (!isLocallyControlled) return 0;
             var keyboard = Keyboard.current;
             float axis = keyboard == null ? 0 :
-                (keyboard.dKey.isPressed ? 1 : 0) - (keyboard.aKey.isPressed ? 1 : 0);
+                (RecruitKeyboard.Control(keyboard,keyboardSlot,2).isPressed ? 1 : 0) - (RecruitKeyboard.Control(keyboard,keyboardSlot,0).isPressed ? 1 : 0);
 #if UNITY_WEBGL && !UNITY_EDITOR
-            float touch = LeftRight_MoveInput();
+            float touch = keyboardSlot==0?LeftRight_MoveInput():0;
             if (Mathf.Abs(touch) > Mathf.Abs(axis)) axis = touch;
 #endif
-            if (Gamepad.current != null)
+            if (keyboardSlot==0 && Gamepad.current != null)
             {
                 var pad = Gamepad.current;
                 float stick = pad.leftStick.x.ReadValue(), dpad = pad.dpad.x.ReadValue();
@@ -144,17 +157,17 @@ namespace LeftRight.Rebuild
             // input. Holding jump must not hop repeatedly or affect another recruit.
             bool touch = false;
 #if UNITY_WEBGL && !UNITY_EDITOR
-            touch = LeftRight_JumpPressed() != 0;
+            touch = keyboardSlot==0 && LeftRight_JumpPressed() != 0;
 #endif
-            return touch || (Keyboard.current!=null&&Keyboard.current.spaceKey.wasPressedThisFrame)||
-                (Gamepad.current!=null&&Gamepad.current.buttonSouth.wasPressedThisFrame);
+            return touch || (Keyboard.current!=null&&RecruitKeyboard.Control(Keyboard.current,keyboardSlot,1).wasPressedThisFrame)||
+                (keyboardSlot==0&&Gamepad.current!=null&&Gamepad.current.buttonSouth.wasPressedThisFrame);
         }
 
         public bool TryJump()
         {
             // Jumping changes height and pose, while ordinary direction penalties and
-            // spike contacts still apply. Holding Space never creates repeated jumps.
-            if(IsJumping||IsPinned||IsTrappedInHole||IsEliminated||course.IsGameOver||
+            // spike contacts still apply. Holding the jump key never creates repeated jumps.
+            if(IsJumping||IsPinned||IsTrappedInHole||IsShocked||IsEliminated||course.IsGameOver||
                 !(round.IsCountingDown||(round.HasStarted&&round.masterBeat.IsPlaying)))return false;
             IsJumping=true;JumpPhase=0;jumpStarted=Time.realtimeSinceStartupAsDouble;landingUntil=0;
             return true;
@@ -184,6 +197,7 @@ namespace LeftRight.Rebuild
 
         public void ResetPlayer()
         {
+            ClearShock();
             var explosion=GetComponent<RecruitExplosion>();if(explosion!=null)explosion.ResetExplosion();
             WasBlasted=false;
             IsFallingThrough=false;
@@ -210,6 +224,7 @@ namespace LeftRight.Rebuild
         public void Eliminate()
         {
             if (IsEliminated) return;
+            ClearShock();
             CancelJump();
             IsEliminated = true;
             if (IsPinned && hitAudio != null) hitAudio.PlaySqueezed();
@@ -248,6 +263,7 @@ namespace LeftRight.Rebuild
         public void PinTo(Transform bank, bool fromLeft, float spikeReach)
         {
             if (IsPinned || IsEliminated) return;
+            ClearShock();
             if(IsTrappedInHole)
             {
                 holeTrap.Capture(fromLeft,course.traps[System.Array.IndexOf(course.players,this)].bloodMaterial);
@@ -308,6 +324,7 @@ namespace LeftRight.Rebuild
 
         public void StopForVictory()
         {
+            ClearShock();
             CancelJump();
             // A tie supplied by an external death batch can already have marked the
             // selected winner dead. Restore only that recruit, preserving their location.

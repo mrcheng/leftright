@@ -24,8 +24,8 @@ async Task<bool> Cross(float distance,int direction,float jumpHeight,float jumpD
  var position=p.transform.position;position.x=1.8f-direction*distance;p.transform.position=position;
  float takeoff=position.x;
  var move=direction>0?Key.D:Key.A;
- InputSystem.QueueStateEvent(keyboard,new KeyboardState(move,Key.Space));await Task.Delay(75);
- if(!p.IsJumping)throw new Exception("Space input did not start jump");
+ InputSystem.QueueStateEvent(keyboard,new KeyboardState(move,Key.S));await Task.Delay(75);
+ if(!p.IsJumping)throw new Exception("S input did not start jump");
  InputSystem.QueueStateEvent(keyboard,new KeyboardState(move));
  double until=Time.realtimeSinceStartupAsDouble+jumpDuration+.4;
  while(p.IsJumping&&!p.IsEliminated&&Time.realtimeSinceStartupAsDouble<until)await Task.Delay(15);
@@ -37,7 +37,7 @@ try
 {
  menu.Open();menu.SetPlayerCount(4);course.round.leadInSeconds=.05f;course.reactionBeats=10000;
  obstacles.automaticSpawning=health.automaticSpawning=false;
- // Reproduce the reported early-takeoff failure using real A/D + Space device events.
+ // Reproduce the reported early-takeoff failure using real A/D + S device events.
  if(await Cross(.95f,1,.85f,.65f))throw new Exception("Old short-jump failure was not reproduced");
  var sparks=UnityEngine.Object.FindObjectsByType<Transform>().Where(t=>t.name=="Blast spark").ToArray();
  if(sparks.Any(t=>t.localScale.magnitude>.1f)||UnityEngine.Object.FindObjectsByType<Transform>().Any(t=>t.name=="Blast and smoke"))throw new Exception("Expanding blast geometry remains");

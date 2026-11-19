@@ -14,9 +14,10 @@ namespace LeftRight.Rebuild
         public Font menuFont;
         public int PlayerCount { get; private set; } = 4;
         public bool IsSurvival { get; private set; }
+        public bool IsCouch {get;private set;}
         int localPlayerCount = 4;
         public bool IsOpen { get; private set; }
-        public enum MenuPage { Main, LocalGame, Settings, Online }
+        public enum MenuPage { Main, LocalGame, Settings, Online, Couch, CreateOnline }
         public MenuPage Page { get; private set; }
         public OnlineMatch online;
         public bool OnlineAvailable => online != null;
@@ -61,7 +62,7 @@ namespace LeftRight.Rebuild
         public void JoinBrowserRoom(string code)
         {
             if(online==null||online.Active||online.Busy)return;
-            OpenOnlineLobby();
+            ShowJoinOnline();
             online.JoinInternetFromMenu(code.Trim().ToUpperInvariant());
         }
         public void SetBrowserTextFocus(string focused)
@@ -132,7 +133,7 @@ namespace LeftRight.Rebuild
             Page = MenuPage.Main; view.MenuActive = true;
             view.RoundSummaryActive = true;
             if(IsSurvival)RestoreLaneOrder();
-            IsSurvival=false;SetPlayerCount(localPlayerCount);
+            IsSurvival=false;IsCouch=false;SetPlayerCount(localPlayerCount);
         }
 
         public void SetPlayerCount(int count)
@@ -151,6 +152,7 @@ namespace LeftRight.Rebuild
                 allPlayers[i].gameObject.SetActive(active);
                 allTraps[i].gameObject.SetActive(active);
                 lanePlatforms[i].gameObject.SetActive(active);
+                allPlayers[i].keyboardSlot=0;
                 allPlayers[i].isLocallyControlled = i == 0;
                 allPlayers[i].computerControlled = i > 0 && active;
                 allPlayers[i].ComputerInput = 0;
@@ -171,7 +173,7 @@ namespace LeftRight.Rebuild
         public void Play()
         {
             if (!IsOpen) return;
-            IsSurvival=false;
+            IsSurvival=false;IsCouch=false;
             // Session mode chooses ownership/network behavior; both modes follow
             // the locally controlled recruit once the match begins.
             view.SetMode(GameViewMode.Local);
@@ -180,10 +182,25 @@ namespace LeftRight.Rebuild
             course.round.BeginRound();
         }
 
+        public void ShowCouch(){if(IsOpen)Page=MenuPage.Couch;}
+        public void PlayCouch()
+        {
+            if(!IsOpen||(online!=null&&(online.Active||online.Busy)))return;
+            RestoreLaneOrder();IsSurvival=false;ApplyRoster(localPlayerCount);IsCouch=true;
+            // Input ownership is explicit: each human uses one independent key bank.
+            // Online and solo sessions always reset the locally owned bank to P1.
+            for(int i=0;i<course.players.Length;i++)
+            {course.players[i].keyboardSlot=i;course.players[i].isLocallyControlled=true;course.players[i].computerControlled=false;}
+            view.SetMode(GameViewMode.Local);IsOpen=false;view.MenuActive=false;view.RoundSummaryActive=false;
+            course.round.BeginRound();
+        }
+        public void ShowJoinOnline(){OpenOnlineLobby();Page=MenuPage.Online;}
+        public void ShowCreateOnline(){OpenOnlineLobby();Page=MenuPage.CreateOnline;}
+
         public void PlaySurvival()
         {
             if(!IsOpen||(online!=null&&(online.Active||online.Busy)))return;
-            RestoreLaneOrder();IsSurvival=true;ApplyRoster(1);
+            RestoreLaneOrder();IsCouch=false;IsSurvival=true;ApplyRoster(1);
             view.SetMode(GameViewMode.Local);IsOpen=false;view.MenuActive=false;view.RoundSummaryActive=false;
             course.round.BeginRound();
         }
@@ -203,14 +220,14 @@ namespace LeftRight.Rebuild
 
         public void OpenOnlineLobby()
         {
-            course.round.CancelStart();IsOpen=true;Page=MenuPage.Online;
-            if(IsSurvival){RestoreLaneOrder();IsSurvival=false;SetPlayerCount(localPlayerCount);}
+            course.round.CancelStart();IsCouch=false;IsOpen=true;if(Page!=MenuPage.CreateOnline)Page=MenuPage.Online;
+            if(IsSurvival){RestoreLaneOrder();IsSurvival=false;IsCouch=false;SetPlayerCount(localPlayerCount);}
             view.MenuActive=true;view.RoundSummaryActive=true;
         }
 
         public void PrepareOnlineMatch(int count,int localSlot)
         {
-            inMatchSettings=false;
+            inMatchSettings=false;IsCouch=false;
             RestoreLaneOrder();IsOpen=true;SetPlayerCount(count);
             IsOpen=false;view.MenuActive=false;view.RoundSummaryActive=false;view.SetMode(GameViewMode.Online);
             for(int i=0;i<course.players.Length;i++)course.players[i].isLocallyControlled=i==localSlot;
@@ -245,7 +262,7 @@ namespace LeftRight.Rebuild
             if (keys == null) return;
             if (keys.escapeKey.wasPressedThisFrame) { if (IsOpen) Back(); else Open(); }
             else if (IsOpen && keys.enterKey.wasPressedThisFrame)
-            { if (Page == MenuPage.LocalGame) Play(); else if (Page == MenuPage.Main) ShowLocalGame(); }
+            { if (Page == MenuPage.LocalGame) Play(); else if(Page==MenuPage.Couch)PlayCouch(); else if (Page == MenuPage.Main) ShowLocalGame(); }
         }
 
         public void ShowLocalGame() { if (IsOpen) Page = MenuPage.LocalGame; }
@@ -334,29 +351,36 @@ namespace LeftRight.Rebuild
             Bar(new Rect(490,260,300,2),new Color(.32f,.38f,.25f));
             if (Page == MenuPage.Main)
             {
-                if(MenuButton(new Rect(410,310,460,66),"START LOCAL GAME",true))ShowLocalGame();
+                if(MenuButton(new Rect(410,286,460,48),"YOU vs. Computer",true))ShowLocalGame();
+                if(MenuButton(new Rect(410,349,460,48),"COUCH DRILL"))ShowCouch();
                 bool enabled=GUI.enabled;GUI.enabled=OnlineAvailable;
-                if(MenuButton(new Rect(410,398,460,66),"ONLINE MATCH"))Page=MenuPage.Online;
+                if(MenuButton(new Rect(410,412,460,48),"JOIN ONLINE DRILL"))ShowJoinOnline();
+                if(MenuButton(new Rect(410,475,460,48),"CREATE ONLINE DRILL"))ShowCreateOnline();
                 GUI.enabled=enabled;
-                GUI.Label(new Rect(410,466,460,28),"HOST / JOIN",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
-                if(MenuButton(new Rect(410,512,460,56),"SURVIVAL",true))PlaySurvival();
-                if(MenuButton(new Rect(410,584,460,52),"SETTINGS"))ShowSettings();
+                if(MenuButton(new Rect(410,538,460,48),"SURVIVAL",true))PlaySurvival();
+                if(MenuButton(new Rect(410,601,460,48),"SETTINGS"))ShowSettings();
                 DrawPublicDrills(new Rect(914,304,342,320),4);
             }
-            else if(Page==MenuPage.LocalGame)
+            else if(Page==MenuPage.LocalGame||Page==MenuPage.Couch)
             {
-                GUI.Label(new Rect(380,283,520,45),"LOCAL GAME",centered);
+                GUI.Label(new Rect(380,283,520,45),Page==MenuPage.Couch?"COUCH DRILL":"YOU vs. Computer",centered);
                 GUI.Label(new Rect(380,333,520,32),"NUMBER OF RECRUITS",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
                 for(int count=2;count<=4;count++)
                     if(MenuButton(new Rect(410+(count-2)*160,380,140,58),count.ToString(),count==PlayerCount))SetPlayerCount(count);
-                GUI.Label(new Rect(260,451,760,40),"YOU + "+(PlayerCount-1)+(PlayerCount==2?" COMPUTER OPPONENT":" COMPUTER OPPONENTS"),centered);
-                if(MenuButton(new Rect(410,514,460,64),"START GAME",true))Play();
+                if(Page==MenuPage.Couch)
+                {
+                    string[] keys={"P1: A / S / D","P2: T / Y / U","P3: N / M / ,","P4: O / P / \u00c5"};
+                    for(int i=0;i<PlayerCount;i++)GUI.Label(new Rect(315+(i%2)*350,445+(i/2)*27,340,27),keys[i],new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=14});
+                    GUI.Label(new Rect(300,490,680,24),"LEFT / JUMP / RIGHT",new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=10});
+                }
+                else GUI.Label(new Rect(260,451,760,40),"YOU + "+(PlayerCount-1)+(PlayerCount==2?" COMPUTER OPPONENT":" COMPUTER OPPONENTS"),centered);
+                if(MenuButton(new Rect(410,514,460,64),"START GAME",true)){if(Page==MenuPage.Couch)PlayCouch();else Play();}
                 if(MenuButton(new Rect(510,597,260,48),"BACK"))Back();
             }
-            else if(Page==MenuPage.Online)
+            else if(Page==MenuPage.Online||Page==MenuPage.CreateOnline)
             {
-                GUI.Label(new Rect(250,280,780,40),"PLAY WITH A FRIEND",centered);
-                if(!online.Active||online.IsHost)
+                GUI.Label(new Rect(250,280,780,40),online.Active?"ONLINE DRILL":Page==MenuPage.CreateOnline?"CREATE ONLINE DRILL":"JOIN ONLINE DRILL",centered);
+                if((Page==MenuPage.CreateOnline&&!online.Active)||(online.Active&&online.IsHost))
                 {
                     bool old=GUI.enabled;GUI.enabled=old&&!online.Busy;
                     DrawPublicOption(new Rect(914,430,342,44));GUI.enabled=old;
@@ -365,13 +389,22 @@ namespace LeftRight.Rebuild
                 if(!online.Active)
                 {
                     bool enabled=GUI.enabled;GUI.enabled=!online.Busy;
-                    GUI.Label(new Rect(280,330,720,28),"MATCH SIZE",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
-                    for(int count=2;count<=4;count++)if(MenuButton(new Rect(410+(count-2)*160,365,140,48),count.ToString(),count==PlayerCount))SetPlayerCount(count);
-                    if(MenuButton(new Rect(410,430,460,54),online.Busy?"CONNECTING...":"HOST ONLINE",true))online.HostInternetFromMenu(PlayerCount);
-                    joinCode=GUI.TextField(new Rect(410,503,285,40),joinCode,12,new GUIStyle(GUI.skin.textField){font=menuFont,fontSize=18,alignment=TextAnchor.MiddleCenter}).ToUpperInvariant();
-                    if(MenuButton(new Rect(710,498,160,48),"JOIN"))online.JoinInternetFromMenu(joinCode);
+                    if(Page==MenuPage.CreateOnline)
+                    {
+                        GUI.Label(new Rect(280,330,720,28),"MATCH SIZE",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                        for(int count=2;count<=4;count++)if(MenuButton(new Rect(410+(count-2)*160,365,140,48),count.ToString(),count==PlayerCount))SetPlayerCount(count);
+                        if(MenuButton(new Rect(410,430,460,54),online.Busy?"CONNECTING...":"CREATE DRILL",true))online.HostInternetFromMenu(PlayerCount);
+                    }
+                    else
+                    {
+                        GUI.Label(new Rect(410,340,460,70),"ENTER YOUR FRIEND'S ROOM CODE",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                        GUI.Label(new Rect(410,450,460,32),"ROOM CODE",centered);
+                        joinCode=GUI.TextField(new Rect(410,503,285,40),joinCode,12,new GUIStyle(GUI.skin.textField){font=menuFont,fontSize=18,alignment=TextAnchor.MiddleCenter}).ToUpperInvariant();
+                        if(MenuButton(new Rect(710,498,160,48),"JOIN"))online.JoinInternetFromMenu(joinCode);
+                        DrawPublicDrills(new Rect(914,304,342,320),4);
+                    }
                     GUI.enabled=enabled;
-                    GUI.Label(new Rect(240,548,800,24),online.Busy?"Please wait for online services...":"Enter the join code your friend shared.",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                    GUI.Label(new Rect(240,548,800,24),online.Busy?"Please wait for online services...":Page==MenuPage.CreateOnline?"Share the room code after creating your drill.":"Enter the join code your friend shared.",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
                     GUI.Label(new Rect(100,571,1080,24),online.Status,new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=12});
                 }
                 else
@@ -465,37 +498,49 @@ namespace LeftRight.Rebuild
             GUI.Label(new Rect(36,156,408,54),"FOLLOW THE ORDERS.\nBE THE LAST ONE STANDING.",new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=13});
             if(Page==MenuPage.Main)
             {
-                if(MenuButton(new Rect(24,230,432,60),"START LOCAL GAME",true))ShowLocalGame();
+                if(MenuButton(new Rect(24,226,432,56),"YOU vs. Computer",true))ShowLocalGame();
+                if(MenuButton(new Rect(24,296,432,56),"COUCH DRILL"))ShowCouch();
                 GUI.enabled=enabled&&OnlineAvailable;
-                if(MenuButton(new Rect(24,306,432,60),"ONLINE MATCH"))Page=MenuPage.Online;
+                if(MenuButton(new Rect(24,366,432,56),"JOIN ONLINE DRILL"))ShowJoinOnline();
+                if(MenuButton(new Rect(24,436,432,56),"CREATE ONLINE DRILL"))ShowCreateOnline();
                 GUI.enabled=enabled;
-                GUI.Label(new Rect(24,370,432,24),"HOST / JOIN",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
-                if(MenuButton(new Rect(24,404,432,60),"SURVIVAL",true))PlaySurvival();
-                if(MenuButton(new Rect(24,480,432,52),"SETTINGS"))ShowSettings();
-                DrawPublicDrills(new Rect(24,550,432,244),2);
+                if(MenuButton(new Rect(24,506,432,56),"SURVIVAL",true))PlaySurvival();
+                if(MenuButton(new Rect(24,576,432,52),"SETTINGS"))ShowSettings();
+                DrawPublicDrills(new Rect(24,646,432,144),1);
             }
-            else if(Page==MenuPage.LocalGame)
+            else if(Page==MenuPage.LocalGame||Page==MenuPage.Couch)
             {
-                GUI.Label(new Rect(24,238,432,40),"LOCAL GAME",centered);
+                GUI.Label(new Rect(24,238,432,40),Page==MenuPage.Couch?"COUCH DRILL":"YOU vs. Computer",centered);
                 GUI.Label(new Rect(24,294,432,32),"NUMBER OF RECRUITS",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
                 for(int count=2;count<=4;count++)
                     if(MenuButton(new Rect(24+(count-2)*150,342,132,64),count.ToString(),count==PlayerCount))SetPlayerCount(count);
-                GUI.Label(new Rect(24,434,432,64),"YOU + "+(PlayerCount-1)+" COMPUTER"+(PlayerCount==2?"":"S"),centered);
-                if(MenuButton(new Rect(24,530,432,64),"START GAME",true))Play();
+                if(Page==MenuPage.Couch)
+                {
+                    string[] keys={"P1: A / S / D","P2: T / Y / U","P3: N / M / ,","P4: O / P / \u00c5"};
+                    for(int i=0;i<PlayerCount;i++)GUI.Label(new Rect(24,420+i*25,432,25),keys[i],new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=14});
+                }
+                else GUI.Label(new Rect(24,434,432,64),"YOU + "+(PlayerCount-1)+" COMPUTER"+(PlayerCount==2?"":"S"),centered);
+                if(MenuButton(new Rect(24,530,432,64),"START GAME",true)){if(Page==MenuPage.Couch)PlayCouch();else Play();}
                 if(MenuButton(new Rect(24,690,432,56),"BACK"))Back();
             }
-            else if(Page==MenuPage.Online)
+            else if(Page==MenuPage.Online||Page==MenuPage.CreateOnline)
             {
-                GUI.Label(new Rect(24,224,432,40),"PLAY WITH A FRIEND",centered);
+                GUI.Label(new Rect(24,224,432,40),online.Active?"ONLINE DRILL":Page==MenuPage.CreateOnline?"CREATE ONLINE DRILL":"JOIN ONLINE DRILL",centered);
                 if(!online.Active)
                 {
                     GUI.enabled=enabled&&!online.Busy;
-                    for(int count=2;count<=4;count++)
-                        if(MenuButton(new Rect(24+(count-2)*150,270,132,56),count.ToString(),count==PlayerCount))SetPlayerCount(count);
-                    DrawPublicOption(new Rect(24,328,432,40));
-                    if(MenuButton(new Rect(24,370,432,54),online.Busy?"CONNECTING...":"HOST ONLINE",true))online.HostInternetFromMenu(PlayerCount);
-                    joinCode=GUI.TextField(new Rect(24,436,270,56),joinCode,12,new GUIStyle(GUI.skin.textField){font=menuFont,fontSize=20,alignment=TextAnchor.MiddleCenter}).ToUpperInvariant();
-                    if(MenuButton(new Rect(310,436,146,56),"JOIN"))online.JoinInternetFromMenu(joinCode);
+                    if(Page==MenuPage.CreateOnline)
+                    {
+                        for(int count=2;count<=4;count++)if(MenuButton(new Rect(24+(count-2)*150,270,132,56),count.ToString(),count==PlayerCount))SetPlayerCount(count);
+                        DrawPublicOption(new Rect(24,328,432,40));
+                        if(MenuButton(new Rect(24,370,432,54),online.Busy?"CONNECTING...":"CREATE DRILL",true))online.HostInternetFromMenu(PlayerCount);
+                    }
+                    else
+                    {
+                        GUI.Label(new Rect(24,300,432,100),"ENTER YOUR FRIEND'S\nROOM CODE",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
+                        joinCode=GUI.TextField(new Rect(24,436,270,56),joinCode,12,new GUIStyle(GUI.skin.textField){font=menuFont,fontSize=20,alignment=TextAnchor.MiddleCenter}).ToUpperInvariant();
+                        if(MenuButton(new Rect(310,436,146,56),"JOIN"))online.JoinInternetFromMenu(joinCode);
+                    }
                     GUI.enabled=enabled;
                     GUI.Label(new Rect(24,494,432,60),online.Busy?"Please wait for online services...":"Enter your friend's room code.",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
                     GUI.Label(new Rect(24,565,432,96),online.Status,new GUIStyle(small){alignment=TextAnchor.MiddleCenter});

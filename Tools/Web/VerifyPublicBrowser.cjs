@@ -23,7 +23,7 @@ const timeout={timeout:45000};
 (async()=>{
  try{
   const host=await open('public-host');assert(await host.evaluate(()=>window.leftRightDrills.isPublic),'new hosts default to public');
-  await tap(host,640,430);await tap(host,1050,452);
+  await tap(host,640,499);await tap(host,1050,452);
   await host.waitForFunction(()=>!window.leftRightDrills.isPublic);
   await tap(host,640,457);await host.waitForFunction(()=>window.leftRightLobby.code.length===6,null,timeout);
   const code=await host.evaluate(()=>window.leftRightLobby.code);

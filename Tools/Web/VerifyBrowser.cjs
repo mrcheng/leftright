@@ -22,7 +22,7 @@ async function click(page,x,y){const r=await page.locator('#game').boundingBox()
 (async()=>{
  try{
   const host=await open('host');console.log('Browser host loaded');
-  await click(host,640,430);
+  await click(host,640,499);
   if(process.env.PRIVATE_HOST==='1'){
    await click(host,1050,452);await host.waitForFunction(()=>window.leftRightDrills?.isPublic===false);
   }
@@ -32,7 +32,7 @@ async function click(page,x,y){const r=await page.locator('#game').boundingBox()
   console.log('Browser created Relay room');await host.screenshot({path:path.join(out,'host-room.png')});
   const peer=await open('peer');
   if(portraitPeer){await peer.waitForSelector('#rotate-phone:visible');await peer.setViewportSize({width:844,height:390});await peer.waitForSelector('#rotate-phone',{state:'hidden'})}
-  await click(peer,640,430);
+  await click(peer,640,436);
   if(mobilePeer){await peer.locator('#join-code').fill(code);await peer.locator('#join-form button').tap()}
   else {await click(peer,550,522);await peer.keyboard.type(code,{delay:120});await click(peer,790,522)}
   await host.waitForFunction(()=>window.leftRightLobby?.humans===2,{},{timeout:60000});
@@ -46,7 +46,7 @@ async function click(page,x,y){const r=await page.locator('#game').boundingBox()
   if(mobilePeer){
    touch=await peer.context().newCDPSession(peer);const r=await peer.locator('#move-right').boundingBox(),j=await peer.locator('#jump-right').boundingBox();
    await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:r.x+r.width/2,y:r.y+r.height/2,id:1},{x:j.x+j.width/2,y:j.y+j.height/2,id:2}]});
-  }else {await peer.keyboard.down('d');await peer.keyboard.press('Space')}
+  }else {await peer.keyboard.down('d');await peer.keyboard.press('s')}
   await peer.waitForFunction(x=>window.leftRightLobby?.x>x+.1&&window.leftRightLobby?.jumping,before,{timeout:5000});
   await peer.screenshot({path:path.join(out,'peer-playing.png')});if(touch)await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});else await peer.keyboard.up('d');
   // Stay in the real match beyond the first obstacle opportunity. A lobby-only

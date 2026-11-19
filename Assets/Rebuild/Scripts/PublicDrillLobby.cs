@@ -34,7 +34,7 @@ namespace LeftRight.Rebuild
         void Update()
         {
             if(menu==null||online==null)return;
-            if(menu.IsOpen&&menu.Page==StartMenu.MenuPage.Main&&!online.Active&&!online.Busy&&
+            if(menu.IsOpen&&(menu.Page==StartMenu.MenuPage.Main||menu.Page==StartMenu.MenuPage.Online)&&!online.Active&&!online.Busy&&
                online.RelayConfigured&&Time.unscaledTime>=nextQuery&&!Refreshing&&!Joining)_=RefreshAsync();
             if(!hostBusy&&Time.unscaledTime>=nextHostCheck)_=ReconcileHostAsync();
         }
@@ -49,7 +49,7 @@ namespace LeftRight.Rebuild
         public async Task RefreshAsync()
         {
             // One in-flight request plus a cooldown prevents repaint/click spam and
-            // respects Lobby query limits. Refresh only while on the first screen.
+            // respects Lobby query limits. The main and join screens share this browser.
             if(Refreshing||Joining||Time.unscaledTime<nextQuery)return;
             Refreshing=true;nextQuery=Time.unscaledTime+Mathf.Max(3,refreshSeconds);
             try
@@ -126,7 +126,7 @@ namespace LeftRight.Rebuild
                 // Recheck visibility, free places and protocol immediately before
                 // joining: a query result may have filled/started since it was drawn.
                 var room=await Directory.GetAsync(selected.Id);
-                if(this==null||!menu.IsOpen||menu.Page!=StartMenu.MenuPage.Main||online.Active||online.Busy)return;
+                if(this==null||!menu.IsOpen||(menu.Page!=StartMenu.MenuPage.Main&&menu.Page!=StartMenu.MenuPage.Online)||online.Active||online.Busy)return;
                 if(room==null){Rooms=Array.Empty<PublicDrillRoom>();BrowserStatus="That drill is no longer available.";nextQuery=Time.unscaledTime+1;return;}
                 menu.OpenOnlineLobby();await online.JoinInternet(room.JoinCode);
             }

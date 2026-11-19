@@ -24,23 +24,20 @@ async function check(engine,device,label){
   await page.setViewportSize({width:844,height:390});await page.waitForTimeout(500);
   assert(!await page.locator('#rotate-phone').isVisible(),'rotation reveals the game');
   assert(!await page.locator('#game').evaluate(node=>node.inert),'landscape restores game input');
-  assert(await page.locator('#fullscreen').isVisible(),'fullscreen button stays available on phones');
-  const fsBox=await page.locator('#fullscreen').boundingBox();assert(fsBox.x>250&&fsBox.y<50,'fullscreen is upper right');
-  await page.locator('#fullscreen').tap();assert(await page.locator('#fullscreen-help').isVisible(),'unsupported fullscreen provides help');
-  await page.locator('#fullscreen-help button').tap();
+  assert(await page.locator('#fullscreen').count()===0,'no fullscreen control');
   let r=await page.locator('#game').boundingBox();assert(Math.abs(r.width-844)<2&&Math.abs(r.height-390)<2,'landscape fallback fills viewport');
   if(engine===webkit){
    // Windows WebKit has no Web Audio implementation. Check its iPhone-sized
    // viewport/menu/native keyboard layout; actual audio/gameplay is tested in
    // Chromium below and still needs a physical iPhone Safari check.
-   await tapGame(page,640,430);await page.waitForFunction(()=>window.leftRightLobby.menuPage===3);
+   await tapGame(page,640,436);await page.waitForFunction(()=>window.leftRightLobby.menuPage===3);
    assert(await page.locator('#join-code').isVisible(),'native mobile room-code field');
    await page.locator('#join-code').fill('ABC123');assert.equal(await page.locator('#join-code').inputValue(),'ABC123');
    await page.screenshot({path:path.join(out,label+'-mobile.png')});
    assert(!errors.length,errors.join('\n'));reports.push({label,checks:'full viewport without native fullscreen, portrait/landscape, menu and native room input',limitation:'Windows WebKit has no Web Audio; no iPhone audio/gameplay claim'});
    console.log('PASS '+label+': full viewport and mobile lobby input (audio unavailable in this test engine)');return;
   }
-  await tapGame(page,640,343);await tapGame(page,640,546);
+  await tapGame(page,640,310);await tapGame(page,640,546);
   await page.waitForFunction(()=>window.leftRightLobby?.playing&&!window.leftRightLobby.menu);
   assert.equal(await page.locator('.touch-button:visible').count(),4,'two buttons per thumb');
   const buttons=await page.locator('.touch-button').evaluateAll(nodes=>nodes.map(n=>({id:n.id,width:n.offsetWidth,height:n.offsetHeight,radius:getComputedStyle(n).borderRadius})));
@@ -75,11 +72,8 @@ async function check(engine,device,label){
   assert(await page.locator('#rotate-phone').isVisible(),'portrait is blocked during a running game too');
   assert.equal(await page.evaluate(()=>window.leftRightInput.axis),0,'rotation clears held input');
   await page.setViewportSize({width:844,height:390});await page.waitForTimeout(250);
-  await page.evaluate(()=>{document.body.requestFullscreen=window.__requestFullscreen});
-  await page.locator('#fullscreen').tap();await page.waitForFunction(()=>!!document.fullscreenElement);
-  await page.locator('#fullscreen').tap();await page.waitForFunction(()=>!document.fullscreenElement);
-  assert(!errors.length,errors.join('\n'));reports.push({label,state,checks:'portrait/landscape fullscreen fallback, compact circles, left/right holds, both jump buttons, move+jump, release/cancel, audible beat, moving spikes, rotation',errors});
-  console.log('PASS '+label+': mobile controls, fullscreen fallback and advancing spikes');
+  assert(!errors.length,errors.join('\n'));reports.push({label,state,checks:'portrait/landscape viewport filling, compact circles, left/right holds, both jump buttons, move+jump, release/cancel, audible beat, moving spikes, rotation',errors});
+  console.log('PASS '+label+': mobile controls, viewport filling and advancing spikes');
  }catch(error){await page.screenshot({path:path.join(out,label+'-mobile-failure.png')}).catch(()=>{});console.error(label,await page.evaluate(()=>window.leftRightLobby).catch(()=>null),errors);throw error}
  finally{await browser.close()}
 }

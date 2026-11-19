@@ -19,7 +19,7 @@ async function run(label,previous){
  try{
   await page.goto(url);await page.waitForFunction(()=>window.leftRightLobby?.menu&&window.leftRightResults,null,{timeout:240000});
   await page.screenshot({path:path.join(out,label+'-menu.png')});
-  await tap(page,640,540);
+  await tap(page,640,562);
   await page.waitForFunction(()=>window.leftRightResults.survival&&window.leftRightLobby.playing&&!window.leftRightLobby.menu);
   await page.screenshot({path:path.join(out,label+'-one-lane.png')});
   await page.waitForFunction(()=>window.leftRightLobby.over,null,{timeout:90000});const death=Date.now();

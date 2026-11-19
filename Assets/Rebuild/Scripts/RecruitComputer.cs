@@ -22,7 +22,7 @@ namespace LeftRight.Rebuild
             if (!player.computerControlled) { player.ComputerInput = 0; return; }
             var round = player.round;
             bool running = round.HasStarted && round.masterBeat.IsPlaying && !player.course.IsGameOver;
-            if (!running || player.IsPinned || player.IsTrappedInHole || player.IsEliminated)
+            if (!running || player.IsPinned || player.IsTrappedInHole || player.IsEliminated || player.IsShocked)
             { player.ComputerInput = 0; lastRunning = false; attemptedMine=-1; return; }
             bool right = round.officer.DirectionRight;
             if (!lastRunning || right != lastDirection)
@@ -50,6 +50,14 @@ namespace LeftRight.Rebuild
                     float distance=(mine.transform.position.x-player.transform.position.x)*Mathf.Sign(input);
                     if(distance<.65f||distance>.9f)continue;
                     attemptedMine=mine.Id;if(random.NextDouble()>=mistakeChance)player.TryJump();
+                }
+            if(obstacles!=null&&!player.InputOverride.HasValue&&!player.IsJumping)
+                foreach(var wire in obstacles.ActiveWires)
+                {
+                    if(wire==null||wire.Spent||wire.LaneIndex!=System.Array.IndexOf(player.course.players,player)||wire.Id==attemptedMine)continue;
+                    float distance=(wire.transform.position.x-player.transform.position.x)*Mathf.Sign(input);
+                    if(distance<.65f||distance>.9f)continue;
+                    attemptedMine=wire.Id;if(random.NextDouble()>=mistakeChance)player.TryJump();
                 }
         }
         void OnDisable() { if (player != null) player.ComputerInput = 0; }

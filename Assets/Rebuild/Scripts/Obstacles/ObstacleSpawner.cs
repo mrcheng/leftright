@@ -12,6 +12,9 @@ namespace LeftRight.Rebuild
         public int firstSpawnBeat=12,intervalBeats=16,lifetimeBeats=12,armingBeats=2;
         public float minimumSpawnDistance=1.5f,maximumSpawnDistance=2f,spikeMargin=.8f;
         public bool automaticSpawning=true;
+        [Range(0,1)] public float electricWireChance=.5f;
+        public IReadOnlyList<LaneElectricWire> ActiveWires=>wires;
+        readonly List<LaneElectricWire> wires=new List<LaneElectricWire>();
         public Material BloodMaterial => course.traps[0].bloodMaterial;
         public AudioClip ExplosionClip { get; private set; }
         public IReadOnlyList<LaneMine> ActiveMines => active;
@@ -19,13 +22,15 @@ namespace LeftRight.Rebuild
         readonly System.Random random=new System.Random();
         long[] nextOpportunity;
         int nextId;
-        Material metal,ring,pressure,lamp;
+        Material metal,ring,pressure,lamp,wireMaterial;
 
         public void Initialize(SpikeCourse owner)
         {
             course=owner;
             metal=Material(new Color(.19f,.23f,.12f));ring=Material(new Color(.65f,.54f,.18f));
             pressure=Material(new Color(.08f,.10f,.06f));lamp=Material(new Color(.9f,.08f,.025f));
+            wireMaterial=Material(new Color(.25f,.8f,1));
+            wireMaterial.EnableKeyword("_EMISSION");wireMaterial.SetColor("_EmissionColor",new Color(.15f,.55f,1)*2);
             ExplosionClip=Resources.Load<AudioClip>("MineExplosion");
             course.round.Cancelled+=Clear;course.round.masterBeat.Beat+=OnBeat;ResetSchedule();
         }
@@ -47,15 +52,17 @@ namespace LeftRight.Rebuild
                 long first=Mathf.Max(0,firstSpawnBeat),interval=Mathf.Max(1,intervalBeats);
                 nextOpportunity[lane]=first+((beat-first)/interval+1)*interval;
                 var p=course.players[lane];
-                if(p.IsPinned||p.IsTrappedInHole||p.IsEliminated||HasMine(lane))continue;
+                if(p.IsPinned||p.IsTrappedInHole||p.IsEliminated||p.IsShocked||HasObstacle(lane))continue;
                 if(LaneSpawnPlacement.TryChoose(p,course.traps[lane],minimumSpawnDistance,
                     Mathf.Max(minimumSpawnDistance,maximumSpawnDistance),spikeMargin,random,
-                    x=>ClearOfCrates(lane,x),out float x))SpawnMine(lane,x);
+                    x=>ClearOfCrates(lane,x),out float x))
+                {if(random.NextDouble()<electricWireChance)SpawnWire(lane,x);else SpawnMine(lane,x);}
             }
         }
         public bool HasMine(int lane)
         {active.RemoveAll(m=>m==null||m.Detonated);return active.Exists(m=>m.LaneIndex==lane);}
-        public bool BlocksHealth(int lane,float x)=>active.Exists(m=>m!=null&&!m.Detonated&&m.LaneIndex==lane&&Mathf.Abs(m.transform.position.x-x)<.9f);
+        public bool HasObstacle(int lane){wires.RemoveAll(w=>w==null);return HasMine(lane)||wires.Exists(w=>w.LaneIndex==lane);}
+        public bool BlocksHealth(int lane,float x)=>active.Exists(m=>m!=null&&!m.Detonated&&m.LaneIndex==lane&&Mathf.Abs(m.transform.position.x-x)<.9f)||wires.Exists(w=>w!=null&&w.LaneIndex==lane&&Mathf.Abs(w.transform.position.x-x)<.9f);
         bool ClearOfCrates(int lane,float x)
         {
             foreach(var crate in course.GetComponentsInChildren<HealthCratePickup>())
@@ -65,7 +72,7 @@ namespace LeftRight.Rebuild
         public LaneMine SpawnMine(int lane,float x)
         {
             if(course.GetComponent<SurvivalLightning>()?.BlocksSpawn(x)??false)return null;
-            if(lane<0||lane>=course.players.Length||HasMine(lane)||!course.round.HasStarted||course.IsGameOver)return null;
+            if(lane<0||lane>=course.players.Length||HasObstacle(lane)||!course.round.HasStarted||course.IsGameOver)return null;
             var p=course.players[lane];var trap=course.traps[lane];
             if(p.IsPinned||p.IsTrappedInHole||p.IsEliminated||x<=trap.LeftTip+spikeMargin||x>=trap.RightTip-spikeMargin||!ClearOfCrates(lane,x))return null;
             double beat=course.round.masterBeat.BeatPosition;
@@ -102,13 +109,58 @@ namespace LeftRight.Rebuild
             foreach(var mine in active)if(mine!=null&&!ids.Contains(mine.Id))Destroy(mine.gameObject);
             active.RemoveAll(m=>m==null||!ids.Contains(m.Id));
         }
+        public LaneElectricWire SpawnWire(int lane,float x)
+        {
+            if(lane<0||lane>=course.players.Length||HasObstacle(lane)||!course.round.HasStarted||course.IsGameOver)return null;
+            var p=course.players[lane];var trap=course.traps[lane];
+            if(p.IsPinned||p.IsTrappedInHole||p.IsEliminated||p.IsShocked||x<=trap.LeftTip+spikeMargin||x>=trap.RightTip-spikeMargin||!ClearOfCrates(lane,x)||(course.GetComponent<SurvivalLightning>()?.BlocksSpawn(x)??false))return null;
+            double beat=course.round.masterBeat.BeatPosition;
+            return CreateWire(++nextId,lane,x,beat+Mathf.Max(1,armingBeats),beat+Mathf.Max(armingBeats+1,lifetimeBeats));
+        }
+        LaneElectricWire CreateWire(int id,int lane,float x,double arms,double expires)
+        {
+            var root=new GameObject("Electric tripwire - lane "+(lane+1));root.transform.SetParent(transform,false);
+            root.transform.position=new Vector3(x,.65f,course.players[lane].transform.position.z);
+            var wire=root.AddComponent<LaneElectricWire>();wire.Initialize(this,id,lane,arms,expires);
+            Transform Box(string name,Vector3 pos,Vector3 size,Material mat)
+            {
+                var go=GameObject.CreatePrimitive(PrimitiveType.Cube);go.name=name;go.transform.SetParent(root.transform,false);go.transform.localPosition=pos;go.transform.localScale=size;
+                var collider=go.GetComponent<Collider>();collider.enabled=false;Destroy(collider);go.GetComponent<Renderer>().sharedMaterial=mat;return go.transform;
+            }
+            foreach(float z in new[]{-.60f,.60f})
+            {
+                Box("Steel pole",new Vector3(0,.39f,z),new Vector3(.10f,.78f,.10f),metal);
+                Box("Footing",new Vector3(0,.04f,z),new Vector3(.23f,.08f,.23f),pressure);
+                Box("Yellow electrical warning",new Vector3(0,.70f,z-.065f),new Vector3(.32f,.29f,.035f),ring);
+                // Three black strokes form a readable lightning bolt on each sign.
+                var a=Box("Lightning upper",new Vector3(0,.76f,z-.088f),new Vector3(.035f,.13f,.012f),pressure);a.localRotation=Quaternion.Euler(0,0,-35);
+                Box("Lightning middle",new Vector3(0,.70f,z-.088f),new Vector3(.10f,.03f,.012f),pressure);
+                var b=Box("Lightning lower",new Vector3(0,.64f,z-.088f),new Vector3(.035f,.13f,.012f),pressure);b.localRotation=Quaternion.Euler(0,0,-35);
+            }
+            wire.cable=Box("Live blue cable",new Vector3(0,.28f,0),new Vector3(.025f,.025f,1.2f),wireMaterial);
+            wires.Add(wire);return wire;
+        }
+        public void ApplyNetworkWires(OnlineWireState[] values)
+        {
+            var ids=new HashSet<int>();
+            foreach(var value in values??Array.Empty<OnlineWireState>())
+            {
+                if(value.lane<0||value.lane>=course.players.Length)continue;ids.Add(value.id);
+                var wire=wires.Find(w=>w!=null&&w.Id==value.id);
+                if(wire==null)wire=CreateWire(value.id,value.lane,value.x,value.arms,value.expires);
+                wire.transform.position=new Vector3(value.x,.65f,course.players[value.lane].transform.position.z);
+                if(value.spent)wire.BurnOut();
+            }
+            foreach(var wire in wires)if(wire!=null&&!ids.Contains(wire.Id))Destroy(wire.gameObject);
+            wires.RemoveAll(w=>w==null||!ids.Contains(w.Id));
+        }
         void Update(){if(course!=null&&course.IsGameOver)ClearMines();}
-        void ClearMines(){foreach(var mine in active)if(mine!=null)Destroy(mine.gameObject);active.Clear();}
+        void ClearMines(){foreach(var mine in active)if(mine!=null)Destroy(mine.gameObject);active.Clear();foreach(var wire in wires)if(wire!=null)Destroy(wire.gameObject);wires.Clear();}
         void Clear(){ClearMines();nextId=0;ResetSchedule();}
         void OnDestroy()
         {
             if(course!=null){course.round.Cancelled-=Clear;course.round.masterBeat.Beat-=OnBeat;}
-            ClearMines();foreach(var material in new[]{metal,ring,pressure,lamp})if(material!=null)Destroy(material);
+            ClearMines();foreach(var material in new[]{metal,ring,pressure,lamp,wireMaterial})if(material!=null)Destroy(material);
         }
     }
 }

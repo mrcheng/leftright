@@ -119,6 +119,9 @@ namespace LeftRight.Rebuild
                     if (players[i].IsEliminated) continue;
                     // Recovery gets its own outward beat instead of fighting an inward penalty.
                     if (traps[i].ProcessRecoveryBeat(pendingBeat)) continue;
+                    // A shock blocks input for two musical beats. Those forced
+                    // idle beats cannot also count as disobeying the instructor.
+                    if (players[i].IsShocked) continue;
                     if (pendingBeat > 0 && round.masterBeat.BeatPosition - cueBeat >= reactionBeats &&
                         (!players[i].IsMoving || players[i].DirectionRight != round.officer.DirectionRight))
                             traps[i].MissBeat();

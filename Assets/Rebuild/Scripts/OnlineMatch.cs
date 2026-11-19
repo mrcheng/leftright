@@ -30,7 +30,7 @@ namespace LeftRight.Rebuild
         public int LocalSlot { get; private set; }
         public int Capacity { get; private set; } = 4;
         public int HumanCount { get; private set; }
-        public string Status { get; private set; } = "Host a game or enter your friend's join code.";
+        public string Status { get; private set; } = "";
         public bool CanStart => IsHost && HumanCount >= 2;
         public double StartTime { get; private set; }
         // NGO's ServerTime is intentionally buffered for interpolation. Music needs the
@@ -326,7 +326,7 @@ namespace LeftRight.Rebuild
             state.startSequence=course.round.startScenes!=null?course.round.startScenes.SelectedIndex:-1;state.introSeconds=course.round.IntroSeconds;
             state.players = course.players.Select((p,i) => new OnlinePlayerState { x = p.transform.position.x, horizontal = p.Horizontal,
                 jumping=p.IsJumping,jumpPhase=p.JumpPhase,
-                blasted=p.WasBlasted,
+                blasted=p.WasBlasted,shockStart=p.ShockStartedBeat,shockEnd=p.ShockEndsBeat,
                 pinned = p.IsPinned, eliminated = p.IsEliminated, fromLeft = p.PinnedFromLeft,
                 travel = course.traps[i].CurrentTravel, target = course.traps[i].TargetTravel,
                 pending = course.traps[i].PendingRecoverySteps, recovery = course.traps[i].RecoveryVersion,
@@ -337,6 +337,7 @@ namespace LeftRight.Rebuild
             state.crates = activeCrates.Select(c=>new OnlineCrateState { id=hostCrateIds[c],lane=c.LaneIndex,x=c.transform.position.x }).ToArray();
             state.mines=menu.Obstacles.ActiveMines.Where(m=>m!=null&&!m.Detonated).Select(m=>new OnlineMineState
                 {id=m.Id,lane=m.LaneIndex,x=m.transform.position.x,arms=m.ArmsAtBeat,expires=m.ExpiresAtBeat}).ToArray();
+            state.wires=menu.Obstacles.ActiveWires.Where(w=>w!=null).Select(w=>new OnlineWireState{id=w.Id,lane=w.LaneIndex,x=w.transform.position.x,arms=w.ArmsAtBeat,expires=w.ExpiresAtBeat,spent=w.Spent}).ToArray();
             return state;
         }
 
@@ -383,10 +384,12 @@ namespace LeftRight.Rebuild
                     if(spawner.cratePrefab.burstPrefab!=null)Instantiate(spawner.cratePrefab.burstPrefab,
                         new Vector3(player.transform.position.x,.65f,player.transform.position.z),Quaternion.identity,remoteRoot.transform);
                 }
+                if(value.shockEnd>course.round.masterBeat.BeatPosition)player.ApplyShock(value.shockStart,value.shockEnd);else player.ClearShock();
                 recoveryVersions[i]=value.recovery;
             }
             ApplyCrates(state.crates);
             menu.Obstacles.ApplyNetwork(state.mines);
+            menu.Obstacles.ApplyNetworkWires(state.wires);
             menu.Scores.ApplyNetwork(state.survivalSeconds,state.survivalTimes,state.over);
             if(state.over && !resultReceived)
             {
@@ -459,16 +462,19 @@ namespace LeftRight.Rebuild
         public OnlinePlayerState[] players;
         public OnlineCrateState[] crates;
         public OnlineMineState[] mines;
+        public OnlineWireState[] wires;
     }
     [Serializable] public sealed class OnlinePlayerState
     {
         public float x,horizontal,travel,target;
         public float jumpPhase;
         public bool jumping;
+        public double shockStart,shockEnd;
         public bool blasted;
         public int pending,recovery;
         public bool pinned,eliminated,fromLeft,crushed,returned;
     }
+    [Serializable] public sealed class OnlineWireState {public int id,lane;public float x;public double arms,expires;public bool spent;}
     [Serializable] public sealed class OnlineCrateState { public int id,lane; public float x; }
     [Serializable] public sealed class OnlineMineState { public int id,lane;public float x;public double arms,expires; }
 }

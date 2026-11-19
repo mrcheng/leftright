@@ -9,6 +9,7 @@ var menu=UnityEngine.Object.FindAnyObjectByType<StartMenu>();var course=menu.cou
 var health=course.GetComponentInChildren<HealthCrateSpawner>();
 float lead=course.round.leadInSeconds,reaction=course.reactionBeats;
 bool automatic=obstacles.automaticSpawning,healthAuto=health.automaticSpawning;
+float wireChance=obstacles.electricWireChance;obstacles.electricWireChance=0;
 int checks=0;void Check(bool value,string message){if(!value)throw new Exception(message);checks++;}
 const string bestKey="Rebuild.SurvivalBestSeconds";bool hadBest=PlayerPrefs.HasKey(bestKey);float best=PlayerPrefs.GetFloat(bestKey);
 void Beat(int n)=>typeof(ObstacleSpawner).GetMethod("OnBeat",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(obstacles,new object[]{(long)n});
@@ -69,6 +70,7 @@ try
 }
 finally
 {
+ obstacles.electricWireChance=wireChance;
  course.NetworkReplica=false;obstacles.automaticSpawning=automatic;health.automaticSpawning=healthAuto;
  course.round.leadInSeconds=lead;course.reactionBeats=reaction;menu.Open();menu.SetPlayerCount(4);
  if(hadBest)PlayerPrefs.SetFloat(bestKey,best);else PlayerPrefs.DeleteKey(bestKey);PlayerPrefs.Save();

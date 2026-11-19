@@ -21,8 +21,6 @@ button,button *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:
 .touch-button *{pointer-events:none}
 #loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;background:#10160e;z-index:5;text-align:center;padding:24px}
 #status{font-size:10px;line-height:2}progress{width:min(380px,70%);height:10px;accent-color:#b5be73}#error{font-size:10px;line-height:2;color:#ffd0a6;white-space:pre-wrap}#play{padding:15px;font-size:12px}
-#fullscreen{position:absolute;top:max(10px,env(safe-area-inset-top));right:calc(64px + env(safe-area-inset-right));z-index:3;font-size:24px;width:44px;height:40px;background:#10160e66;color:#f4e9ba;border:1px solid #f4e9ba55;border-radius:8px}
-#fullscreen-help{position:absolute;top:calc(58px + env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:4;width:min(290px,85vw);padding:16px;background:#10160eef;border:1px solid #b5be73;font-size:10px;line-height:2}#fullscreen-help button{display:block;margin-top:12px;padding:8px;font-size:9px}
 #touch-controls{display:none;position:absolute;inset:0;pointer-events:none;z-index:2;user-select:none}body.touch-playing #touch-controls{display:block}
 .thumb-controls{position:absolute;bottom:max(16px,env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px}.thumb-controls.left{left:max(18px,env(safe-area-inset-left))}.thumb-controls.right{right:max(18px,env(safe-area-inset-right))}
 .touch-button{pointer-events:auto;touch-action:none;-webkit-touch-callout:none;width:56px;height:56px;border-radius:50%;border:1px solid #f4e9ba66;background:#b5be7326;color:#fff9dd;text-shadow:1px 1px 3px #000;font-size:22px;padding:0;display:grid;place-content:center;gap:3px}.touch-button.jump{width:48px;height:48px;font-size:17px}.touch-button small{font-size:7px}.touch-button:hover{background:#b5be7326}.touch-button.held{background:#b5be7366;border-color:#f4e9ba}
@@ -41,8 +39,6 @@ button,button *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:
 </head>
 <body>
 <div id="stage"><canvas id="game" tabindex="0" aria-label="Left Right multiplayer game"></canvas>
-<button id="fullscreen" title="Fullscreen" aria-label="Fullscreen">⛶</button>
-<div id="fullscreen-help" role="status" hidden><span></span><button type="button">OK</button></div>
 <div id="touch-controls">
  <div class="thumb-controls left"><button class="touch-button" id="move-left" aria-label="Move left" data-axis="-1">←</button><button class="touch-button jump" id="jump-left" aria-label="Jump on left side">↑<small>JUMP</small></button></div>
  <div class="thumb-controls right"><button class="touch-button jump" id="jump-right" aria-label="Jump on right side">↑<small>JUMP</small></button><button class="touch-button" id="move-right" aria-label="Move right" data-axis="1">→</button></div>
@@ -79,7 +75,7 @@ button,button *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:
 <script>
 const canvas=document.getElementById('game'),loading=document.getElementById('loading'),status=document.getElementById('status'),progress=document.getElementById('progress');
 const touchDevice=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
-const fullscreen=document.getElementById('fullscreen'),joinCode=document.getElementById('join-code');
+const joinCode=document.getElementById('join-code');
 let instance;
 window.leftRightInput={axis:0,jump:false};
 const touches=new Map();
@@ -105,15 +101,9 @@ window.addEventListener('leftright-lobby',event=>{
  document.body.classList.toggle('touch-playing',touchDevice&&canMove());
  if(!canMove())resetInput();
  document.getElementById('join-form').hidden=!touchDevice||!!state.code||!state.menu||state.menuPage!==3;
- document.getElementById('copy-room').hidden=!state.code||!state.host||!state.menu||state.menuPage!==3;
+ document.getElementById('copy-room').hidden=!state.code||!state.host||!state.menu||![3,5].includes(state.menuPage);
 });
-// The game always fills the viewport, including iPhone browsers without native
-// fullscreen. Native fullscreen is an optional enhancement, not a layout dependency.
-const fullscreenHelp=document.getElementById('fullscreen-help');
-function showFullscreenHelp(){fullscreenHelp.querySelector('span').textContent=/iPhone|iPad|iPod/.test(navigator.userAgent)?'For fullscreen on iPhone: use Safari’s Share menu → Add to Home Screen, then open the game from that icon.':'The game already fills this browser window. Your browser does not allow native fullscreen here.';fullscreenHelp.hidden=false}
-fullscreenHelp.querySelector('button').onclick=()=>fullscreenHelp.hidden=true;
-fullscreen.onclick=()=>{resetInput();canvas.focus();fullscreenHelp.hidden=true;if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});else if(document.body.requestFullscreen)document.body.requestFullscreen().catch(showFullscreenHelp);else showFullscreenHelp()};
-document.addEventListener('fullscreenchange',()=>{const active=!!document.fullscreenElement;fullscreen.textContent=active?'×':'⛶';fullscreen.setAttribute('aria-label',active?'Exit fullscreen':'Fullscreen');resetInput()});
+// The game fills the browser viewport without an extra fullscreen control.
 canvas.addEventListener('pointerdown',()=>canvas.focus());
 // Only the four compact buttons capture gameplay touches. The rest of the view
 // stays clear, and independent pointer IDs allow either thumb to move and jump.
