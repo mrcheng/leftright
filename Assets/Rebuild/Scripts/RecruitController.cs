@@ -58,6 +58,8 @@ namespace LeftRight.Rebuild
         bool releasedAfterSqueeze;
         public bool IsFallingThrough {get;private set;}
         float dropSpeed;
+        SurvivalRain rain;
+        float groundSpeed,slickness;
 
         void Awake()
         {
@@ -66,6 +68,7 @@ namespace LeftRight.Rebuild
             movementTime = Time.realtimeSinceStartupAsDouble;
             visualRoot = transform.Find("Model orientation");
             visualRestScale = visualRoot.localScale;
+            rain=course.GetComponent<SurvivalRain>();
         }
 
         void Update()
@@ -78,15 +81,29 @@ namespace LeftRight.Rebuild
             if (IsEliminated || IsPinned || !canMove || course.IsGameOver)
             {
                 Horizontal = 0;
+                groundSpeed=slickness=0;
                 CancelJump();
                 return;
             }
             if(ReadJumpPressed())TryJump();
             UpdateJump();
             Horizontal = Mathf.Clamp(InputOverride ?? (computerControlled ? ComputerInput : ReadInput()), -1, 1);
-            if (!IsMoving) { Horizontal = 0; return; }
-            DirectionRight = Horizontal > 0;
-            transform.localPosition += Vector3.right * Horizontal * walkSpeed * elapsed;
+            if (!IsMoving) Horizontal = 0;
+            else DirectionRight = Horizontal > 0;
+            float wetness=rain!=null?rain.WetnessAt(this):0;
+            slickness=wetness>0?wetness:Mathf.MoveTowards(slickness,0,elapsed*4);
+            float target=Horizontal*walkSpeed;
+            // Input/facing still determine whether an order is followed. Wet ground
+            // changes actual travel: release coasts, and reversing takes a moment.
+            // Dry lanes retain the existing instant response; traction returns soon
+            // after leaving a puddle, so sliding never becomes an uncontrollable drift.
+            if(slickness>.01f)
+            {
+                float grip=Mathf.Abs(Horizontal)>.2f?Mathf.Lerp(25,3.5f,slickness):Mathf.Lerp(30,2,slickness);
+                groundSpeed=Mathf.MoveTowards(groundSpeed,target,grip*elapsed);
+            }
+            else groundSpeed=target;
+            transform.localPosition += Vector3.right * groundSpeed * elapsed;
         }
 
         float ReadInput()
@@ -169,6 +186,7 @@ namespace LeftRight.Rebuild
             var explosion=GetComponent<RecruitExplosion>();if(explosion!=null)explosion.ResetExplosion();
             WasBlasted=false;
             IsFallingThrough=false;dropSpeed=0;
+            groundSpeed=slickness=0;
             CancelJump();
             if (ragdoll != null) ragdoll.ResetRagdoll();
             if (hitAudio != null) hitAudio.ResetAudio();

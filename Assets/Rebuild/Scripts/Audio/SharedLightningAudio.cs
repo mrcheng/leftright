@@ -42,6 +42,7 @@ namespace LeftRight.Rebuild
             if(StrikePlayed)return false;
             StrikePlayed=true;warning.Stop();
             if(clap!=null)impact.PlayOneShot(clap,.95f);
+            // The single trimmed wood crash starts with the bolt, never on a fall.
             if(wood!=null)impact.PlayOneShot(wood,.85f);
             return true;
         }

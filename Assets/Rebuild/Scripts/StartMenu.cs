@@ -114,6 +114,9 @@ namespace LeftRight.Rebuild
             var lightning=GetComponent<SurvivalLightning>();
             if(lightning==null)lightning=gameObject.AddComponent<SurvivalLightning>();
             lightning.Initialize(this);
+            var rain=GetComponent<SurvivalRain>();
+            if(rain==null)rain=gameObject.AddComponent<SurvivalRain>();
+            rain.Initialize(this,lightning);
         }
         void Start() => Open();
 

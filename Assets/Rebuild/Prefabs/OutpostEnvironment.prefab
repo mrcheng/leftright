@@ -11081,6 +11081,7 @@ GameObject:
   - component: {fileID: 7408402796270050849}
   - component: {fileID: 987338904262047222}
   - component: {fileID: 3541850252793865271}
+  - component: {fileID: 7726776352886136814}
   m_Layer: 0
   m_Name: OutpostEnvironment
   m_TagString: Untagged
@@ -11337,6 +11338,22 @@ MonoBehaviour:
   rumbleClip: {fileID: 8300000, guid: 066e64dcfde48e54eb2d8b5d4422163a, type: 3}
   strikeClip: {fileID: 8300000, guid: 66f67e3f2cdcb644a8b8386555d9c60e, type: 3}
   woodClip: {fileID: 8300000, guid: 89ac50bf71b446e499c029427e9e3cbc, type: 3}
+--- !u!114 &7726776352886136814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6663512733640326206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cc61979cadfe7b47b9898b3e56ea491, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.SurvivalRain
+  delaySeconds: {x: 5, y: 10}
+  durationSeconds: {x: 8, y: 12}
+  dryingSeconds: 12
+  puddlesPerLane: 3
 --- !u!1 &6664416983528790334
 GameObject:
   m_ObjectHideFlags: 0

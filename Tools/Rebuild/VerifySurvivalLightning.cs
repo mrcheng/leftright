@@ -18,6 +18,7 @@ try
 {
  Check(timing.x>=30&&timing.y>timing.x&&warning==3,"Production deadline is randomized after 30s with a three-second warning");
  Check(lightning.rumbleClip!=null&&lightning.strikeClip!=null&&lightning.woodClip!=null&&lightning.rumbleClip.length>=2.9f,"Supplied rumble, thunderclap and wood clips are available");
+ Check(lightning.woodClip.length<=1.81f,"Wood audio is one immediate crash, without the recording's delayed second hit");
  lightning.strikeSeconds=new Vector2(3.4f,3.4f);round.leadInSeconds=.15f;course.reactionBeats=10000;menu.Obstacles.automaticSpawning=false;
  menu.PlaySurvival();var player=course.players[0];player.InputOverride=0;
  var storm=SharedLightningAudio.ForCourse(course);int voices=course.GetComponents<AudioSource>().Length;

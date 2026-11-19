@@ -13,6 +13,7 @@ namespace LeftRight.Rebuild
         public Vector2 strikeSeconds=new Vector2(30,40);
         [Min(.1f)] public float warningSeconds=3;
         public AudioClip rumbleClip,strikeClip,woodClip;
+        public event Action Struck;
         public bool HasStruck {get;private set;}
         public bool IsWarning {get;private set;}
         public double StrikeAt {get;private set;}
@@ -106,6 +107,7 @@ namespace LeftRight.Rebuild
             foreach(var board in new[]{first,second})
             {board.renderer.SetPropertyBlock(null);board.broken=true;board.transform.gameObject.AddComponent<FallingLanePlank>().Initialize(random);}
             stormAudio.PlayStrike(strikeClip,woodClip);MakeBolt(hit);
+            Struck?.Invoke();
         }
         void CheckHole()
         {
