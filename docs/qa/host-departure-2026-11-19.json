@@ -1,0 +1,9 @@
+{
+  "checks": 14,
+  "errors": [],
+  "cloudDeleteStatuses": [
+    204,
+    204
+  ],
+  "scope": "Public lobby Stay/Leave, in-progress exit, reliable guest notice, abrupt host loss, native overlays and unload warning"
+}

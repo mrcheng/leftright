@@ -15,6 +15,7 @@ namespace LeftRight.Rebuild
         public int PlayerCount { get; private set; } = 4;
         public bool IsSurvival { get; private set; }
         public bool IsCouch {get;private set;}
+        public OnlineSessionDialog SessionDialog {get;private set;}
         int localPlayerCount = 4;
         public bool IsOpen { get; private set; }
         public enum MenuPage { Main, LocalGame, Settings, Online, Couch, CreateOnline }
@@ -33,7 +34,7 @@ namespace LeftRight.Rebuild
         float nextWebStatus;
         [System.Runtime.InteropServices.DllImport("__Internal")]
         static extern void LeftRight_UpdateLobby(string code,string status,int humans,int host,int playing,float x,int jumping,
-            int menu,int over,float beat,float travel,string receiver);
+            int menu,int over,float beat,float travel,string receiver,int modal);
         [System.Runtime.InteropServices.DllImport("__Internal")]
         static extern void LeftRight_UpdateDrills(string json);
         [System.Runtime.InteropServices.DllImport("__Internal")]
@@ -50,7 +51,7 @@ namespace LeftRight.Rebuild
             LeftRight_UpdateLobby(online.JoinCode,online.Status,online.HumanCount,online.IsHost?1:0,playing?1:0,
                 local!=null?local.transform.position.x:0,local!=null&&local.IsJumping?1:0,
                 IsOpen?(int)Page+1:0,course.IsGameOver?1:0,(float)course.round.masterBeat.BeatPosition,
-                slot>=0&&slot<course.traps.Length?course.traps[slot].CurrentTravel:0,gameObject.name);
+                slot>=0&&slot<course.traps.Length?course.traps[slot].CurrentTravel:0,gameObject.name,SessionDialog.Visible?1:0);
             if(PublicDrills!=null)LeftRight_UpdateDrills(JsonUtility.ToJson(new BrowserDrills{
                 isPublic=PublicDrills.IsPublic,listed=PublicDrills.IsListed,refreshing=PublicDrills.Refreshing,
                 joining=PublicDrills.Joining,status=online.IsHost?PublicDrills.HostStatus:PublicDrills.BrowserStatus,rooms=PublicDrills.Rooms}));
@@ -75,6 +76,8 @@ namespace LeftRight.Rebuild
         public void RetrySurvivalScores(string unused)=>Results.Refresh();
         public void ReplayFromResults(string unused)=>Results.PlayAgain();
         public void MenuFromResults(string unused)=>Results.MainMenu();
+        public void HostBrowserLeaving(string unused)
+        {if(online!=null&&online.IsHost){online.SendHostClosingNotice();online.Leave("You ended the drill.");}}
         string joinCode = "";
         readonly System.Collections.Generic.Dictionary<Transform,float> laneZ = new System.Collections.Generic.Dictionary<Transform,float>();
         float masterVolume;
@@ -90,6 +93,7 @@ namespace LeftRight.Rebuild
 
         void Awake()
         {
+            SessionDialog=gameObject.AddComponent<OnlineSessionDialog>();SessionDialog.Initialize(this);
             victory = GetComponent<VictoryDirector>();
             Scores = gameObject.AddComponent<SurvivalScore>();
             Scores.Initialize(course,this);
@@ -128,7 +132,7 @@ namespace LeftRight.Rebuild
         public void Open()
         {
             inMatchSettings=false;
-            if(online!=null&&(online.Active||online.Busy)){online.Leave();return;}
+            if(online!=null&&(online.Active||online.Busy)){RequestLeaveOnline();return;}
             course.round.CancelStart(); IsOpen = true;
             Page = MenuPage.Main; view.MenuActive = true;
             view.RoundSummaryActive = true;
@@ -260,6 +264,7 @@ namespace LeftRight.Rebuild
         {
             var keys = Keyboard.current;
             if (keys == null) return;
+            if(SessionDialog.Visible){if(keys.escapeKey.wasPressedThisFrame)SessionDialog.Dismiss();return;}
             if (keys.escapeKey.wasPressedThisFrame) { if (IsOpen) Back(); else Open(); }
             else if (IsOpen && keys.enterKey.wasPressedThisFrame)
             { if (Page == MenuPage.LocalGame) Play(); else if(Page==MenuPage.Couch)PlayCouch(); else if (Page == MenuPage.Main) ShowLocalGame(); }
@@ -275,9 +280,15 @@ namespace LeftRight.Rebuild
         }
         public void Back()
         {
+            if(SessionDialog.Visible){SessionDialog.Dismiss();return;}
             if(!IsOpen)return;
             if(inMatchSettings){inMatchSettings=false;IsOpen=false;view.MenuActive=false;return;}
-            if(online!=null&&(online.Active||online.Busy))online.Leave();Page=MenuPage.Main;
+            if(online!=null&&(online.Active||online.Busy)){RequestLeaveOnline();return;}Page=MenuPage.Main;
+        }
+        public void RequestLeaveOnline()
+        {
+            if(online==null)return;
+            if(online.IsHost)SessionDialog.RequestHostLeave();else online.Leave();
         }
         public void SetMasterVolume(float value)
         {
@@ -327,6 +338,7 @@ namespace LeftRight.Rebuild
 
         void OnGUI()
         {
+            if(SessionDialog!=null&&SessionDialog.Visible)return;
             if (!IsOpen)
             {
                 if (victory != null && victory.ShowRestartPrompt) DrawRoundResult();
@@ -430,6 +442,7 @@ namespace LeftRight.Rebuild
                 if(MenuButton(new Rect(350,395,62,46),"-"))SetMasterVolume(masterVolume-.1f);
                 for(int step=0;step<10;step++)Bar(new Rect(438+step*38,403,28,28),step<Mathf.RoundToInt(masterVolume*10)?new Color(.72f,.75f,.44f):new Color(.18f,.24f,.17f));
                 if(MenuButton(new Rect(860,395,62,46),"+"))SetMasterVolume(masterVolume+.1f);
+                if(online!=null&&online.Active&&MenuButton(new Rect(410,510,460,52),"LEAVE DRILL"))RequestLeaveOnline();
                 if(MenuButton(new Rect(510,597,260,48),"BACK"))Back();
             }
             GUI.Label(new Rect(240,663,800,32),"OUTPOST DRILL  /  PROTOTYPE",new GUIStyle(small){alignment=TextAnchor.MiddleCenter});
@@ -573,6 +586,7 @@ namespace LeftRight.Rebuild
                 if(MenuButton(new Rect(24,395,64,64),"-"))SetMasterVolume(masterVolume-.1f);
                 for(int step=0;step<10;step++)Bar(new Rect(104+step*27,415,20,24),step<Mathf.RoundToInt(masterVolume*10)?new Color(.72f,.75f,.44f):new Color(.18f,.24f,.17f));
                 if(MenuButton(new Rect(392,395,64,64),"+"))SetMasterVolume(masterVolume+.1f);
+                if(online!=null&&online.Active&&MenuButton(new Rect(24,550,432,60),"LEAVE DRILL"))RequestLeaveOnline();
                 if(MenuButton(new Rect(24,690,432,56),"BACK"))Back();
             }
             GUI.Label(new Rect(24,798,432,32),"OUTPOST DRILL / PROTOTYPE",new GUIStyle(small){alignment=TextAnchor.MiddleCenter,fontSize=11});

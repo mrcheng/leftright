@@ -168,7 +168,7 @@ namespace LeftRight.Rebuild
 
         void OnGUI()
         {
-            if (MenuActive||menu?.Results?.Visible==true) return;
+            if (MenuActive||menu?.Results?.Visible==true||menu?.SessionDialog?.Visible==true) return;
             const float margin = 14, button = 38;
             if (GUI.Button(new Rect(Screen.width - margin - button, margin, button, button), gear))
             {

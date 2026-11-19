@@ -15,7 +15,7 @@ mergeInto(LibraryManager.library, {
     return pressed ? 1 : 0;
   },
   LeftRight_UpdateLobby__deps: ['$WEBAudio'],
-  LeftRight_UpdateLobby: function (code, status, humans, host, playing, x, jumping, menu, over, beat, travel, receiver) {
+  LeftRight_UpdateLobby: function (code, status, humans, host, playing, x, jumping, menu, over, beat, travel, receiver, modal) {
     if (typeof window === 'undefined') return;
     // Run resume directly inside a trusted pointer gesture, not after a network or
     // Unity callback. Safari can otherwise leave the musical/gameplay clock paused.
@@ -30,7 +30,7 @@ mergeInto(LibraryManager.library, {
     window.dispatchEvent(new CustomEvent('leftright-lobby', { detail: {
       code: UTF8ToString(code), status: UTF8ToString(status),
       humans: humans, host: !!host, playing: !!playing, x: x, jumping: !!jumping,
-      menu: !!menu, menuPage: menu - 1, over: !!over, beat: beat, travel: travel, receiver: UTF8ToString(receiver)
+      menu: !!menu, menuPage: menu - 1, over: !!over, beat: beat, travel: travel, receiver: UTF8ToString(receiver), modal: !!modal
     }}));
   }
 });

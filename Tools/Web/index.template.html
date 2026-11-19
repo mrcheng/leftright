@@ -13,6 +13,7 @@
 @font-face{font-family:Drill;src:url(style/PressStart2P.ttf) format('truetype');font-display:swap}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#10160e;color:#f4e9ba;font-family:Drill,monospace}
 #stage{position:fixed;inset:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#10160e}
+body.session-modal #gui-overlay,body.session-modal #touch-controls,body.session-modal #round-results{display:none!important}
 #rotate-phone{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:#10160e;padding:32px;text-align:center;outline:0}
 #rotate-phone[hidden]{display:none}#rotate-phone svg{width:112px;height:112px;color:#b5be73}#rotate-phone h2{font-size:18px;line-height:1.8;margin:0}#rotate-phone p{font-size:11px;line-height:2;max-width:320px;margin:0;color:#c4cba7}
 canvas{width:100%;height:100%;display:block;outline:0;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -91,13 +92,17 @@ function updateOrientation(){
 }
 portraitScreen.addEventListener('change',updateOrientation);
 updateOrientation();
-function canMove(){const s=window.leftRightLobby;return rotatePhone.hidden&&s&&s.playing&&!s.menu&&!s.over}
+function canMove(){const s=window.leftRightLobby;return rotatePhone.hidden&&s&&!s.modal&&s.playing&&!s.menu&&!s.over}
 function resetInput(){touches.clear();window.leftRightInput.axis=0;window.leftRightInput.jump=false;document.querySelectorAll('.touch-button.held').forEach(button=>button.classList.remove('held'))}
 function updateAxis(){// Opposite fingers cancel; releasing one keeps the other held.
  window.leftRightInput.axis=Math.sign([...touches.values()].reduce((sum,axis)=>sum+axis,0));
 }
 window.addEventListener('leftright-lobby',event=>{
+ const hadModal=!!window.leftRightLobby?.modal;
  const state=event.detail;window.leftRightLobby={...state,updatedAt:performance.now()};
+ document.body.classList.toggle('session-modal',!!state.modal);
+ if(state.modal&&!hadModal){browserMessage('SetBrowserTextFocus','0');canvas.focus()}
+ else if(hadModal&&!state.modal&&window.leftRightResults?.visible)browserMessage('SetBrowserTextFocus','1');
  document.body.classList.toggle('touch-playing',touchDevice&&canMove());
  if(!canMove())resetInput();
  document.getElementById('join-form').hidden=!touchDevice||!!state.code||!state.menu||state.menuPage!==3;
@@ -120,6 +125,12 @@ for(const button of document.querySelectorAll('.touch-button')){
 }
 window.addEventListener('blur',resetInput);window.addEventListener('resize',resetInput);document.addEventListener('visibilitychange',resetInput);
 function browserMessage(method,value){const receiver=window.leftRightLobby?.receiver;if(instance&&receiver)instance.SendMessage(receiver,method,value)}
+// Browser close/reload prompts cannot display custom text. The in-game dialog
+// has the full warning; this native prompt covers navigation out of an active host.
+window.addEventListener('beforeunload',event=>{if(window.leftRightLobby?.host){event.preventDefault();event.returnValue=''}});
+// Best effort only: a killed browser/offline device cannot finish a Lobby delete.
+// Do not end matches on visibilitychange: switching apps/tabs is not leaving.
+window.addEventListener('pagehide',()=>{if(window.leftRightLobby?.host)browserMessage('HostBrowserLeaving','')});
 joinCode.addEventListener('focus',()=>browserMessage('SetBrowserTextFocus','1'));
 joinCode.addEventListener('blur',()=>browserMessage('SetBrowserTextFocus','0'));
 document.getElementById('join-form').onsubmit=event=>{event.preventDefault();window.leftRightResumeAudio?.();joinCode.blur();browserMessage('JoinBrowserRoom',joinCode.value)};

@@ -28,7 +28,7 @@ namespace LeftRight.Rebuild
         IPublicDrillDirectory Directory => DirectoryOverride ?? (cloud ??= new UnityPublicDrillDirectory());
 
         public void Initialize(StartMenu startMenu,OnlineMatch match){menu=startMenu;online=match;}
-        bool CanAdvertise => online!=null&&online.IsHost&&online.UsesRelay&&IsPublic&&!online.RoundActive&&
+        bool CanAdvertise => online!=null&&online.IsHost&&!online.Closing&&online.UsesRelay&&IsPublic&&!online.RoundActive&&
             online.HumanCount<online.Capacity&&(online.RelayConnectionOverride==null||DirectoryOverride!=null);
 
         void Update()

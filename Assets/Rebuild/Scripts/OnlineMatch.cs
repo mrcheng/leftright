@@ -16,6 +16,8 @@ namespace LeftRight.Rebuild
     public sealed class OnlineMatch : MonoBehaviour
     {
         const string StateMessage = "leftright.state.v1", InputMessage = "leftright.input.v1";
+        const string HostClosingMessage="leftright.host-closing.v1";
+        public bool Closing {get;private set;}
         public StartMenu menu;
         public ushort port = 7777;
         public float snapshotInterval = .05f;
@@ -31,7 +33,7 @@ namespace LeftRight.Rebuild
         public int Capacity { get; private set; } = 4;
         public int HumanCount { get; private set; }
         public string Status { get; private set; } = "";
-        public bool CanStart => IsHost && HumanCount >= 2;
+        public bool CanStart => IsHost && !Closing && HumanCount >= 2;
         public double StartTime { get; private set; }
         // NGO's ServerTime is intentionally buffered for interpolation. Music needs the
         // estimated current server time, so remove the local input buffer instead.
@@ -184,9 +186,9 @@ namespace LeftRight.Rebuild
 
         void Approve(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
         {
-            response.Approved = !RoundActive && slots.Count < Capacity;
+            response.Approved = !Closing && !RoundActive && slots.Count < Capacity;
             response.CreatePlayerObject = false; response.Pending = false;
-            response.Reason = RoundActive ? "Match already started." : "Game is full.";
+            response.Reason = Closing ? "Host is leaving." : RoundActive ? "Match already started." : "Game is full.";
             if(response.Approved && !slots.ContainsKey(request.ClientNetworkId))
                 slots[request.ClientNetworkId]=Enumerable.Range(0,Capacity).First(i=>!slots.ContainsValue(i));
         }
@@ -195,6 +197,32 @@ namespace LeftRight.Rebuild
         {
             manager.CustomMessagingManager.RegisterNamedMessageHandler(StateMessage, ReceiveState);
             manager.CustomMessagingManager.RegisterNamedMessageHandler(InputMessage, ReceiveInput);
+            manager.CustomMessagingManager.RegisterNamedMessageHandler(HostClosingMessage,ReceiveHostClosing);
+        }
+        void ReceiveHostClosing(ulong sender,FastBufferReader reader)
+        {
+            if(!Active||IsHost||sender!=NetworkManager.ServerClientId)return;
+            Leave("The host ended the drill.");
+            menu.SessionDialog.Notify(OnlineSessionDialog.HostEnded);
+        }
+        public void SendHostClosingNotice()
+        {
+            if(!IsHost||manager.CustomMessagingManager==null)return;
+            using var writer=new FastBufferWriter(1,Allocator.Temp);writer.WriteValueSafe((byte)1);
+            foreach(var client in manager.ConnectedClientsIds.ToArray())
+                if(client!=manager.LocalClientId)manager.CustomMessagingManager.SendNamedMessage(HostClosingMessage,client,writer,NetworkDelivery.ReliableSequenced);
+        }
+        public async void EndHostedSession()
+        {
+            if(!IsHost||Closing)return;
+            int attempt=connectionAttempt;
+            Closing=true;menu.PublicDrills?.StopAdvertising();SendHostClosingNotice();
+            Status="Ending the drill...";
+            // Allow the reliable notice to flush before destroying transport. The
+            // closing guard prevents a new guest or a replacement public listing.
+            double until=Time.realtimeSinceStartupAsDouble+.25;
+            while(this!=null&&Active&&connectionAttempt==attempt&&Time.realtimeSinceStartupAsDouble<until)await Awaitable.NextFrameAsync();
+            if(this!=null&&Closing&&connectionAttempt==attempt)Leave("You ended the drill.");
         }
 
         void Connected(ulong client)
@@ -214,16 +242,26 @@ namespace LeftRight.Rebuild
             if (!Active || stopping) return;
             if (!IsHost || RoundActive)
             {
+                bool joinedGuest=!IsHost&&ReceivedSnapshots>0;
+                bool endedHostRound=IsHost&&RoundActive;
                 string reason=manager!=null?manager.DisconnectReason:null;
                 string message = reason != null && reason.IndexOf("already started",StringComparison.OrdinalIgnoreCase)>=0 ? "Match already started."
                     : reason != null && reason.IndexOf("full",StringComparison.OrdinalIgnoreCase)>=0 ? "Game is full."
                     : "Connection lost. Reconnect or host another game.";
-                Leave(message);return;
+                Leave(message);
+                if(joinedGuest)menu.SessionDialog.Notify(OnlineSessionDialog.HostLost);
+                else if(endedHostRound)menu.SessionDialog.Notify("A recruit lost connection.\nThe drill ended and everyone is back at the menu.");
+                return;
             }
             slots.Remove(client); inputSeen.Remove(client); inputSequence.Remove(client); HumanCount = slots.Count;
             Status = "Player left. Waiting for another player.";
         }
-        void TransportFailed() => Leave("Network transport failed.");
+        void TransportFailed()
+        {
+            bool joined=ReceivedSnapshots>0&&!IsHost;
+            Leave("Network transport failed.");
+            if(joined)menu.SessionDialog.Notify(OnlineSessionDialog.HostLost);
+        }
 
         public bool RequestRound()
         {
@@ -422,7 +460,8 @@ namespace LeftRight.Rebuild
 
         public void Leave(string reason = "Disconnected.")
         {
-            if(stopping)return; stopping=true; Active=false;RoundActive=false;
+            if(stopping)return; stopping=true; Active=false;RoundActive=false;Closing=false;
+            menu.SessionDialog?.Dismiss();
             menu.PublicDrills?.StopAdvertising();
             connectionAttempt++;Busy=false;UsesRelay=false;JoinCode="";
             course.NetworkReplica=false;course.round.masterBeat.NetworkElapsedSeconds=null;
