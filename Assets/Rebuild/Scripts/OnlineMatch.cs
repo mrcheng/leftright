@@ -231,7 +231,8 @@ namespace LeftRight.Rebuild
             if (!CanStart) { Status = IsHost ? "Wait for a second player." : "Waiting for the host to start the next round."; return true; }
             RoundNumber++; cueVersion = 0; victoryAt = 0; resultReceived = false;
             hostCrateIds.Clear();nextCrateId=0;
-            StartTime = Now + Math.Max(3,course.round.leadInSeconds);
+            float introSeconds=Mathf.Clamp(course.round.leadInSeconds,3,5);
+            StartTime = Now + introSeconds;
             menu.PrepareOnlineMatch(Capacity,0);
             for (int i = 0; i < course.players.Length; i++)
             {
@@ -242,7 +243,8 @@ namespace LeftRight.Rebuild
             course.NetworkReplica = false; spawner.enabled = true;
             RoundActive = true;
             menu.PublicDrills?.StopAdvertising();
-            course.round.BeginScheduled(AudioSettings.dspTime + StartTime - Now, false);
+            int intro=course.round.startScenes!=null?course.round.startScenes.ChooseIndex():-1;
+            course.round.BeginScheduled(AudioSettings.dspTime + StartTime - Now, false,intro,introSeconds);
             course.round.masterBeat.NetworkElapsedSeconds = () => Now - StartTime;
             Status = "Online round " + RoundNumber; nextSnapshot = 0;
             return true;
@@ -321,6 +323,7 @@ namespace LeftRight.Rebuild
                 right = course.round.officer.DirectionRight, over = course.IsGameOver, victoryAt = victoryAt,
                 winner = Array.IndexOf(course.players,course.Winner), sequence = Array.IndexOf(victory.sequences,victory.SelectedSequence) };
             state.survivalSeconds=menu.Scores.ElapsedSeconds;state.survivalTimes=menu.Scores.Times;
+            state.startSequence=course.round.startScenes!=null?course.round.startScenes.SelectedIndex:-1;state.introSeconds=course.round.IntroSeconds;
             state.players = course.players.Select((p,i) => new OnlinePlayerState { x = p.transform.position.x, horizontal = p.Horizontal,
                 jumping=p.IsJumping,jumpPhase=p.JumpPhase,
                 blasted=p.WasBlasted,
@@ -355,11 +358,11 @@ namespace LeftRight.Rebuild
                 menu.PrepareOnlineMatch(Capacity,LocalSlot);
                 course.NetworkReplica = true; spawner.enabled = false;
                 foreach(var player in course.players) { player.NetworkReplica=true; player.computerControlled=false; player.InputOverride=null; }
-                course.round.BeginScheduled(AudioSettings.dspTime + Math.Max(.05,StartTime-Now),true);
+                course.round.BeginScheduled(AudioSettings.dspTime + Math.Max(.05,StartTime-Now),true,state.startSequence,state.introSeconds>0?state.introSeconds:3);
                 menu.ArrangeOnlineFront(LocalSlot);
                 course.round.masterBeat.NetworkElapsedSeconds = () => Now - StartTime;
             }
-            if (state.cue > 0 && state.cue != remoteCue && !state.over)
+            if (state.cue > 0 && state.cue != remoteCue && !state.over && !course.round.IsCountingDown)
             { remoteCue=state.cue; course.round.officer.ApplyNetworkCue(state.right); }
             for (int i=0;i<Capacity;i++)
             {
@@ -447,6 +450,8 @@ namespace LeftRight.Rebuild
     [Serializable] public sealed class OnlineState
     {
         public int serial,round,capacity,humans,yourSlot,cue,winner,sequence;
+        public int startSequence;
+        public float introSeconds;
         public double startsAt,victoryAt;
         public float survivalSeconds;
         public float[] survivalTimes;

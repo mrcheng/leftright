@@ -24,6 +24,7 @@ namespace LeftRight.Rebuild
         public Vector3 CoursePosition => widePosition;
         public Quaternion CourseRotation => wideRotation;
         public float CourseFieldOfView => wideFieldOfView;
+        public Vector3 GameplayFocus=>LocalPlayer!=null?Vector3.Lerp(LocalPlayer.transform.position,course.round.officer.transform.position,.35f)+Vector3.up*1.2f:widePosition+wideRotation*Vector3.forward*20;
         Vector3 widePosition, savedWidePosition, velocity;
         Quaternion wideRotation;
         float wideFieldOfView, fieldVelocity;
@@ -83,26 +84,7 @@ namespace LeftRight.Rebuild
                 (course.round.IsCountingDown || course.round.HasStarted);
             Vector3 desired = widePosition;
             float fov = close ? onlineFieldOfView : wideFieldOfView;
-            if (close)
-            {
-                // Bias toward the local front recruit, retaining enough horizontal/vertical
-                // field of view for the instructor at either end of the player's lane.
-                Vector3 playerFeet = player.transform.position;
-                Vector3 instructorFeet = course.round.officer.transform.position;
-                Vector3 center = Vector3.Lerp(playerFeet, instructorFeet, .35f) + Vector3.up * 1.2f;
-                // Frame the front lane consistently across phone/desktop aspect ratios.
-                // Measure width at the recruit's depth, rather than at the aim point
-                // behind them. The instructor visibility checks can still pull back
-                // when the player walks toward either end of the lane.
-                float horizontal = Mathf.Tan(onlineFieldOfView*Mathf.Deg2Rad*.5f)*Mathf.Max(.4f,gameCamera.aspect);
-                float playerDepth=(Quaternion.Inverse(wideRotation)*(playerFeet-center)).z;
-                float distance = Mathf.Max(onlineDistance,followLaneWidth*.5f/horizontal-playerDepth);
-                distance = FitPoint(playerFeet - Vector3.up * .1f, center, distance);
-                distance = FitPoint(playerFeet + Vector3.up * 2.25f, center, distance);
-                distance = FitPoint(instructorFeet - Vector3.up * .1f, center, distance);
-                distance = FitPoint(instructorFeet + Vector3.up * 2.65f, center, distance);
-                desired = center - (wideRotation * Vector3.forward) * distance;
-            }
+            if (close) GameplayPose(out desired,out _,out _);
             float delta = Time.unscaledDeltaTime;
             gameCamera.transform.position = Vector3.SmoothDamp(gameCamera.transform.position, desired,
                 ref velocity, Mathf.Max(.05f, followSmoothSeconds), Mathf.Infinity, delta);
@@ -116,6 +98,34 @@ namespace LeftRight.Rebuild
                 gameCamera.transform.position = widePosition; gameCamera.fieldOfView = wideFieldOfView;
             }
         }
+
+        public void GameplayPose(out Vector3 position,out Quaternion rotation,out float fov)
+        {
+            UpdateWideFraming();rotation=wideRotation;fov=onlineFieldOfView;
+            if(LocalPlayer==null){position=widePosition;fov=wideFieldOfView;return;}
+            // Bias toward the local front recruit, retaining enough horizontal/vertical
+            // field of view for the instructor at either end of the player's lane.
+            Vector3 playerFeet = LocalPlayer.transform.position;
+            Vector3 instructorFeet = course.round.officer.transform.position;
+            Vector3 center = GameplayFocus;
+            // Frame the front lane consistently across phone/desktop aspect ratios.
+            // Measure width at the recruit's depth, rather than at the aim point
+            // behind them. The instructor visibility checks can still pull back
+            // when the player walks toward either end of the lane.
+            float horizontal = Mathf.Tan(onlineFieldOfView*Mathf.Deg2Rad*.5f)*Mathf.Max(.4f,gameCamera.aspect);
+            float playerDepth=(Quaternion.Inverse(wideRotation)*(playerFeet-center)).z;
+            float distance = Mathf.Max(onlineDistance,followLaneWidth*.5f/horizontal-playerDepth);
+            distance = FitPoint(playerFeet - Vector3.up * .1f, center, distance);
+            distance = FitPoint(playerFeet + Vector3.up * 2.25f, center, distance);
+            distance = FitPoint(instructorFeet - Vector3.up * .1f, center, distance);
+            distance = FitPoint(instructorFeet + Vector3.up * 2.65f, center, distance);
+            position = center - (wideRotation * Vector3.forward) * distance;
+        }
+
+        public void SnapToGameplay()
+        {GameplayPose(out var position,out var rotation,out float fov);velocity=Vector3.zero;fieldVelocity=0;gameCamera.transform.SetPositionAndRotation(position,rotation);gameCamera.fieldOfView=fov;}
+        public void SnapToCourse()
+        {UpdateWideFraming();velocity=Vector3.zero;fieldVelocity=0;gameCamera.transform.SetPositionAndRotation(widePosition,wideRotation);gameCamera.fieldOfView=wideFieldOfView;}
 
         float FitPoint(Vector3 point, Vector3 center, float distance)
         {

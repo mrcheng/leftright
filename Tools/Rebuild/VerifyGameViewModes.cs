@@ -13,13 +13,15 @@ var speeds=course.players.Select(p=>p.walkSpeed).ToArray();
 var positions=course.players.Select(p=>p.transform.position).ToArray();
 try
 {
- menu.Open();await Task.Delay(100);
+ // Fix the reference aspect before measuring the menu-to-game distance; the
+ // Editor's current Game view can otherwise make those two poses nearly equal.
+ camera.aspect=16f/9;menu.Open();await Task.Delay(100);
  Vector3 wide=settings.CoursePosition;
  Check(Vector3.Distance(camera.transform.position,wide)<.01f,"Menu retains the saved course framing");
  menu.Play();course.enabled=false;
  foreach(var p in course.players){p.InputOverride=0;p.walkSpeed=0;}
  await Task.Delay(6000);
- Check(settings.Mode==GameViewMode.Local&&Vector3.Distance(camera.transform.position,wide)>1,"Local match follows its recruit during countdown");
+ Check(settings.Mode==GameViewMode.Local&&course.round.HasStarted&&!settings.CinematicActive&&Vector3.Distance(camera.transform.position,wide)>1,"Local match follows its recruit after the selected opening");
  var feet=settings.LocalPlayer.transform.position;
  float left=camera.WorldToViewportPoint(feet+Vector3.left*10).x,right=camera.WorldToViewportPoint(feet+Vector3.right*10).x;
  Check(left>-.1f&&left<.15f&&right>.85f&&right<1.1f,"Starting follow frames the first lane edges close to the screen edges");

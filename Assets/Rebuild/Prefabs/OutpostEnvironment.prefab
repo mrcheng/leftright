@@ -11082,6 +11082,7 @@ GameObject:
   - component: {fileID: 987338904262047222}
   - component: {fileID: 3541850252793865271}
   - component: {fileID: 7726776352886136814}
+  - component: {fileID: 9079215001601086568}
   m_Layer: 0
   m_Name: OutpostEnvironment
   m_TagString: Untagged
@@ -11153,6 +11154,7 @@ MonoBehaviour:
   masterBeat: {fileID: 226349629807214999}
   leadInSeconds: 3
   playOnStart: 0
+  startScenes: {fileID: 9079215001601086568}
 --- !u!114 &226349629807214999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11357,6 +11359,21 @@ MonoBehaviour:
   durationSeconds: {x: 8, y: 12}
   dryingSeconds: 12
   puddlesPerLane: 3
+--- !u!114 &9079215001601086568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6663512733640326206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da68b5579720ce1418c1287cf9f2485a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: LeftRight.Rebuild::LeftRight.Rebuild.StartSceneDirector
+  sequences:
+  - {fileID: 11400000, guid: d93308865deaa6b429db328044331143, type: 2}
+  - {fileID: 11400000, guid: c67a443e128a22e498b1884cd8506175, type: 2}
 --- !u!1 &6664416983528790334
 GameObject:
   m_ObjectHideFlags: 0
@@ -13664,7 +13681,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
   m_IsGlobal: 1
   priority: 0
@@ -14429,7 +14446,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
